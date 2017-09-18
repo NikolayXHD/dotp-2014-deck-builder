@@ -2,7 +2,7 @@
 <LOCALIZATION>
 	<!-- Localization information to credit the person who did this localization. -->
 	<STRING key="LOCALIZED_BY"><![CDATA[Localized by Riiak Shi Nal - 2013]]></STRING>
-	<STRING key="LOCALIZATION_VERSION"><![CDATA[English (US) v1.2.0.0]]></STRING>
+	<STRING key="LOCALIZATION_VERSION"><![CDATA[English (US) v1.3.0.0]]></STRING>
 	<!-- Strings for Main Window -->
 	<STRING key="MISSING_DOTP_DIRECTORY_TITLE"><![CDATA[DotP 2014 Directory not set.]]></STRING>
 	<STRING key="MISSING_DOTP_DIRECTORY_MESSAGE"><![CDATA[The Duels of the Planeswalkers 2014 game directory has not yet been set.  Please do so now.]]></STRING>
@@ -25,6 +25,8 @@
 	<STRING key="MENU_ABOUT"><![CDATA[&About]]></STRING>
 	<STRING key="MENU_EXPORT_IMAGE"><![CDATA[&Export Image]]></STRING>
 	<STRING key="MENU_EXPORT_CARD_PREVIEWS"><![CDATA[&Export Card Previews]]></STRING>
+	<STRING key="MENU_EXPORT_CARD_XML"><![CDATA[E&xport Card XML]]></STRING>
+	<STRING key="MENU_EXPORT_IMAGE_CROP"><![CDATA[Ex&port Image Crop]]></STRING>
 	<!-- Strings for the Card Listing Columns -->
 	<STRING key="COLUMN_TEXT_NAME"><![CDATA[Name]]></STRING>
 	<STRING key="COLUMN_TEXT_FILE_NAME"><![CDATA[File Name]]></STRING>
@@ -61,6 +63,8 @@
 	<STRING key="DECK_OPEN_TITLE"><![CDATA[Open Deck ...]]></STRING>
 	<STRING key="DECK_SAVE_TITLE"><![CDATA[Save Deck As ...]]></STRING>
 	<STRING key="DECK_FILTER"><![CDATA[Deck XML (*.xml)|*.xml|All Files|*]]></STRING>
+	<STRING key="CARD_SAVE_TITLE"><![CDATA[Save Card As ...]]></STRING>
+	<STRING key="CARD_FILTER"><![CDATA[Card XML (*.xml)|*.xml|All Files|*]]></STRING>
 	<STRING key="UNABLE_TO_LOAD_DECK_CAPTION"><![CDATA[Unable to load deck.]]></STRING>
 	<STRING key="UNABLE_TO_LOAD_DECK_MESSAGE"><![CDATA[Unable to load selected deck, please verify that you chose the correct file and that the XML is valid.]]></STRING>
 	<STRING key="UNSAVED_WORK_CAPTION"><![CDATA[Unsaved work: Save Now?]]></STRING>

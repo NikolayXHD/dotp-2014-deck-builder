@@ -101,6 +101,10 @@
 			this.sslblLoadedCardsNum = new System.Windows.Forms.ToolStripStatusLabel();
 			this.sslblCardsInList = new System.Windows.Forms.ToolStripStatusLabel();
 			this.sslblCardsInListNum = new System.Windows.Forms.ToolStripStatusLabel();
+			this.cmnuiExportCard = new System.Windows.Forms.ToolStripMenuItem();
+			this.cmnuiExportImageCrop = new System.Windows.Forms.ToolStripMenuItem();
+			this.cmnuiExportImageCropPng = new System.Windows.Forms.ToolStripMenuItem();
+			this.cmnuiExportImageCropTdx = new System.Windows.Forms.ToolStripMenuItem();
 			((System.ComponentModel.ISupportInitialize)(this.dgvCards)).BeginInit();
 			this.mnuMain.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.picFrame)).BeginInit();
@@ -781,10 +785,12 @@
             this.cmnuiRemoveCard,
             this.cmnuiViewCard,
             this.cmnuiDecksUsedIn,
+            this.cmnuiExportCard,
             this.toolStripSeparator7,
-            this.cmnuiExportPreviews});
+            this.cmnuiExportPreviews,
+            this.cmnuiExportImageCrop});
 			this.cmnuContext.Name = "cmnuContext";
-			this.cmnuContext.Size = new System.Drawing.Size(185, 148);
+			this.cmnuContext.Size = new System.Drawing.Size(185, 192);
 			// 
 			// cmnuiColumns
 			// 
@@ -840,14 +846,14 @@
 			// cmnuiExportPreviewsPng
 			// 
 			this.cmnuiExportPreviewsPng.Name = "cmnuiExportPreviewsPng";
-			this.cmnuiExportPreviewsPng.Size = new System.Drawing.Size(110, 22);
+			this.cmnuiExportPreviewsPng.Size = new System.Drawing.Size(152, 22);
 			this.cmnuiExportPreviewsPng.Text = "&PNG ...";
 			this.cmnuiExportPreviewsPng.Click += new System.EventHandler(this.cmnuiExportPreviewsPng_Click);
 			// 
 			// cmnuiExportPreviewsTdx
 			// 
 			this.cmnuiExportPreviewsTdx.Name = "cmnuiExportPreviewsTdx";
-			this.cmnuiExportPreviewsTdx.Size = new System.Drawing.Size(110, 22);
+			this.cmnuiExportPreviewsTdx.Size = new System.Drawing.Size(152, 22);
 			this.cmnuiExportPreviewsTdx.Text = "&TDX ...";
 			this.cmnuiExportPreviewsTdx.Click += new System.EventHandler(this.cmnuiExportPreviewsTdx_Click);
 			// 
@@ -942,6 +948,38 @@
 			this.sslblCardsInListNum.Name = "sslblCardsInListNum";
 			this.sslblCardsInListNum.Size = new System.Drawing.Size(17, 19);
 			this.sslblCardsInListNum.Text = "0";
+			// 
+			// cmnuiExportCard
+			// 
+			this.cmnuiExportCard.Name = "cmnuiExportCard";
+			this.cmnuiExportCard.Size = new System.Drawing.Size(184, 22);
+			this.cmnuiExportCard.Tag = "MENU_EXPORT_CARD_XML";
+			this.cmnuiExportCard.Text = "E&xport Card XML";
+			this.cmnuiExportCard.Click += new System.EventHandler(this.cmnuiExportCard_Click);
+			// 
+			// cmnuiExportImageCrop
+			// 
+			this.cmnuiExportImageCrop.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.cmnuiExportImageCropPng,
+            this.cmnuiExportImageCropTdx});
+			this.cmnuiExportImageCrop.Name = "cmnuiExportImageCrop";
+			this.cmnuiExportImageCrop.Size = new System.Drawing.Size(184, 22);
+			this.cmnuiExportImageCrop.Tag = "MENU_EXPORT_IMAGE_CROP";
+			this.cmnuiExportImageCrop.Text = "Ex&port Image Crop";
+			// 
+			// cmnuiExportImageCropPng
+			// 
+			this.cmnuiExportImageCropPng.Name = "cmnuiExportImageCropPng";
+			this.cmnuiExportImageCropPng.Size = new System.Drawing.Size(152, 22);
+			this.cmnuiExportImageCropPng.Text = "&PNG";
+			this.cmnuiExportImageCropPng.Click += new System.EventHandler(this.cmnuiExportImageCropPng_Click);
+			// 
+			// cmnuiExportImageCropTdx
+			// 
+			this.cmnuiExportImageCropTdx.Name = "cmnuiExportImageCropTdx";
+			this.cmnuiExportImageCropTdx.Size = new System.Drawing.Size(152, 22);
+			this.cmnuiExportImageCropTdx.Text = "&TDX";
+			this.cmnuiExportImageCropTdx.Click += new System.EventHandler(this.cmnuiExportImageCropTdx_Click);
 			// 
 			// DeckBuilder
 			// 
@@ -1081,6 +1119,10 @@
 		private System.Windows.Forms.ToolStripStatusLabel sslblLoadedCardsNum;
 		private System.Windows.Forms.ToolStripStatusLabel sslblCardsInList;
 		private System.Windows.Forms.ToolStripStatusLabel sslblCardsInListNum;
+		private System.Windows.Forms.ToolStripMenuItem cmnuiExportCard;
+		private System.Windows.Forms.ToolStripMenuItem cmnuiExportImageCrop;
+		private System.Windows.Forms.ToolStripMenuItem cmnuiExportImageCropPng;
+		private System.Windows.Forms.ToolStripMenuItem cmnuiExportImageCropTdx;
 	}
 }
 

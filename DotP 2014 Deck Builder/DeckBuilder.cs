@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
 using System.Security.AccessControl;
@@ -146,6 +147,10 @@ namespace RSN.DotP
 			cmnuiRemoveCard.Text = Settings.UIStrings[(string)cmnuiRemoveCard.Tag];
 			cmnuiViewCard.Text = Settings.UIStrings[(string)cmnuiViewCard.Tag];
 			cmnuiDecksUsedIn.Text = Settings.UIStrings[(string)cmnuiDecksUsedIn.Tag];
+			cmnuiExport.Text = Settings.UIStrings[(string)cmnuiExport.Tag];
+			cmnuiExportCard.Text = Settings.UIStrings[(string)cmnuiExportCard.Tag];
+			cmnuiExportImageCrop.Text = Settings.UIStrings[(string)cmnuiExportImageCrop.Tag];
+			cmnuiExportPreviews.Text = Settings.UIStrings[(string)cmnuiExportPreviews.Tag];
 
 			// Status Bar
 			sslblLoadedCards.Text = Settings.UIStrings[(string)sslblLoadedCards.Tag];
@@ -1590,12 +1595,17 @@ namespace RSN.DotP
 					cmnuiViewCard.Enabled = true;
 					cmnuiDecksUsedIn.Enabled = true;
 					cmnuiExportPreviews.Enabled = true;
+					cmnuiExportCard.Enabled = true;
+					TdxWrapper twImage = m_gdWads.LoadImage(m_ciContextCard.ImageFilename, LoadImageType.Card);
+					cmnuiExportImageCrop.Enabled = (twImage != null);
 				}
 				else
 				{
 					cmnuiViewCard.Enabled = false;
 					cmnuiDecksUsedIn.Enabled = false;
 					cmnuiExportPreviews.Enabled = false;
+					cmnuiExportCard.Enabled = false;
+					cmnuiExportImageCrop.Enabled = false;
 				}
 
 				// Always disable remove card for the master card list.
@@ -1621,6 +1631,9 @@ namespace RSN.DotP
 					cmnuiDecksUsedIn.Enabled = true;
 					cmnuiRemoveCard.Enabled = true;
 					cmnuiExportPreviews.Enabled = true;
+					cmnuiExportCard.Enabled = true;
+					TdxWrapper twImage = m_gdWads.LoadImage(m_ciContextCard.ImageFilename, LoadImageType.Card);
+					cmnuiExportImageCrop.Enabled = (twImage != null);
 				}
 				else
 				{
@@ -1628,6 +1641,8 @@ namespace RSN.DotP
 					cmnuiDecksUsedIn.Enabled = false;
 					cmnuiRemoveCard.Enabled = false;
 					cmnuiExportPreviews.Enabled = false;
+					cmnuiExportCard.Enabled = false;
+					cmnuiExportImageCrop.Enabled = false;
 				}
 
 				// Information for remove card.
@@ -1654,6 +1669,9 @@ namespace RSN.DotP
 					cmnuiDecksUsedIn.Enabled = true;
 					cmnuiRemoveCard.Enabled = true;
 					cmnuiExportPreviews.Enabled = true;
+					cmnuiExportCard.Enabled = true;
+					TdxWrapper twImage = m_gdWads.LoadImage(m_ciContextCard.ImageFilename, LoadImageType.Card);
+					cmnuiExportImageCrop.Enabled = (twImage != null);
 				}
 				else
 				{
@@ -1661,6 +1679,8 @@ namespace RSN.DotP
 					cmnuiDecksUsedIn.Enabled = false;
 					cmnuiRemoveCard.Enabled = false;
 					cmnuiExportPreviews.Enabled = false;
+					cmnuiExportCard.Enabled = false;
+					cmnuiExportImageCrop.Enabled = false;
 				}
 
 				// Information for remove card.
@@ -1687,6 +1707,9 @@ namespace RSN.DotP
 					cmnuiDecksUsedIn.Enabled = true;
 					cmnuiRemoveCard.Enabled = true;
 					cmnuiExportPreviews.Enabled = true;
+					cmnuiExportCard.Enabled = true;
+					TdxWrapper twImage = m_gdWads.LoadImage(m_ciContextCard.ImageFilename, LoadImageType.Card);
+					cmnuiExportImageCrop.Enabled = (twImage != null);
 				}
 				else
 				{
@@ -1694,6 +1717,8 @@ namespace RSN.DotP
 					cmnuiDecksUsedIn.Enabled = false;
 					cmnuiRemoveCard.Enabled = false;
 					cmnuiExportPreviews.Enabled = false;
+					cmnuiExportCard.Enabled = false;
+					cmnuiExportImageCrop.Enabled = false;
 				}
 
 				// Information for remove card.
@@ -1884,7 +1909,7 @@ namespace RSN.DotP
 			{
 				string strFilename = Tools.SaveDialog(Settings.UIStrings["IMAGE_SAVE_TITLE"], Settings.UIStrings["PNG_FILTER"], ".png");
 				if (strFilename.Length > 0)
-					picFrame.Image.Save(strFilename, System.Drawing.Imaging.ImageFormat.Png);
+					picFrame.Image.Save(strFilename, ImageFormat.Png);
 			}
 		}
 
@@ -1922,39 +1947,39 @@ namespace RSN.DotP
 					// Save for English.
 					Bitmap bmpPreview = Tools.AddCardBorder(ciCard.GetPreviewImage("en-US"));
 					if (bmpPreview != null)
-						bmpPreview.Save(strDir + "EN_" + strFileBase);
+						bmpPreview.Save(strDir + "EN_" + strFileBase, ImageFormat.Png);
 					// Save for French.
 					bmpPreview = Tools.AddCardBorder(ciCard.GetPreviewImage("fr-FR"));
 					if (bmpPreview != null)
-						bmpPreview.Save(strDir + "FR_" + strFileBase);
+						bmpPreview.Save(strDir + "FR_" + strFileBase, ImageFormat.Png);
 					// Save for Spanish.
 					bmpPreview = Tools.AddCardBorder(ciCard.GetPreviewImage("es-ES"));
 					if (bmpPreview != null)
-						bmpPreview.Save(strDir + "ES_" + strFileBase);
+						bmpPreview.Save(strDir + "ES_" + strFileBase, ImageFormat.Png);
 					// Save for German.
 					bmpPreview = Tools.AddCardBorder(ciCard.GetPreviewImage("de-DE"));
 					if (bmpPreview != null)
-						bmpPreview.Save(strDir + "DE_" + strFileBase);
+						bmpPreview.Save(strDir + "DE_" + strFileBase, ImageFormat.Png);
 					// Save for Italian.
 					bmpPreview = Tools.AddCardBorder(ciCard.GetPreviewImage("it-IT"));
 					if (bmpPreview != null)
-						bmpPreview.Save(strDir + "IT_" + strFileBase);
+						bmpPreview.Save(strDir + "IT_" + strFileBase, ImageFormat.Png);
 					// Save for Japanese.
 					bmpPreview = Tools.AddCardBorder(ciCard.GetPreviewImage("jp-JA"));
 					if (bmpPreview != null)
-						bmpPreview.Save(strDir + "JP_" + strFileBase);
+						bmpPreview.Save(strDir + "JP_" + strFileBase, ImageFormat.Png);
 					// Save for Korean.
 					bmpPreview = Tools.AddCardBorder(ciCard.GetPreviewImage("ko-KR"));
 					if (bmpPreview != null)
-						bmpPreview.Save(strDir + "KO_" + strFileBase);
+						bmpPreview.Save(strDir + "KO_" + strFileBase, ImageFormat.Png);
 					// Save for Russian.
 					bmpPreview = Tools.AddCardBorder(ciCard.GetPreviewImage("ru-RU"));
 					if (bmpPreview != null)
-						bmpPreview.Save(strDir + "RU_" + strFileBase);
+						bmpPreview.Save(strDir + "RU_" + strFileBase, ImageFormat.Png);
 					// Save for Portuguese.
 					bmpPreview = Tools.AddCardBorder(ciCard.GetPreviewImage("pt-BR"));
 					if (bmpPreview != null)
-						bmpPreview.Save(strDir + "PT_" + strFileBase);
+						bmpPreview.Save(strDir + "PT_" + strFileBase, ImageFormat.Png);
 				}
 			}
 		}
@@ -2143,6 +2168,52 @@ namespace RSN.DotP
 				}
 				e.Handled = true;
 				e.SuppressKeyPress = true;
+			}
+		}
+
+		private void cmnuiExportCard_Click(object sender, EventArgs e)
+		{
+			if (m_ciContextCard != null)
+			{
+				string strFilename = Tools.SaveDialog(Settings.UIStrings["CARD_SAVE_TITLE"], Settings.UIStrings["CARD_FILTER"], ".XML", m_ciContextCard.Filename + ".XML");
+				if (strFilename.Length > 0)
+				{
+					// Save to file (in UTF-8 with BOM)
+					using (FileStream fs = new FileStream(strFilename, FileMode.Create, FileAccess.Write, FileShare.None))
+					{
+						StreamWriter sw = new StreamWriter(fs, new UTF8Encoding(Settings.IncludeBOM));
+						sw.Write(m_ciContextCard.CardXML);
+						sw.Close();
+					}
+				}
+			}
+		}
+
+		private void cmnuiExportImageCropPng_Click(object sender, EventArgs e)
+		{
+			if (m_ciContextCard != null)
+			{
+				TdxWrapper twImage = m_gdWads.LoadImage(m_ciContextCard.ImageFilename, LoadImageType.Card);
+				if ((twImage != null) && (twImage.Image != null))
+				{
+					string strFilename = Tools.SaveDialog(Settings.UIStrings["IMAGE_SAVE_TITLE"], Settings.UIStrings["PNG_FILTER"], ".png", m_ciContextCard.ImageFilename + ".png");
+					if (strFilename.Length > 0)
+						twImage.Image.Save(strFilename, ImageFormat.Png);
+				}
+			}
+		}
+
+		private void cmnuiExportImageCropTdx_Click(object sender, EventArgs e)
+		{
+			if (m_ciContextCard != null)
+			{
+				TdxWrapper twImage = m_gdWads.LoadImage(m_ciContextCard.ImageFilename, LoadImageType.Card);
+				if (twImage != null)
+				{
+					string strFilename = Tools.SaveDialog(Settings.UIStrings["IMAGE_SAVE_TITLE"], Settings.UIStrings["TDX_FILTER"], ".TDX", m_ciContextCard.ImageFilename + ".TDX");
+					if (strFilename.Length > 0)
+						twImage.Save(strFilename);
+				}
 			}
 		}
 	}

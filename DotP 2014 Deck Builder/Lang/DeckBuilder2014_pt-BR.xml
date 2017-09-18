@@ -29,6 +29,8 @@
 	<STRING key="MENU_ABOUT"><![CDATA[Sobre]]></STRING>
 	<STRING key="MENU_EXPORT_IMAGE"><![CDATA[Exportar Imagem]]></STRING>
 	<STRING key="MENU_EXPORT_CARD_PREVIEWS"><![CDATA[Exportar Previews de Cartas]]></STRING>
+	<STRING key="MENU_EXPORT_CARD_XML"><![CDATA[E&xport Card XML]]></STRING>
+	<STRING key="MENU_EXPORT_IMAGE_CROP"><![CDATA[Ex&port Image Crop]]></STRING>
 	<!-- Strings for the Card Listing Columns -->
 	<STRING key="COLUMN_TEXT_NAME"><![CDATA[Nome]]></STRING>
 	<STRING key="COLUMN_TEXT_FILE_NAME"><![CDATA[Nome do Arquivo]]></STRING>
@@ -65,6 +67,8 @@
 	<STRING key="DECK_OPEN_TITLE"><![CDATA[Abrir Grimório ...]]></STRING>
 	<STRING key="DECK_SAVE_TITLE"><![CDATA[Salvar Grimório Como ...]]></STRING>
 	<STRING key="DECK_FILTER"><![CDATA[XML do Grimório (*.xml)|*.xml|Todos os Arquivos|*]]></STRING>
+	<STRING key="CARD_SAVE_TITLE"><![CDATA[Save Card As ...]]></STRING>
+	<STRING key="CARD_FILTER"><![CDATA[Card XML (*.xml)|*.xml|All Files|*]]></STRING>
 	<STRING key="UNABLE_TO_LOAD_DECK_CAPTION"><![CDATA[Falha ao carregar Grimório.]]></STRING>
 	<STRING key="UNABLE_TO_LOAD_DECK_MESSAGE"><![CDATA[Falha ao carregar o Grimório selecionado. Por favor, verifique se escolheu o arquivo correto e que o XML seja válido.]]></STRING>
 	<STRING key="UNSAVED_WORK_CAPTION"><![CDATA[Alterações não salvas: Salvar agora?]]></STRING>

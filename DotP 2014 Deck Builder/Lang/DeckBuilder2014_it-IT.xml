@@ -29,6 +29,8 @@
 	<STRING key="MENU_ABOUT"><![CDATA[&Info]]></STRING>
 	<STRING key="MENU_EXPORT_IMAGE"><![CDATA[Esporta &immagine]]></STRING>
 	<STRING key="MENU_EXPORT_CARD_PREVIEWS"><![CDATA[Esporta &carte anteprima]]></STRING>
+	<STRING key="MENU_EXPORT_CARD_XML"><![CDATA[E&xport Card XML]]></STRING>
+	<STRING key="MENU_EXPORT_IMAGE_CROP"><![CDATA[Ex&port Image Crop]]></STRING>
 	<!-- Strings for the Card Listing Columns -->
 	<STRING key="COLUMN_TEXT_NAME"><![CDATA[Nome]]></STRING>
 	<STRING key="COLUMN_TEXT_FILE_NAME"><![CDATA[Nome file]]></STRING>
@@ -65,6 +67,8 @@
 	<STRING key="DECK_OPEN_TITLE"><![CDATA[Apri mazzo...]]></STRING>
 	<STRING key="DECK_SAVE_TITLE"><![CDATA[Salva mazzo con nome...]]></STRING>
 	<STRING key="DECK_FILTER"><![CDATA[XML mazzo (*.xml)|*.xml|Tutti i file|*]]></STRING>
+	<STRING key="CARD_SAVE_TITLE"><![CDATA[Save Card As ...]]></STRING>
+	<STRING key="CARD_FILTER"><![CDATA[Card XML (*.xml)|*.xml|All Files|*]]></STRING>
 	<STRING key="UNABLE_TO_LOAD_DECK_CAPTION"><![CDATA[Impossibile caricare il mazzo.]]></STRING>
 	<STRING key="UNABLE_TO_LOAD_DECK_MESSAGE"><![CDATA[Impossibile caricare il mazzo selezionato, si prega di verificare che il file scelto sia quello giusto e che l’XML sia valido.]]></STRING>
 	<STRING key="UNSAVED_WORK_CAPTION"><![CDATA[Modifiche non salvate: salvare ora?]]></STRING>

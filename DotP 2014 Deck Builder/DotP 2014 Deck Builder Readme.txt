@@ -1,5 +1,5 @@
 --------------------------------------------------------------------------------
----- Riiak Shi Nal's Duels of the Planeswalkers 2014 Deck Builder v1.2.0.0 -----
+---- Riiak Shi Nal's Duels of the Planeswalkers 2014 Deck Builder v1.3.0.0 -----
 --------------------------------------------------------------------------------
 
     This is the first Deck Builder for DotP 2014 and it will ask for the DotP
@@ -851,6 +851,23 @@ Everyone else on the forums - For keeping the community alive and fun.
 --------------------------------------------------------------------------------
 Change History:
 --------------------------------------------------------------------------------
+- v1.3.0.0
+    - Changed the Deck Availability back to Always Available now that we have
+        confirmed that the problem only happens with content pack 0 and the Deck
+        Builder now puts all the decks it creates into a content pack equal to
+        the Id Block the user is using.
+    - Dropped the opacity of the planeswalker symbol in the Deck Box Overlay by
+        20 points (now 50% opacity instead of 70%).
+    - Fixed a couple of bugs with not localizing the export menu options on the
+        context menus for the main window.
+    - Added context menu option to export card XML.  Note: Regardless of how the
+        original file is stored it will save out the card XML as UTF-8 with BOM.
+    - Added context menu options to export the cropped card image (the actual
+        card image before any frames, boxes, or other processing is done) to
+        either PNG or TDX format (if saving as TDX it should be an exact copy of
+        what is stored).
+    - Added 4 strings to localizations to support the new features.
+
 - v1.2.0.0
     - Changed CardInfo class constructor to take in the actual filename of the
         card and store it for later checks.
