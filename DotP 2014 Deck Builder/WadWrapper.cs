@@ -73,7 +73,22 @@ namespace RSN.DotP
 
 			if (abytHeader.Length > 0)
 			{
-				string strHeader = Encoding.UTF8.GetString(abytHeader);
+				string strHeader;
+				byte[] abytBomUTF8 = Encoding.UTF8.GetPreamble();
+				byte[] abytBomLittleUnicode = Encoding.Unicode.GetPreamble();
+				byte[] abytBomBigUnicode = Encoding.BigEndianUnicode.GetPreamble();
+
+				// For UTF-8 BOM is 3-bytes
+				if ((abytHeader[0] == abytBomUTF8[0]) && (abytHeader[1] == abytBomUTF8[1]) && (abytHeader[2] == abytBomUTF8[2]))
+					strHeader = Encoding.UTF8.GetString(abytHeader, 3, abytHeader.Length - 3);
+				// For unicode BOM is 2-bytes
+				else if ((abytHeader[0] == abytBomLittleUnicode[0]) && (abytHeader[1] == abytBomLittleUnicode[1]))
+					strHeader = Encoding.Unicode.GetString(abytHeader, 2, abytHeader.Length - 2);
+				else if ((abytHeader[0] == abytBomBigUnicode[0]) && (abytHeader[1] == abytBomBigUnicode[1]))
+					strHeader = Encoding.BigEndianUnicode.GetString(abytHeader, 2, abytHeader.Length - 2);
+				else
+					strHeader = Encoding.UTF8.GetString(abytHeader);
+				
 				try
 				{
 					xdHeader = new XmlDocument();

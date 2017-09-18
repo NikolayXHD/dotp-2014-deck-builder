@@ -1,5 +1,5 @@
 --------------------------------------------------------------------------------
----- Riiak Shi Nal's Duels of the Planeswalkers 2014 Deck Builder v1.5.0.1 -----
+---- Riiak Shi Nal's Duels of the Planeswalkers 2014 Deck Builder v1.5.0.2 -----
 --------------------------------------------------------------------------------
 
     This is the first Deck Builder for DotP 2014 and it will ask for the DotP
@@ -868,6 +868,10 @@ Everyone else on the forums - For keeping the community alive and fun.
 --------------------------------------------------------------------------------
 Change History:
 --------------------------------------------------------------------------------
+- v1.5.0.2
+    - Fixed issue with not honoring the BOM (Byte Order Mark) in Header XML
+        files in packed Wads (Directory Wads seem to be unaffected).
+
 - v1.5.0.1
     - Fixed missed location for loading of header text for custom tag columns.
 
