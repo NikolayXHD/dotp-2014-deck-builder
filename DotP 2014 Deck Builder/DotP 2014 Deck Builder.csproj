@@ -1,0 +1,298 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{E1BFAB20-A2AC-41C5-8267-614CA2A8A86C}</ProjectGuid>
+    <OutputType>WinExe</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>RSN.DotP</RootNamespace>
+    <AssemblyName>DotP 2014 Deck Builder</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TargetFrameworkProfile>Client</TargetFrameworkProfile>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
+    <PlatformTarget>x86</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
+    <PlatformTarget>x86</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\x64\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <Optimize>false</Optimize>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
+    <OutputPath>bin\x64\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisIgnoreBuiltInRules>false</CodeAnalysisIgnoreBuiltInRules>
+    <CodeAnalysisFailOnMissingRules>false</CodeAnalysisFailOnMissingRules>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Gibbed.Duels.FileFormats">
+      <HintPath>References\Gibbed.Duels.FileFormats.dll</HintPath>
+    </Reference>
+    <Reference Include="Gibbed.IO">
+      <HintPath>References\Gibbed.IO.dll</HintPath>
+    </Reference>
+    <Reference Include="Gibbed.Squish">
+      <HintPath>References\Gibbed.Squish.dll</HintPath>
+    </Reference>
+    <Reference Include="ICSharpCode.SharpZipLib">
+      <HintPath>References\ICSharpCode.SharpZipLib.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Deployment" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Ability.cs" />
+    <Compile Include="AboutBox.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="AboutBox.Designer.cs">
+      <DependentUpon>AboutBox.cs</DependentUpon>
+    </Compile>
+    <Compile Include="AiPersonality.cs" />
+    <Compile Include="CardFilterAdvancedSettings.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="CardFilterAdvancedSettings.Designer.cs">
+      <DependentUpon>CardFilterAdvancedSettings.cs</DependentUpon>
+    </Compile>
+    <Compile Include="CardFilterBoolProp.cs" />
+    <Compile Include="CardFilterEnumProp.cs" />
+    <Compile Include="CardFilterIntProp.cs" />
+    <Compile Include="CardFilterStringIntProp.cs" />
+    <Compile Include="CardFilterStringProp.cs" />
+    <Compile Include="CardInfo.cs" />
+    <Compile Include="CreateFromExistingDeck.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="CreateFromExistingDeck.Designer.cs">
+      <DependentUpon>CreateFromExistingDeck.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Deck.cs" />
+    <Compile Include="DeckBuilder.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="DeckBuilder.Designer.cs">
+      <DependentUpon>DeckBuilder.cs</DependentUpon>
+    </Compile>
+    <Compile Include="DeckCard.cs" />
+    <Compile Include="DeckInformation.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="DeckInformation.Designer.cs">
+      <DependentUpon>DeckInformation.cs</DependentUpon>
+    </Compile>
+    <Compile Include="DeckUnlocks.cs" />
+    <Compile Include="DurationTimer.cs" />
+    <Compile Include="EditAiPersonality.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="EditAiPersonality.Designer.cs">
+      <DependentUpon>EditAiPersonality.cs</DependentUpon>
+    </Compile>
+    <Compile Include="EditString.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="EditString.Designer.cs">
+      <DependentUpon>EditString.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Enums.cs" />
+    <Compile Include="FileTools.cs" />
+    <Compile Include="CardFilterBase.cs" />
+    <Compile Include="Filters.cs" />
+    <Compile Include="CardFilterSet.cs" />
+    <Compile Include="FilterSettings.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FilterSettings.Designer.cs">
+      <DependentUpon>FilterSettings.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GameDirectory.cs" />
+    <Compile Include="CardSubType.cs" />
+    <Compile Include="IdScheme.cs" />
+    <Compile Include="ImageBuilder.cs" />
+    <Compile Include="LanguageStrings.cs" />
+    <Compile Include="MessageLog.cs" />
+    <Compile Include="Options.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Options.Designer.cs">
+      <DependentUpon>Options.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Settings.cs" />
+    <Compile Include="Program.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="PropertyComparer.cs" />
+    <Compile Include="SortableBindingList.cs" />
+    <Compile Include="TdxWrapper.cs" />
+    <Compile Include="Tools.cs" />
+    <Compile Include="ViewCard.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ViewCard.Designer.cs">
+      <DependentUpon>ViewCard.cs</DependentUpon>
+    </Compile>
+    <Compile Include="WadBase.cs" />
+    <Compile Include="WadDirectory.cs" />
+    <Compile Include="WadWrapper.cs" />
+    <Compile Include="XmlTools.cs" />
+    <EmbeddedResource Include="AboutBox.resx">
+      <DependentUpon>AboutBox.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="CardFilterAdvancedSettings.resx">
+      <DependentUpon>CardFilterAdvancedSettings.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="CreateFromExistingDeck.resx">
+      <DependentUpon>CreateFromExistingDeck.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="DeckBuilder.resx">
+      <DependentUpon>DeckBuilder.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="DeckInformation.resx">
+      <DependentUpon>DeckInformation.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="EditAiPersonality.resx">
+      <DependentUpon>EditAiPersonality.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="EditString.resx">
+      <DependentUpon>EditString.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FilterSettings.resx">
+      <DependentUpon>FilterSettings.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Options.resx">
+      <DependentUpon>Options.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resources.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <EmbeddedResource Include="ViewCard.resx">
+      <DependentUpon>ViewCard.cs</DependentUpon>
+    </EmbeddedResource>
+    <None Include="app.config" />
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="DotP 2014 Deck Builder Readme.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Images\D14_CardBorder.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Images\D14_DeckBoxAlpha.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Images\D14_DeckBoxMask.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Images\D14_DeckBoxOverlay.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Images\D14_PersonalityBackplateAlpha.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Images\D14_PersonalityCircularAlpha.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Images\D14_PersonalityCircularMask.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="squish_32.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="squish_64.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Lang\DeckBuilder2014_de-DE.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Lang\DeckBuilder2014_en-US.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <SubType>Designer</SubType>
+    </Content>
+    <Content Include="Lang\DeckBuilder2014_es-ES.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Lang\DeckBuilder2014_fr-FR.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Lang\DeckBuilder2014_it-IT.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Lang\DeckBuilder2014_jp-JA.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Lang\DeckBuilder2014_ko-KR.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Lang\DeckBuilder2014_pt-BR.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Lang\DeckBuilder2014_ru-RU.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+  <ItemGroup />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
