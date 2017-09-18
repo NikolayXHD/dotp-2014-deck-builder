@@ -173,6 +173,7 @@
     </Compile>
     <Compile Include="WadBase.cs" />
     <Compile Include="WadDirectory.cs" />
+    <Compile Include="WadHeaderInfo.cs" />
     <Compile Include="WadWrapper.cs" />
     <Compile Include="XmlTools.cs" />
     <EmbeddedResource Include="AboutBox.resx">

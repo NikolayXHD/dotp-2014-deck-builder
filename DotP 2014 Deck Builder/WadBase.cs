@@ -84,9 +84,9 @@ namespace RSN.DotP
 			get { return m_lstPersonalities; }
 		}
 
-		public void AddHeader(bool bForAppIdLinking = false)
+		public void AddHeader(WadHeaderInfo whiInfo = null)
 		{
-			AddFile("HEADER.XML", CreateHeader(bForAppIdLinking));
+			AddFile("HEADER.XML", CreateHeader(whiInfo));
 		}
 
 		public void AddAiPersonality(string strFilename, XmlDocument xdPersonality)
@@ -223,39 +223,74 @@ namespace RSN.DotP
 			}
 		}
 
-		protected MemoryStream CreateHeader(bool bForAppIdLinking)
+		protected MemoryStream CreateHeader(WadHeaderInfo whiInfo)
 		{
 			XmlDocument xdHeader = new XmlDocument();
 			XmlDeclaration xdDec = xdHeader.CreateXmlDeclaration("1.0", null, null);
 			xdHeader.AppendChild(xdDec);
 
-			XmlNode xnHeader = xdHeader.CreateElement("WAD_HEADER");
-			xdHeader.AppendChild(xnHeader);
+			XmlNode xnHeader = XmlTools.AddElementToNode(xdHeader, xdHeader, "WAD_HEADER");
+			XmlNode xnEntry = XmlTools.AddElementToNode(xdHeader, xnHeader, "ENTRY");
+			XmlTools.AddAttributeToNode(xdHeader, xnEntry, "platform", "ALL");
 
-			XmlNode xnEntry = xdHeader.CreateElement("ENTRY");
-			xnHeader.AppendChild(xnEntry);
-
-			XmlAttribute xaAttr = xdHeader.CreateAttribute("platform");
-			xaAttr.Value = "ALL";
-			xnEntry.Attributes.Append(xaAttr);
-
-			xaAttr = xdHeader.CreateAttribute("source");
-			if (bForAppIdLinking)
-				xaAttr.Value = m_strName.ToUpper() + "/DATA_PC/";
+			if ((whiInfo != null) && (whiInfo.ForAppIdLinking))
+			{
+				XmlTools.AddAttributeToNode(xdHeader, xnEntry, "source", m_strName.ToUpper() + "/DATA_PC/");
+			}
 			else
-				xaAttr.Value = m_strName.ToUpper() + "/DATA_ALL_PLATFORMS/";
-			xnEntry.Attributes.Append(xaAttr);
+			{
+				XmlTools.AddAttributeToNode(xdHeader, xnEntry, "source", m_strName.ToUpper() + "/DATA_ALL_PLATFORMS/");
+			}
 
-			xaAttr = xdHeader.CreateAttribute("alias");
-			xaAttr.Value = "Content";
-			xnEntry.Attributes.Append(xaAttr);
+			XmlTools.AddAttributeToNode(xdHeader, xnEntry, "alias", "Content");
 
-			xaAttr = xdHeader.CreateAttribute("order");
-			if (bForAppIdLinking)
-				xaAttr.Value = "4";
+			if ((whiInfo != null) && (whiInfo.ForAppIdLinking))
+			{
+				XmlTools.AddAttributeToNode(xdHeader, xnEntry, "order", "4");
+			}
 			else
-				xaAttr.Value = "3";
-			xnEntry.Attributes.Append(xaAttr);
+			{
+				XmlTools.AddAttributeToNode(xdHeader, xnEntry, "order", "3");
+			}
+
+			if (whiInfo != null)
+			{
+				XmlNode xnContentPack = XmlTools.AddElementToNode(xdHeader, xnHeader, "CONTENTPACK");
+				XmlTools.AddAttributeToNode(xdHeader, xnContentPack, "UID", whiInfo.ContentPackId.ToString());
+				if (whiInfo.DeckId > 0)
+					XmlTools.AddAttributeToNode(xdHeader, xnContentPack, "DECK_UID", whiInfo.DeckId.ToString());
+
+				XmlNode xnPDSection = XmlTools.AddElementToNode(xdHeader, xnContentPack, "PD_SECTION");
+				XmlNode xnAppId = XmlTools.AddElementToNode(xdHeader, xnPDSection, "APP_ID");
+				XmlTools.AddAttributeToNode(xdHeader, xnAppId, "ID", whiInfo.ContentAppId.ToString());
+
+				if (whiInfo.ContentFlags != WadHeaderContentFlags.Invalid)
+				{
+					XmlNode xnFlags = XmlTools.AddElementToNode(xdHeader, xnContentPack, "CONTENTFLAGS");
+					if ((whiInfo.ContentFlags & WadHeaderContentFlags.Avatar) == WadHeaderContentFlags.Avatar)
+						XmlTools.AddElementToNode(xdHeader, xnFlags, "AVATAR_CONTENT");
+					if ((whiInfo.ContentFlags & WadHeaderContentFlags.Background) == WadHeaderContentFlags.Background)
+						XmlTools.AddElementToNode(xdHeader, xnFlags, "BACKGROUND_CONTENT");
+					if ((whiInfo.ContentFlags & WadHeaderContentFlags.Campaign) == WadHeaderContentFlags.Campaign)
+						XmlTools.AddElementToNode(xdHeader, xnFlags, "CAMPAIGN_CONTENT");
+					if ((whiInfo.ContentFlags & WadHeaderContentFlags.Deck) == WadHeaderContentFlags.Deck)
+						XmlTools.AddElementToNode(xdHeader, xnFlags, "DECK_CONTENT");
+					if ((whiInfo.ContentFlags & WadHeaderContentFlags.Foil) == WadHeaderContentFlags.Foil)
+						XmlTools.AddElementToNode(xdHeader, xnFlags, "FOIL_CONTENT");
+					if ((whiInfo.ContentFlags & WadHeaderContentFlags.Font) == WadHeaderContentFlags.Font)
+						XmlTools.AddElementToNode(xdHeader, xnFlags, "FONT_CONTENT");
+					if ((whiInfo.ContentFlags & WadHeaderContentFlags.Glossary) == WadHeaderContentFlags.Glossary)
+						XmlTools.AddElementToNode(xdHeader, xnFlags, "GLOSSARY_CONTENT");
+					if ((whiInfo.ContentFlags & WadHeaderContentFlags.LoadingScreen) == WadHeaderContentFlags.LoadingScreen)
+						XmlTools.AddElementToNode(xdHeader, xnFlags, "LOADING_SCREEN_CONTENT");
+					if ((whiInfo.ContentFlags & WadHeaderContentFlags.PlayField) == WadHeaderContentFlags.PlayField)
+						XmlTools.AddElementToNode(xdHeader, xnFlags, "PLAYFIELD_CONTENT");
+					if ((whiInfo.ContentFlags & WadHeaderContentFlags.ReloadAll) == WadHeaderContentFlags.ReloadAll)
+						XmlTools.AddElementToNode(xdHeader, xnFlags, "RELOAD_ALL_CONTENT");
+					if ((whiInfo.ContentFlags & WadHeaderContentFlags.Unlock) == WadHeaderContentFlags.Unlock)
+						XmlTools.AddElementToNode(xdHeader, xnFlags, "UNLOCK_CONTENT");
+				}
+			}
 
 			MemoryStream msReturn = new MemoryStream();
 			xdHeader.Save(msReturn);

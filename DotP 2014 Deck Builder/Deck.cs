@@ -88,7 +88,8 @@ namespace RSN.DotP
 			m_strDeckBoxImage = string.Empty;
 			m_strDeckBoxImageLocked = "locked";						// Most if not all decks use the same locked image.
 			m_nContentPack = 0;										// By default should be available to all game versions.
-			m_eAvailability = DeckAvailability.AlwaysAvailable;		// Deck should always be available by default.
+			//m_eAvailability = DeckAvailability.AlwaysAvailable;		// Deck should always be available by default.
+			m_eAvailability = DeckAvailability.Locked;				// DotP 2014 currently seems to have issues with a bunch of decks with always_available="true" set.
 			m_eColour = 0;											// Do not give it any colour by default (even colourless).
 			m_strNameTag = string.Empty;
 			m_strDescriptionTag = string.Empty;

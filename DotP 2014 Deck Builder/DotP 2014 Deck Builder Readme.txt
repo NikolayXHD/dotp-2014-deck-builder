@@ -1,5 +1,5 @@
 --------------------------------------------------------------------------------
----- Riiak Shi Nal's Duels of the Planeswalkers 2014 Deck Builder v1.0.2.0 -----
+---- Riiak Shi Nal's Duels of the Planeswalkers 2014 Deck Builder v1.1.0.0 -----
 --------------------------------------------------------------------------------
 
     This is the first Deck Builder for DotP 2014 and it will ask for the DotP
@@ -804,6 +804,8 @@ Rick - Gibbed Tools & Source
 
 thefiremind - Provided Italian localization.
 
+Vulasuw - Provided Portuguese-Brazil localization.
+
 Scion of Darkness - Provided shading layer and planeswalker symbol for the Deck
     Box template.
     http://www.slightlymagic.net/forum/viewtopic.php?f=109&t=10970
@@ -827,6 +829,22 @@ Everyone else on the forums - For keeping the community alive and fun.
 --------------------------------------------------------------------------------
 Change History:
 --------------------------------------------------------------------------------
+- v1.1.0.0
+    - Changed default availability to locked due to DotP 2014 problem with lots
+        of decks with always_available="true" set (probably within the same
+        content pack).
+    - Added WadHeaderInfo & WadHeaderContentFlags to store and handle the info
+        for the header to create a new content_pack, assign the deck to it, and
+        write all this information to the header to try and prevent a crash in
+        the game.   The content pack that will be generated is equal to the
+        value you specified for the IdBlock (if you are using the IdBlock other-
+        wise it will be equal to the DeckIdChange).
+    - When exporting it will now generate a "Content Pack Enabler" for the
+        current content pack (currently identical to the Id Block).
+    - Couple of minor changes to Wad naming, now the created Wads/Directories
+        will have "Data_DLC_" and "Data_Decks_" instead of "DATA_DLC_" and
+        "DATA_DECKS_" simply because I think it looks slightly better this way.
+
 - v1.0.2.0
     - Added creation of MipMap chain to the compression of TDX images (enabled
         by default).

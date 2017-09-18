@@ -980,8 +980,14 @@ namespace RSN.DotP
 
 		private void ExportWad(WadBase wad, string strGameDirectory)
 		{
+			// Create a WadHeaderInfo to fill for our header.
+			WadHeaderInfo whiInfo = new WadHeaderInfo();
+			whiInfo.ContentAppId = Settings.GetSetting("SteamDefaultUnlockId", 213850);
+			whiInfo.ContentFlags = WadHeaderContentFlags.Deck | WadHeaderContentFlags.Glossary | WadHeaderContentFlags.Unlock | WadHeaderContentFlags.Avatar;
+
 			// Create an IdScheme to pass to the deck.
 			IdScheme isScheme = Settings.GetSerializableSetting("CurrentIdScheme", new IdScheme());
+			whiInfo.ContentPackId = (isScheme.UseIdBlock ? isScheme.IdBlock : isScheme.DeckIdChange);
 
 			// Check our ids to make sure none of them will conflict.
 			try
@@ -1016,9 +1022,10 @@ namespace RSN.DotP
 			m_dkWorking.CreateLandPool(m_gdWads);
 
 			// Collect our files.
+			m_dkWorking.ContentPack = whiInfo.ContentPackId;
 			Dictionary<string, XmlDocument> dicFiles = m_dkWorking.Export(isScheme);
 
-			wad.Name = "DATA_DECKS_" + m_dkWorking.ExportFileName.Substring(4);
+			wad.Name = "Data_Decks_" + m_dkWorking.ExportFileName.Substring(4);
 
 			wad.AddHeader();
 
@@ -1121,6 +1128,11 @@ namespace RSN.DotP
 
 			try
 			{
+				// Create a ContentPack Enabler Wad.
+				WadWrapper wwContentPack = new WadWrapper("Data_DLC_" + whiInfo.ContentPackId.ToString() + "_Content_Pack_Enabler");
+				wwContentPack.AddHeader(whiInfo);
+				wwContentPack.WriteWad(strGameDirectory);
+
 				// Now we should have collected all the files so now we finalize.
 				wad.WriteWad(strGameDirectory);
 

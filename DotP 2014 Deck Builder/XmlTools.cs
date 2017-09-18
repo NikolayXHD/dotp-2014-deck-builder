@@ -412,5 +412,20 @@ namespace RSN.DotP
 
 			return strReturn;
 		}
+
+		public static XmlElement AddElementToNode(XmlDocument xdDoc, XmlNode xnParent, string strElement)
+		{
+			XmlElement xeElement = xdDoc.CreateElement(strElement);
+			xnParent.AppendChild(xeElement);
+			return xeElement;
+		}
+
+		public static XmlAttribute AddAttributeToNode(XmlDocument xdDoc, XmlNode xnNode, string strAttribute, string strValue)
+		{
+			XmlAttribute xaAttr = xdDoc.CreateAttribute(strAttribute);
+			xaAttr.Value = strValue;
+			xnNode.Attributes.Append(xaAttr);
+			return xaAttr;
+		}
 	}
 }
