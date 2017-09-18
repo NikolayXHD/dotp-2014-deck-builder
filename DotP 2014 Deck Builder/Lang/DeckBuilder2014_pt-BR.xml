@@ -94,6 +94,8 @@ Realmente deseja continuar??]]></STRING>
 	<STRING key="SAVE_CORE_WAD_AS"><![CDATA[Salvar Core Wad como ...]]></STRING>
 	<STRING key="WAD_FILTER"><![CDATA[DotP Packed Data File (*.wad)|*.wad|All Files|*]]></STRING>
 	<STRING key="CREATE_CORE_WAD_SUCCESS"><![CDATA[Core wad criado com sucesso.]]></STRING>
+	<STRING key="LOADED_CARDS"><![CDATA[Loaded Cards:]]></STRING>
+	<STRING key="CARDS_IN_LIST"><![CDATA[Cards in List:]]></STRING>
 	<!-- Strings for use in generating a readme for the exported wad -->
 	<!--	I don't really have any clue what I should put for a generic deck readme preamble so I just made some stuff up. -->
 	<STRING key="README_PREAMBLE"><![CDATA[Este Grimório e arquivo Leiame foi criado pelo programa Riiak Shi Nal's DotP 2014 Deck Builder.

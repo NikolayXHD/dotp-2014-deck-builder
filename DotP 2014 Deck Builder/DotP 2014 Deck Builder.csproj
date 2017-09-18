@@ -101,6 +101,7 @@
     <Compile Include="CardFilterStringIntProp.cs" />
     <Compile Include="CardFilterStringProp.cs" />
     <Compile Include="CardInfo.cs" />
+    <Compile Include="ColumnSort.cs" />
     <Compile Include="CreateFromExistingDeck.cs">
       <SubType>Form</SubType>
     </Compile>

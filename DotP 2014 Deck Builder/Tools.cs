@@ -557,7 +557,7 @@ namespace RSN.DotP
 
 			// Try going to the closest larger Multiple of Four and see if that works
 			int nWidthMof = szInput.Width + (4 - (szInput.Width % 4));
-			Size szReturn = new Size(nWidthMof, (int)(nWidthMof * dRatio));
+			Size szReturn = new Size(nWidthMof, (int)Math.Round(nWidthMof * dRatio));
 
 			// While we have a non-multiple of 4 size keep looking for one.
 			while ((((szReturn.Width % 4) != 0) || ((szReturn.Height % 4) != 0)) && (nDistance < MOF_MAX_DISTANCE))
@@ -565,14 +565,14 @@ namespace RSN.DotP
 				nDistance++;
 				// Try enlarging by our distance to see if we can get a Mof size.
 				szReturn.Width = nWidthMof + (4 * nDistance);
-				szReturn.Height = (int)(szReturn.Width * dRatio);
+				szReturn.Height = (int)Math.Round(szReturn.Width * dRatio);
 				if (((szReturn.Width % 4) == 0) && ((szReturn.Height % 4) == 0))
 					break;
 				// No luck enlarging so lets try reducing (as long as it would remain above 0.
 				if ((nWidthMof - (4 * nDistance)) > 0)
 				{
 					szReturn.Width = nWidthMof - (4 * nDistance);
-					szReturn.Height = (int)(szReturn.Width * dRatio);
+					szReturn.Height = (int)Math.Round(szReturn.Width * dRatio);
 				}
 				// loop will do our checking for us so no need for an extra if.
 			}
@@ -690,6 +690,99 @@ namespace RSN.DotP
 			}
 
 			return ctrlReturn;
+		}
+
+		public static void AddViewColumn(DataGridView dgvView, DataGridViewColumn dgvcNewColumn, string strName, string strDataProp, string strHeader, DataGridViewColumnSortMode dgvcsmSort, int nDefWidth = -1, bool bVisible = true)
+		{
+			dgvcNewColumn.DataPropertyName = strDataProp;
+			dgvcNewColumn.Name = strName;
+			dgvcNewColumn.Tag = strHeader;
+			dgvcNewColumn.HeaderText = Settings.UIStrings[strHeader];
+			dgvcNewColumn.SortMode = dgvcsmSort;
+			if (nDefWidth > -1)
+				dgvcNewColumn.Width = nDefWidth;
+			dgvcNewColumn.Visible = bVisible;
+			dgvView.Columns.Add(dgvcNewColumn);
+		}
+
+		public static void AdjustSort(DataGridView dgvList, BindingSource bsList, List<ColumnSort> lstSort, string strProp, bool bRemove)
+		{
+			// First find the column we're changing the sort on.
+			DataGridViewColumn dgvcColumn = null;
+			foreach (DataGridViewColumn dgvcTest in dgvList.Columns)
+			{
+				if (dgvcTest.DataPropertyName.Equals(strProp))
+				{
+					dgvcColumn = dgvcTest;
+					break;
+				}
+			}
+
+			// Find the index of the sort item.
+			int nSortIndex = -1;
+			for (int i = 0; i < lstSort.Count; i++)
+			{
+				if (lstSort[i].DataProperty.Equals(strProp))
+				{
+					nSortIndex = i;
+					break;
+				}
+			}
+
+			// Do our adjustment.
+			if (bRemove)
+			{
+				if (nSortIndex >= 0)
+				{
+					// Remove the sort item.
+					if (dgvcColumn != null)
+						dgvcColumn.HeaderCell.SortGlyphDirection = SortOrder.None;
+					lstSort.RemoveAt(nSortIndex);
+				}
+				else
+				{
+					// Don't bother re-sorting because we didn't do anything.
+					return;
+				}
+			}
+			else if (nSortIndex >= 0)
+			{
+				// Flip the sort item.
+				lstSort[nSortIndex].SortDirection = (lstSort[nSortIndex].SortDirection == SortOrder.Ascending ? SortOrder.Descending : SortOrder.Ascending);
+				if (dgvcColumn != null)
+					dgvcColumn.HeaderCell.SortGlyphDirection = lstSort[nSortIndex].SortDirection;
+			}
+			else
+			{
+				// Add the sort item.
+				if (dgvcColumn != null)
+				{
+					lstSort.Add(new ColumnSort(dgvcColumn.Name, strProp, SortOrder.Ascending));
+					dgvcColumn.HeaderCell.SortGlyphDirection = SortOrder.Ascending;
+				}
+			}
+
+			// Re-Sort the list.
+			SortFromList(dgvList, bsList, lstSort);
+		}
+
+		public static void SortFromList(DataGridView dgvList, BindingSource bsList, List<ColumnSort> lstSort)
+		{
+			string strSort = string.Empty;
+
+			foreach (ColumnSort csSort in lstSort)
+			{
+				if (strSort.Length > 0)
+					strSort += ", ";
+				strSort += csSort.DataProperty + (csSort.SortDirection == SortOrder.Ascending ? " ASC" : " DESC");
+			}
+
+			if (strSort.Length > 0)
+				bsList.Sort = strSort;
+
+			// Set the sorting glyphs
+			foreach (ColumnSort csSort in lstSort)
+				dgvList.Columns[csSort.Key].HeaderCell.SortGlyphDirection = csSort.SortDirection;
 		}
 	}
 }

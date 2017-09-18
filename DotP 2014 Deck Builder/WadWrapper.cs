@@ -138,13 +138,17 @@ namespace RSN.DotP
 									{
 										try
 										{
-											CardInfo ciCard = new CardInfo(strCard, m_strName, gdData);
+											CardInfo ciCard = new CardInfo(feFile.Name, strCard, m_strName, gdData);
 											if (ciCard.Filename == null)
 												Settings.ReportError(null, ErrorPriority.Low, "Card (" + feFile.Name + ") could not be loaded due to missing the CARD_V2 block in wad " + m_strName + ".");
 											else if (ciCard.Filename.Length <= 0)
 												Settings.ReportError(null, ErrorPriority.Low, "Card (" + feFile.Name + ") could not be properly loaded due to missing or malformed FILENAME tag in wad " + m_strName + ".");
 											else
+											{
 												set.Add(ciCard);
+												if (!ciCard.Filename.Equals(ciCard.ActualFilename, StringComparison.OrdinalIgnoreCase))
+													Settings.ReportError(null, ErrorPriority.Low, "Card (" + ciCard.ActualFilename + ") in wad " + m_strName + " has a FILENAME tag that does not match which will cause problems in-game: " + ciCard.Filename);
+											}
 										}
 										catch (Exception e)
 										{

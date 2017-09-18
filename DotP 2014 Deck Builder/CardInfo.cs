@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Xml;
@@ -19,6 +20,7 @@ namespace RSN.DotP
 		//	image, this will prevent us from building multiple images for the same casting cost.
 		private static Dictionary<string, Bitmap> m_dicCastingCostCache;
 
+		private string m_strActualFilename;
 		private string m_strFilename;
 		private int m_nMultiverseId;
 		private Dictionary<string, string> m_dicName;
@@ -92,7 +94,7 @@ namespace RSN.DotP
 		private StringFormat m_sfCardText;
 
 
-		public CardInfo(string strXML, string strWad = "", GameDirectory gdData = null)
+		public CardInfo(string strFilename, string strXML, string strWad = "", GameDirectory gdData = null)
 		{
 			m_dicCardPreview = new Dictionary<string, Bitmap>();
 			m_dicTypeLine = new Dictionary<string, string>();
@@ -111,9 +113,15 @@ namespace RSN.DotP
 			m_strToughness = null;
 			m_strCastingCost = null;
 			m_imgCastingCost = null;
+			m_strActualFilename = Path.GetFileNameWithoutExtension(strFilename);
 			m_strFilename = null;		// Will get set properly during ParseXML() if the Card is properly in a CARD_V2 tag.
 			m_strFrameType = string.Empty;
 			ParseXML(m_strCardXML);
+		}
+
+		public string ActualFilename
+		{
+			get { return m_strActualFilename; }
 		}
 
 		public string Filename

@@ -95,6 +95,12 @@
 			this.cmnuiExport = new System.Windows.Forms.ToolStripMenuItem();
 			this.cmnuiExportPng = new System.Windows.Forms.ToolStripMenuItem();
 			this.cmnuiExportTdx = new System.Windows.Forms.ToolStripMenuItem();
+			this.ssStatus = new System.Windows.Forms.StatusStrip();
+			this.sslblSpacing = new System.Windows.Forms.ToolStripStatusLabel();
+			this.sslblLoadedCards = new System.Windows.Forms.ToolStripStatusLabel();
+			this.sslblLoadedCardsNum = new System.Windows.Forms.ToolStripStatusLabel();
+			this.sslblCardsInList = new System.Windows.Forms.ToolStripStatusLabel();
+			this.sslblCardsInListNum = new System.Windows.Forms.ToolStripStatusLabel();
 			((System.ComponentModel.ISupportInitialize)(this.dgvCards)).BeginInit();
 			this.mnuMain.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.picFrame)).BeginInit();
@@ -131,6 +137,7 @@
 			((System.ComponentModel.ISupportInitialize)(this.dgvUnlocksPromo)).BeginInit();
 			this.cmnuContext.SuspendLayout();
 			this.cmnuPictures.SuspendLayout();
+			this.ssStatus.SuspendLayout();
 			this.SuspendLayout();
 			// 
 			// dgvCards
@@ -148,13 +155,13 @@
 			this.dgvCards.Name = "dgvCards";
 			this.dgvCards.RowHeadersVisible = false;
 			this.dgvCards.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-			this.dgvCards.Size = new System.Drawing.Size(1086, 97);
+			this.dgvCards.Size = new System.Drawing.Size(1086, 82);
 			this.dgvCards.TabIndex = 0;
 			this.dgvCards.CellDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgvCards_CellDoubleClick);
 			this.dgvCards.CellMouseEnter += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgvCards_CellMouseEnter);
+			this.dgvCards.ColumnHeaderMouseClick += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.dgvCards_ColumnHeaderMouseClick);
 			this.dgvCards.Scroll += new System.Windows.Forms.ScrollEventHandler(this.dgvCards_Scroll);
 			this.dgvCards.SelectionChanged += new System.EventHandler(this.dgvCards_SelectionChanged);
-			this.dgvCards.Sorted += new System.EventHandler(this.dgvCards_Sorted);
 			this.dgvCards.KeyDown += new System.Windows.Forms.KeyEventHandler(this.dgvCards_KeyDown);
 			this.dgvCards.MouseClick += new System.Windows.Forms.MouseEventHandler(this.dgvCards_MouseClick);
 			// 
@@ -251,7 +258,7 @@
 			// mnuiFileExportToDirectory
 			// 
 			this.mnuiFileExportToDirectory.Name = "mnuiFileExportToDirectory";
-			this.mnuiFileExportToDirectory.Size = new System.Drawing.Size(152, 22);
+			this.mnuiFileExportToDirectory.Size = new System.Drawing.Size(122, 22);
 			this.mnuiFileExportToDirectory.Tag = "MENU_FILE_EXPORT_DIRECTORY";
 			this.mnuiFileExportToDirectory.Text = "&Directory";
 			this.mnuiFileExportToDirectory.Click += new System.EventHandler(this.mnuiFileExportToDirectory_Click);
@@ -259,7 +266,7 @@
 			// mnuiFileExportToWad
 			// 
 			this.mnuiFileExportToWad.Name = "mnuiFileExportToWad";
-			this.mnuiFileExportToWad.Size = new System.Drawing.Size(152, 22);
+			this.mnuiFileExportToWad.Size = new System.Drawing.Size(122, 22);
 			this.mnuiFileExportToWad.Tag = "MENU_FILE_EXPORT_WAD";
 			this.mnuiFileExportToWad.Text = "&Wad";
 			this.mnuiFileExportToWad.Click += new System.EventHandler(this.mnuiFileExportToWad_Click);
@@ -587,6 +594,7 @@
 			this.dgvDeckCards.CellBeginEdit += new System.Windows.Forms.DataGridViewCellCancelEventHandler(this.dgvDeckCards_CellBeginEdit);
 			this.dgvDeckCards.CellEndEdit += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgvDeckCards_CellEndEdit);
 			this.dgvDeckCards.CellMouseEnter += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgvDeckCards_CellMouseEnter);
+			this.dgvDeckCards.ColumnHeaderMouseClick += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.dgvDeckCards_ColumnHeaderMouseClick);
 			this.dgvDeckCards.SelectionChanged += new System.EventHandler(this.dgvDeckCards_SelectionChanged);
 			this.dgvDeckCards.MouseClick += new System.Windows.Forms.MouseEventHandler(this.dgvDeckCards_MouseClick);
 			// 
@@ -874,11 +882,73 @@
 			this.cmnuiExportTdx.Text = "&TDX ...";
 			this.cmnuiExportTdx.Click += new System.EventHandler(this.cmnuiExportTdx_Click);
 			// 
+			// ssStatus
+			// 
+			this.ssStatus.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.sslblSpacing,
+            this.sslblLoadedCards,
+            this.sslblLoadedCardsNum,
+            this.sslblCardsInList,
+            this.sslblCardsInListNum});
+			this.ssStatus.Location = new System.Drawing.Point(0, 630);
+			this.ssStatus.Name = "ssStatus";
+			this.ssStatus.Size = new System.Drawing.Size(1110, 24);
+			this.ssStatus.TabIndex = 10;
+			// 
+			// sslblSpacing
+			// 
+			this.sslblSpacing.Name = "sslblSpacing";
+			this.sslblSpacing.Size = new System.Drawing.Size(897, 19);
+			this.sslblSpacing.Spring = true;
+			// 
+			// sslblLoadedCards
+			// 
+			this.sslblLoadedCards.BorderSides = ((System.Windows.Forms.ToolStripStatusLabelBorderSides)((((System.Windows.Forms.ToolStripStatusLabelBorderSides.Left | System.Windows.Forms.ToolStripStatusLabelBorderSides.Top)
+						| System.Windows.Forms.ToolStripStatusLabelBorderSides.Right)
+						| System.Windows.Forms.ToolStripStatusLabelBorderSides.Bottom)));
+			this.sslblLoadedCards.BorderStyle = System.Windows.Forms.Border3DStyle.SunkenOuter;
+			this.sslblLoadedCards.Name = "sslblLoadedCards";
+			this.sslblLoadedCards.Size = new System.Drawing.Size(86, 19);
+			this.sslblLoadedCards.Tag = "LOADED_CARDS";
+			this.sslblLoadedCards.Text = "Loaded Cards:";
+			// 
+			// sslblLoadedCardsNum
+			// 
+			this.sslblLoadedCardsNum.BorderSides = ((System.Windows.Forms.ToolStripStatusLabelBorderSides)((((System.Windows.Forms.ToolStripStatusLabelBorderSides.Left | System.Windows.Forms.ToolStripStatusLabelBorderSides.Top)
+						| System.Windows.Forms.ToolStripStatusLabelBorderSides.Right)
+						| System.Windows.Forms.ToolStripStatusLabelBorderSides.Bottom)));
+			this.sslblLoadedCardsNum.BorderStyle = System.Windows.Forms.Border3DStyle.SunkenOuter;
+			this.sslblLoadedCardsNum.Name = "sslblLoadedCardsNum";
+			this.sslblLoadedCardsNum.Size = new System.Drawing.Size(17, 19);
+			this.sslblLoadedCardsNum.Text = "0";
+			// 
+			// sslblCardsInList
+			// 
+			this.sslblCardsInList.BorderSides = ((System.Windows.Forms.ToolStripStatusLabelBorderSides)((((System.Windows.Forms.ToolStripStatusLabelBorderSides.Left | System.Windows.Forms.ToolStripStatusLabelBorderSides.Top)
+						| System.Windows.Forms.ToolStripStatusLabelBorderSides.Right)
+						| System.Windows.Forms.ToolStripStatusLabelBorderSides.Bottom)));
+			this.sslblCardsInList.BorderStyle = System.Windows.Forms.Border3DStyle.SunkenOuter;
+			this.sslblCardsInList.Name = "sslblCardsInList";
+			this.sslblCardsInList.Size = new System.Drawing.Size(78, 19);
+			this.sslblCardsInList.Tag = "CARDS_IN_LIST";
+			this.sslblCardsInList.Text = "Cards in List:";
+			// 
+			// sslblCardsInListNum
+			// 
+			this.sslblCardsInListNum.BorderSides = ((System.Windows.Forms.ToolStripStatusLabelBorderSides)((((System.Windows.Forms.ToolStripStatusLabelBorderSides.Left | System.Windows.Forms.ToolStripStatusLabelBorderSides.Top)
+						| System.Windows.Forms.ToolStripStatusLabelBorderSides.Right)
+						| System.Windows.Forms.ToolStripStatusLabelBorderSides.Bottom)));
+			this.sslblCardsInListNum.BorderStyle = System.Windows.Forms.Border3DStyle.SunkenOuter;
+			this.sslblCardsInListNum.Name = "sslblCardsInListNum";
+			this.sslblCardsInListNum.Size = new System.Drawing.Size(17, 19);
+			this.sslblCardsInListNum.Text = "0";
+			// 
 			// DeckBuilder
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.ClientSize = new System.Drawing.Size(1110, 654);
+			this.Controls.Add(this.ssStatus);
 			this.Controls.Add(this.scDeckUnlocks);
 			this.Controls.Add(this.scFilterNormalAdvanced);
 			this.Controls.Add(this.gbCardMoveOptions);
@@ -930,6 +1000,8 @@
 			((System.ComponentModel.ISupportInitialize)(this.dgvUnlocksPromo)).EndInit();
 			this.cmnuContext.ResumeLayout(false);
 			this.cmnuPictures.ResumeLayout(false);
+			this.ssStatus.ResumeLayout(false);
+			this.ssStatus.PerformLayout();
 			this.ResumeLayout(false);
 			this.PerformLayout();
 
@@ -1003,6 +1075,12 @@
 		private System.Windows.Forms.ToolStripSeparator toolStripSeparator8;
 		private System.Windows.Forms.ToolStripMenuItem mnuiToolsCreateCoreWad;
 		private System.Windows.Forms.Button cmdFilterAdvanced;
+		private System.Windows.Forms.StatusStrip ssStatus;
+		private System.Windows.Forms.ToolStripStatusLabel sslblSpacing;
+		private System.Windows.Forms.ToolStripStatusLabel sslblLoadedCards;
+		private System.Windows.Forms.ToolStripStatusLabel sslblLoadedCardsNum;
+		private System.Windows.Forms.ToolStripStatusLabel sslblCardsInList;
+		private System.Windows.Forms.ToolStripStatusLabel sslblCardsInListNum;
 	}
 }
 

@@ -6,7 +6,7 @@
 			untranslated, so anyone who completes this translation and corrects the
 			errors (if any) should remove my name and credit themselves. -->
 	<STRING key="LOCALIZED_BY"><![CDATA[Localized by Riiak Shi Nal - 2013]]></STRING>
-	<STRING key="LOCALIZATION_VERSION"><![CDATA[Deutsch v1.0.0.1]]></STRING>
+	<STRING key="LOCALIZATION_VERSION"><![CDATA[Deutsch v1.0.0.2]]></STRING>
 	<!-- Strings for Main Window -->
 	<STRING key="MISSING_DOTP_DIRECTORY_TITLE"><![CDATA[DotP 2014 Directory not set.]]></STRING>
 	<STRING key="MISSING_DOTP_DIRECTORY_MESSAGE"><![CDATA[The Duels of the Planeswalkers 2014 game directory has not yet been set.  Please do so now.]]></STRING>
@@ -94,6 +94,8 @@ Do you really want to continue?]]></STRING>
 	<STRING key="SAVE_CORE_WAD_AS"><![CDATA[Save Core Wad As ...]]></STRING>
 	<STRING key="WAD_FILTER"><![CDATA[DotP Packed Data File (*.wad)|*.wad|All Files|*]]></STRING>
 	<STRING key="CREATE_CORE_WAD_SUCCESS"><![CDATA[Successfully, created core wad from custom data.]]></STRING>
+	<STRING key="LOADED_CARDS"><![CDATA[Loaded Cards:]]></STRING>
+	<STRING key="CARDS_IN_LIST"><![CDATA[Cards in List:]]></STRING>
 	<!-- Strings for use in generating a readme for the exported wad -->
 	<!--	I don't really have any clue what I should put for a generic deck readme preamble so I just made some stuff up. -->
 	<STRING key="README_PREAMBLE"><![CDATA[This deck and readme was created using Riiak Shi Nal's DotP 2014 Deck Builder.

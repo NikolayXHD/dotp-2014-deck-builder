@@ -16,6 +16,10 @@ namespace RSN.DotP
 		private Deck m_dkNew;
 		private EventHandler m_ehColumnMenuItemClick;
 
+		// For multiple column sorting.
+		private BindingSource m_bsDecks;
+		private List<ColumnSort> m_lstDeckSort;
+
 		public CreateFromExistingDeck(SortableBindingList<Deck> lstDecks)
 		{
 			InitializeComponent();
@@ -42,11 +46,28 @@ namespace RSN.DotP
 			SetupDeckList();
 
 			// Set Data.
-			dgvDecks.DataSource = new SortableBindingList<Deck>(lstDecks.Where(x => !x.IsLandPool));
+			m_bsDecks = new BindingSource();
+			m_bsDecks.DataSource = new SortableBindingList<Deck>(lstDecks.Where(x => !x.IsLandPool));
+			dgvDecks.DataSource = m_bsDecks;
 			// Restore previous sort.
-			string strSortColumnName = Settings.GetSetting("DeckViewSortColumn", "Uid");
-			ListSortDirection eSortDir = (ListSortDirection)Enum.Parse(typeof(ListSortDirection), Settings.GetSetting("DeckViewSortDirection", "Ascending"));
-			dgvDecks.Sort(dgvDecks.Columns[strSortColumnName], eSortDir);
+			RestoreDeckSort();
+		}
+
+		private void RestoreDeckSort()
+		{
+			// Load the list
+			List<ColumnSort> lstSort = Settings.GetSerializableSetting("DeckViewSort", new List<ColumnSort>());
+			if (lstSort.Count <= 0)
+				lstSort.Add(new ColumnSort("Uid", "Uid", SortOrder.Ascending));
+
+			// Actually sort.
+			m_lstDeckSort = lstSort;
+			Tools.SortFromList(dgvDecks, m_bsDecks, lstSort);
+		}
+
+		private void SaveDeckSort()
+		{
+			Settings.SaveSerializableSetting("DeckViewSort", m_lstDeckSort);
 		}
 
 		public Deck CreatedDeck
@@ -71,77 +92,14 @@ namespace RSN.DotP
 				dgvDecks.AllowUserToAddRows = false;
 				dgvDecks.AllowUserToDeleteRows = false;
 
-				DataGridViewColumn dgvcColumn = new DataGridViewTextBoxColumn();
-				dgvcColumn.DataPropertyName = "Uid";
-				dgvcColumn.Name = "Uid";
-				dgvcColumn.Tag = "COLUMN_TEXT_UID";
-				dgvcColumn.HeaderText = Settings.UIStrings[(string)dgvcColumn.Tag];
-				dgvcColumn.SortMode = DataGridViewColumnSortMode.Automatic;
-				dgvcColumn.Width = 60;
-				dgvDecks.Columns.Add(dgvcColumn);
-
-				dgvcColumn = new DataGridViewTextBoxColumn();
-				dgvcColumn.DataPropertyName = "FileName";
-				dgvcColumn.Name = "Filename";
-				dgvcColumn.Tag = "COLUMN_TEXT_FILE_NAME";
-				dgvcColumn.HeaderText = Settings.UIStrings[(string)dgvcColumn.Tag];
-				dgvcColumn.SortMode = DataGridViewColumnSortMode.Automatic;
-				dgvcColumn.Width = 150;
-				dgvDecks.Columns.Add(dgvcColumn);
-
-				dgvcColumn = new DataGridViewTextBoxColumn();
-				dgvcColumn.DataPropertyName = "LocalizedName";
-				dgvcColumn.Name = "Name";
-				dgvcColumn.Tag = "COLUMN_TEXT_NAME";
-				dgvcColumn.HeaderText = Settings.UIStrings[(string)dgvcColumn.Tag];
-				dgvcColumn.SortMode = DataGridViewColumnSortMode.Automatic;
-				dgvcColumn.Width = 150;
-				dgvDecks.Columns.Add(dgvcColumn);
-
-				dgvcColumn = new DataGridViewTextBoxColumn();
-				dgvcColumn.DataPropertyName = "ColourText";
-				dgvcColumn.Name = "Colour";
-				dgvcColumn.Tag = "COLUMN_TEXT_COLOUR";
-				dgvcColumn.HeaderText = Settings.UIStrings[(string)dgvcColumn.Tag];
-				dgvcColumn.SortMode = DataGridViewColumnSortMode.Automatic;
-				dgvcColumn.Width = 150;
-				dgvDecks.Columns.Add(dgvcColumn);
-
-				dgvcColumn = new DataGridViewTextBoxColumn();
-				dgvcColumn.DataPropertyName = "CardCount";
-				dgvcColumn.Name = "CardCount";
-				dgvcColumn.Tag = "COLUMN_TEXT_CARD_COUNT";
-				dgvcColumn.HeaderText = Settings.UIStrings[(string)dgvcColumn.Tag];
-				dgvcColumn.SortMode = DataGridViewColumnSortMode.Automatic;
-				dgvcColumn.Width = 60;
-				dgvDecks.Columns.Add(dgvcColumn);
-
-				dgvcColumn = new DataGridViewTextBoxColumn();
-				dgvcColumn.DataPropertyName = "BasicLandAmount";
-				dgvcColumn.Name = "BasicLands";
-				dgvcColumn.Tag = "COLUMN_TEXT_BASIC_LANDS";
-				dgvcColumn.HeaderText = Settings.UIStrings[(string)dgvcColumn.Tag];
-				dgvcColumn.SortMode = DataGridViewColumnSortMode.Automatic;
-				dgvcColumn.Width = 60;
-				dgvDecks.Columns.Add(dgvcColumn);
-
-				dgvcColumn = new DataGridViewTextBoxColumn();
-				dgvcColumn.DataPropertyName = "RegularUnlockCardCount";
-				dgvcColumn.Name = "RegularUnlocks";
-				dgvcColumn.Tag = "COLUMN_TEXT_REGULAR_UNLOCKS";
-				dgvcColumn.HeaderText = Settings.UIStrings[(string)dgvcColumn.Tag];
-				dgvcColumn.SortMode = DataGridViewColumnSortMode.Automatic;
-				dgvcColumn.Width = 60;
-				dgvDecks.Columns.Add(dgvcColumn);
-
-				dgvcColumn = new DataGridViewTextBoxColumn();
-				dgvcColumn.DataPropertyName = "PromoUnlockCardCount";
-				dgvcColumn.Name = "PromoUnlocks";
-				dgvcColumn.Tag = "COLUMN_TEXT_PROMO_UNLOCKS";
-				dgvcColumn.HeaderText = Settings.UIStrings[(string)dgvcColumn.Tag];
-				dgvcColumn.SortMode = DataGridViewColumnSortMode.Automatic;
-				dgvcColumn.Width = 60;
-				dgvDecks.Columns.Add(dgvcColumn);
+				Tools.AddViewColumn(dgvDecks, new DataGridViewTextBoxColumn(), "Uid", "Uid", "COLUMN_TEXT_UID", DataGridViewColumnSortMode.Programmatic, 60);
+				Tools.AddViewColumn(dgvDecks, new DataGridViewTextBoxColumn(), "Filename", "FileName", "COLUMN_TEXT_FILE_NAME", DataGridViewColumnSortMode.Programmatic, 150);
+				Tools.AddViewColumn(dgvDecks, new DataGridViewTextBoxColumn(), "Name", "LocalizedName", "COLUMN_TEXT_NAME", DataGridViewColumnSortMode.Programmatic, 150);
+				Tools.AddViewColumn(dgvDecks, new DataGridViewTextBoxColumn(), "Colour", "ColourText", "COLUMN_TEXT_COLOUR", DataGridViewColumnSortMode.Programmatic, 150);
+				Tools.AddViewColumn(dgvDecks, new DataGridViewTextBoxColumn(), "CardCount", "CardCount", "COLUMN_TEXT_CARD_COUNT", DataGridViewColumnSortMode.Programmatic, 60);
+				Tools.AddViewColumn(dgvDecks, new DataGridViewTextBoxColumn(), "BasicLands", "BasicLandAmount", "COLUMN_TEXT_BASIC_LANDS", DataGridViewColumnSortMode.Programmatic, 60);
+				Tools.AddViewColumn(dgvDecks, new DataGridViewTextBoxColumn(), "RegularUnlocks", "RegularUnlockCardCount", "COLUMN_TEXT_REGULAR_UNLOCKS", DataGridViewColumnSortMode.Programmatic, 60);
+				Tools.AddViewColumn(dgvDecks, new DataGridViewTextBoxColumn(), "PromoUnlocks", "PromoUnlockCardCount", "COLUMN_TEXT_PROMO_UNLOCKS", DataGridViewColumnSortMode.Programmatic, 60);
 
 				Settings.GetSetting("DeckViewColumns", dgvDecks.Columns);
 
@@ -194,12 +152,6 @@ namespace RSN.DotP
 			}
 		}
 
-		private void dgvDecks_Sorted(object sender, EventArgs e)
-		{
-			Settings.SaveSetting("DeckViewSortColumn", dgvDecks.SortedColumn.Name);
-			Settings.SaveSetting("DeckViewSortDirection", dgvDecks.SortOrder.ToString());
-		}
-
 		private void BuildColumnsMenu(ToolStripMenuItem mnuiParent, DataGridViewColumnCollection dgvccColl)
 		{
 			if (m_ehColumnMenuItemClick == null)
@@ -239,6 +191,36 @@ namespace RSN.DotP
 				BuildColumnsMenu(cmnuiColumns, dgvDecks.Columns);
 				// Now show the context menu
 				cmnuContext.Show(Cursor.Position);
+			}
+		}
+
+		private void dgvDecks_ColumnHeaderMouseClick(object sender, DataGridViewCellMouseEventArgs e)
+		{
+			if ((e.ColumnIndex >= 0) && (e.ColumnIndex < dgvDecks.Columns.Count))
+			{
+				DataGridViewColumn dgvcColumn = dgvDecks.Columns[e.ColumnIndex];
+				if (dgvcColumn.SortMode == DataGridViewColumnSortMode.Programmatic)
+				{
+					if (Control.ModifierKeys == Keys.Shift)
+					{
+						// Add or Modify an existing sort.
+						Tools.AdjustSort(dgvDecks, m_bsDecks, m_lstDeckSort, dgvcColumn.DataPropertyName, false);
+					}
+					else if (Control.ModifierKeys == Keys.Control)
+					{
+						Tools.AdjustSort(dgvDecks, m_bsDecks, m_lstDeckSort, dgvcColumn.DataPropertyName, true);
+					}
+					else
+					{
+						// Regular single sort (or reverse).
+						string strProp = dgvcColumn.DataPropertyName;
+						SortOrder soDirection = (dgvcColumn.HeaderCell.SortGlyphDirection == SortOrder.Ascending ? SortOrder.Descending : SortOrder.Ascending);
+						m_lstDeckSort = new List<ColumnSort>();
+						m_lstDeckSort.Add(new ColumnSort(dgvcColumn.Name, strProp, soDirection));
+						Tools.SortFromList(dgvDecks, m_bsDecks, m_lstDeckSort);
+					}
+					SaveDeckSort();
+				}
 			}
 		}
 	}

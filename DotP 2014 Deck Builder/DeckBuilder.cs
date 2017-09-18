@@ -38,6 +38,12 @@ namespace RSN.DotP
 		private string m_strUnlockRegularCellValue;
 		private string m_strUnlockPromoCellValue;
 
+		// For multi-column filtering.
+		private BindingSource m_bsCards;
+		private BindingSource m_bsDeckCards;
+		private List<ColumnSort> m_lstCardSort;
+		private List<ColumnSort> m_lstDeckCardSort;
+
 		private enum DeckLocation
 		{
 			MainDeck = 0,
@@ -140,6 +146,10 @@ namespace RSN.DotP
 			cmnuiRemoveCard.Text = Settings.UIStrings[(string)cmnuiRemoveCard.Tag];
 			cmnuiViewCard.Text = Settings.UIStrings[(string)cmnuiViewCard.Tag];
 			cmnuiDecksUsedIn.Text = Settings.UIStrings[(string)cmnuiDecksUsedIn.Tag];
+
+			// Status Bar
+			sslblLoadedCards.Text = Settings.UIStrings[(string)sslblLoadedCards.Tag];
+			sslblCardsInList.Text = Settings.UIStrings[(string)sslblCardsInList.Tag];
 		}
 
 		private void LoadMenuItemStrings(ToolStripMenuItem mnuiItem)
@@ -164,16 +174,19 @@ namespace RSN.DotP
 			m_gdWads.LoadMusic();
 			m_gdWads.LoadWads();
 			bool bFirstSetup = SetupCardList();
+			m_bsCards = new BindingSource();
 			if ((Settings.GetSetting("Filtering", true)) && (Settings.GetSetting("AdvancedFiltering", false)) && (m_cfsCardFilterAdvanced != null))
-				dgvCards.DataSource = new SortableBindingList<CardInfo>(m_gdWads.Cards.Where(x => m_cfsCardFilterAdvanced.IsAllowed(x)));
+				m_bsCards.DataSource = new SortableBindingList<CardInfo>(m_gdWads.Cards.Where(x => m_cfsCardFilterAdvanced.IsAllowed(x)));
 			else if ((Settings.GetSetting("Filtering", true)) && (m_fltCardFilter != null))
-				dgvCards.DataSource = new SortableBindingList<CardInfo>(m_gdWads.Cards.Where(x => m_fltCardFilter.CheckAgainstFilter(x)));
+				m_bsCards.DataSource = new SortableBindingList<CardInfo>(m_gdWads.Cards.Where(x => m_fltCardFilter.CheckAgainstFilter(x)));
 			else
-				dgvCards.DataSource = m_gdWads.Cards;
+				m_bsCards.DataSource = m_gdWads.Cards;
+			dgvCards.DataSource = m_bsCards;
+			// Update status numbers.
+			sslblLoadedCardsNum.Text = m_gdWads.Cards.Count.ToString();
+			sslblCardsInListNum.Text = ((SortableBindingList<CardInfo>)m_bsCards.DataSource).Count.ToString();
 			// Restore the previous sort.
-			string strSortColumnName = Settings.GetSetting("CardViewSortColumn", "Name");
-			ListSortDirection eSortDir = (ListSortDirection)Enum.Parse(typeof(ListSortDirection), Settings.GetSetting("CardViewSortDirection", "Ascending"));
-			dgvCards.Sort(dgvCards.Columns[strSortColumnName], eSortDir);
+			RestoreCardSort();
 			if (bFirstSetup)
 			{
 				foreach (DataGridViewColumn dgvc in dgvCards.Columns)
@@ -297,13 +310,52 @@ namespace RSN.DotP
 			this.Cursor = Cursors.Default;
 		}
 
+		private void RestoreCardSort()
+		{
+			// Load the list
+			List<ColumnSort> lstSort = Settings.GetSerializableSetting("CardViewSort", new List<ColumnSort>());
+			if (lstSort.Count <= 0)
+				lstSort.Add(new ColumnSort("Name", "LocalizedName", SortOrder.Ascending));
+
+			// Actually sort.
+			m_lstCardSort = lstSort;
+			Tools.SortFromList(dgvCards, m_bsCards, lstSort);
+		}
+
+		private void RestoreDeckCardSort()
+		{
+			/*
+			// Load the list
+			List<ColumnSort> lstSort = Settings.GetSerializableSetting("DeckCardViewSort", new List<ColumnSort>());
+			if (lstSort.Count <= 0)
+				lstSort.Add(new ColumnSort("Name", "LocalizedCardName", SortOrder.Ascending));
+
+			// Actually sort.
+			m_lstDeckCardSort = lstSort;
+			Tools.SortFromList(dgvDeckCards, m_bsDeckCards, lstSort);
+			//*/
+		}
+
+		private void SaveCardSort()
+		{
+			Settings.SaveSerializableSetting("CardViewSort", m_lstCardSort);
+		}
+
+		private void SaveDeckCardSort()
+		{
+			//Settings.SaveSerializableSetting("DeckCardViewSort", m_lstDeckCardSort);
+		}
+
 		public void RefreshDeck()
 		{
 			lblDeckName.Text = m_dkWorking.LocalizedName;
 			lblBasicLandCount.Text = m_dkWorking.BasicLandAmount.ToString();
 			SetupDeckCardList();
-			dgvDeckCards.DataSource = m_dkWorking.Cards;
+			m_bsDeckCards = new BindingSource();
+			m_bsDeckCards.DataSource = m_dkWorking.Cards;
+			dgvDeckCards.DataSource = m_bsDeckCards;
 			dgvDeckCards.Refresh();
+			RestoreDeckCardSort();
 			SetupUnlockCardList(dgvUnlocksRegular, "RegularUnlocksViewColumns");
 			dgvUnlocksRegular.DataSource = m_dkWorking.RegularUnlocks.Cards;
 			dgvUnlocksRegular.Refresh();
@@ -323,19 +375,6 @@ namespace RSN.DotP
 				rbDoubleClickPromoUnlock.Enabled = true;
 		}
 
-		private void AddViewColumn(DataGridView dgvView, DataGridViewColumn dgvcNewColumn, string strName, string strDataProp, string strHeader, DataGridViewColumnSortMode dgvcsmSort, int nDefWidth = -1, bool bVisible = true)
-		{
-			dgvcNewColumn.DataPropertyName = strDataProp;
-			dgvcNewColumn.Name = strName;
-			dgvcNewColumn.Tag = strHeader;
-			dgvcNewColumn.HeaderText = Settings.UIStrings[strHeader];
-			dgvcNewColumn.SortMode = dgvcsmSort;
-			if (nDefWidth > -1)
-				dgvcNewColumn.Width = nDefWidth;
-			dgvcNewColumn.Visible = bVisible;
-			dgvView.Columns.Add(dgvcNewColumn);
-		}
-
 		// This is merely to setup the columns for the card list.
 		private bool SetupCardList()
 		{
@@ -350,20 +389,20 @@ namespace RSN.DotP
 				dgvCards.AllowUserToAddRows = false;
 				dgvCards.AllowUserToDeleteRows = false;
 
-				AddViewColumn(dgvCards, new DataGridViewTextBoxColumn(), "Name", "LocalizedName", "COLUMN_TEXT_NAME", DataGridViewColumnSortMode.Automatic);
-				AddViewColumn(dgvCards, new DataGridViewTextBoxColumn(), "Filename", "Filename", "COLUMN_TEXT_FILE_NAME", DataGridViewColumnSortMode.Automatic);
-				AddViewColumn(dgvCards, new DataGridViewTextBoxColumn(), "Colour", "ColourText", "COLUMN_TEXT_COLOUR", DataGridViewColumnSortMode.Automatic);
-				AddViewColumn(dgvCards, new DataGridViewImageColumn(), "Cost", "CastingCostImage", "COLUMN_TEXT_CASTING_COST", DataGridViewColumnSortMode.NotSortable);
-				AddViewColumn(dgvCards, new DataGridViewTextBoxColumn(), "CostText", "CastingCost", "COLUMN_TEXT_CASTING_COST_TEXT", DataGridViewColumnSortMode.Automatic, -1, false);
-				AddViewColumn(dgvCards, new DataGridViewTextBoxColumn(), "CMC", "ConvertedManaCost", "COLUMN_TEXT_CMC", DataGridViewColumnSortMode.Automatic);
-				AddViewColumn(dgvCards, new DataGridViewTextBoxColumn(), "Type", "LocalizedTypeLine", "COLUMN_TEXT_TYPE", DataGridViewColumnSortMode.Automatic);
-				AddViewColumn(dgvCards, new DataGridViewTextBoxColumn(), "Power", "Power", "COLUMN_TEXT_POWER", DataGridViewColumnSortMode.Automatic);
-				AddViewColumn(dgvCards, new DataGridViewTextBoxColumn(), "Toughness", "Toughness", "COLUMN_TEXT_TOUGHNESS", DataGridViewColumnSortMode.Automatic);
-				AddViewColumn(dgvCards, new DataGridViewCheckBoxColumn(), "Token", "Token", "COLUMN_TEXT_TOKEN", DataGridViewColumnSortMode.Automatic, -1, false);
-				AddViewColumn(dgvCards, new DataGridViewTextBoxColumn(), "Rarity", "Rarity", "COLUMN_TEXT_RARITY", DataGridViewColumnSortMode.Automatic, -1, false);
-				AddViewColumn(dgvCards, new DataGridViewTextBoxColumn(), "Artist", "Artist", "COLUMN_TEXT_ARTIST", DataGridViewColumnSortMode.Automatic, -1, false);
-				AddViewColumn(dgvCards, new DataGridViewTextBoxColumn(), "Expansion", "Expansion", "COLUMN_TEXT_EXPANSION", DataGridViewColumnSortMode.Automatic, -1, false);
-				AddViewColumn(dgvCards, new DataGridViewTextBoxColumn(), "Wad", "PresentInWad", "COLUMN_TEXT_WAD", DataGridViewColumnSortMode.Automatic);
+				Tools.AddViewColumn(dgvCards, new DataGridViewTextBoxColumn(), "Name", "LocalizedName", "COLUMN_TEXT_NAME", DataGridViewColumnSortMode.Programmatic);
+				Tools.AddViewColumn(dgvCards, new DataGridViewTextBoxColumn(), "Filename", "Filename", "COLUMN_TEXT_FILE_NAME", DataGridViewColumnSortMode.Programmatic);
+				Tools.AddViewColumn(dgvCards, new DataGridViewTextBoxColumn(), "Colour", "ColourText", "COLUMN_TEXT_COLOUR", DataGridViewColumnSortMode.Programmatic);
+				Tools.AddViewColumn(dgvCards, new DataGridViewImageColumn(), "Cost", "CastingCostImage", "COLUMN_TEXT_CASTING_COST", DataGridViewColumnSortMode.NotSortable);
+				Tools.AddViewColumn(dgvCards, new DataGridViewTextBoxColumn(), "CostText", "CastingCost", "COLUMN_TEXT_CASTING_COST_TEXT", DataGridViewColumnSortMode.Programmatic, -1, false);
+				Tools.AddViewColumn(dgvCards, new DataGridViewTextBoxColumn(), "CMC", "ConvertedManaCost", "COLUMN_TEXT_CMC", DataGridViewColumnSortMode.Programmatic);
+				Tools.AddViewColumn(dgvCards, new DataGridViewTextBoxColumn(), "Type", "LocalizedTypeLine", "COLUMN_TEXT_TYPE", DataGridViewColumnSortMode.Programmatic);
+				Tools.AddViewColumn(dgvCards, new DataGridViewTextBoxColumn(), "Power", "Power", "COLUMN_TEXT_POWER", DataGridViewColumnSortMode.Programmatic);
+				Tools.AddViewColumn(dgvCards, new DataGridViewTextBoxColumn(), "Toughness", "Toughness", "COLUMN_TEXT_TOUGHNESS", DataGridViewColumnSortMode.Programmatic);
+				Tools.AddViewColumn(dgvCards, new DataGridViewCheckBoxColumn(), "Token", "Token", "COLUMN_TEXT_TOKEN", DataGridViewColumnSortMode.Programmatic, -1, false);
+				Tools.AddViewColumn(dgvCards, new DataGridViewTextBoxColumn(), "Rarity", "Rarity", "COLUMN_TEXT_RARITY", DataGridViewColumnSortMode.Programmatic, -1, false);
+				Tools.AddViewColumn(dgvCards, new DataGridViewTextBoxColumn(), "Artist", "Artist", "COLUMN_TEXT_ARTIST", DataGridViewColumnSortMode.Programmatic, -1, false);
+				Tools.AddViewColumn(dgvCards, new DataGridViewTextBoxColumn(), "Expansion", "Expansion", "COLUMN_TEXT_EXPANSION", DataGridViewColumnSortMode.Programmatic, -1, false);
+				Tools.AddViewColumn(dgvCards, new DataGridViewTextBoxColumn(), "Wad", "PresentInWad", "COLUMN_TEXT_WAD", DataGridViewColumnSortMode.Programmatic);
 
 				bSetup = !Settings.GetSetting("CardViewColumns", dgvCards.Columns);
 			}
@@ -379,23 +418,23 @@ namespace RSN.DotP
 				dgvDeckCards.AllowUserToAddRows = false;
 				dgvDeckCards.AllowUserToDeleteRows = true;
 
-				AddViewColumn(dgvDeckCards, new DataGridViewTextBoxColumn(), "Name", "LocalizedCardName", "COLUMN_TEXT_NAME", DataGridViewColumnSortMode.Automatic, 130);
-				AddViewColumn(dgvDeckCards, new DataGridViewTextBoxColumn(), "Quantity", "Quantity", "COLUMN_TEXT_QUANTITY", DataGridViewColumnSortMode.Automatic, 54);
-				AddViewColumn(dgvDeckCards, new DataGridViewTextBoxColumn(), "Bias", "Bias", "COLUMN_TEXT_BIAS", DataGridViewColumnSortMode.Automatic, 35);
-				AddViewColumn(dgvDeckCards, new DataGridViewCheckBoxColumn(), "Promo", "Promo", "COLUMN_TEXT_PROMO", DataGridViewColumnSortMode.Automatic, 44);
-				AddViewColumn(dgvDeckCards, new DataGridViewTextBoxColumn(), "Filename", "Filename", "COLUMN_TEXT_FILE_NAME", DataGridViewColumnSortMode.Automatic, -1, false);
-				AddViewColumn(dgvDeckCards, new DataGridViewTextBoxColumn(), "Colour", "ColourText", "COLUMN_TEXT_COLOUR", DataGridViewColumnSortMode.Automatic, -1, false);
-				AddViewColumn(dgvDeckCards, new DataGridViewImageColumn(), "Cost", "CastingCostImage", "COLUMN_TEXT_CASTING_COST", DataGridViewColumnSortMode.NotSortable, -1, false);
-				AddViewColumn(dgvDeckCards, new DataGridViewTextBoxColumn(), "CostText", "CastingCost", "COLUMN_TEXT_CASTING_COST_TEXT", DataGridViewColumnSortMode.Automatic, -1, false);
-				AddViewColumn(dgvDeckCards, new DataGridViewTextBoxColumn(), "CMC", "ConvertedManaCost", "COLUMN_TEXT_CMC", DataGridViewColumnSortMode.Automatic, -1, false);
-				AddViewColumn(dgvDeckCards, new DataGridViewTextBoxColumn(), "Type", "LocalizedTypeLine", "COLUMN_TEXT_TYPE", DataGridViewColumnSortMode.Automatic, -1, false);
-				AddViewColumn(dgvDeckCards, new DataGridViewTextBoxColumn(), "Power", "Power", "COLUMN_TEXT_POWER", DataGridViewColumnSortMode.Automatic, -1, false);
-				AddViewColumn(dgvDeckCards, new DataGridViewTextBoxColumn(), "Toughness", "Toughness", "COLUMN_TEXT_TOUGHNESS", DataGridViewColumnSortMode.Automatic, -1, false);
-				AddViewColumn(dgvDeckCards, new DataGridViewCheckBoxColumn(), "Token", "Token", "COLUMN_TEXT_TOKEN", DataGridViewColumnSortMode.Automatic, -1, false);
-				AddViewColumn(dgvDeckCards, new DataGridViewTextBoxColumn(), "Rarity", "Rarity", "COLUMN_TEXT_RARITY", DataGridViewColumnSortMode.Automatic, -1, false);
-				AddViewColumn(dgvDeckCards, new DataGridViewTextBoxColumn(), "Artist", "Artist", "COLUMN_TEXT_ARTIST", DataGridViewColumnSortMode.Automatic, -1, false);
-				AddViewColumn(dgvDeckCards, new DataGridViewTextBoxColumn(), "Expansion", "Expansion", "COLUMN_TEXT_EXPANSION", DataGridViewColumnSortMode.Automatic, -1, false);
-				AddViewColumn(dgvDeckCards, new DataGridViewTextBoxColumn(), "Wad", "PresentInWad", "COLUMN_TEXT_WAD", DataGridViewColumnSortMode.Automatic, 130);
+				Tools.AddViewColumn(dgvDeckCards, new DataGridViewTextBoxColumn(), "Name", "LocalizedCardName", "COLUMN_TEXT_NAME", DataGridViewColumnSortMode.Automatic, 130);
+				Tools.AddViewColumn(dgvDeckCards, new DataGridViewTextBoxColumn(), "Quantity", "Quantity", "COLUMN_TEXT_QUANTITY", DataGridViewColumnSortMode.Automatic, 54);
+				Tools.AddViewColumn(dgvDeckCards, new DataGridViewTextBoxColumn(), "Bias", "Bias", "COLUMN_TEXT_BIAS", DataGridViewColumnSortMode.Automatic, 35);
+				Tools.AddViewColumn(dgvDeckCards, new DataGridViewCheckBoxColumn(), "Promo", "Promo", "COLUMN_TEXT_PROMO", DataGridViewColumnSortMode.Automatic, 44);
+				Tools.AddViewColumn(dgvDeckCards, new DataGridViewTextBoxColumn(), "Filename", "Filename", "COLUMN_TEXT_FILE_NAME", DataGridViewColumnSortMode.Automatic, -1, false);
+				Tools.AddViewColumn(dgvDeckCards, new DataGridViewTextBoxColumn(), "Colour", "ColourText", "COLUMN_TEXT_COLOUR", DataGridViewColumnSortMode.Automatic, -1, false);
+				Tools.AddViewColumn(dgvDeckCards, new DataGridViewImageColumn(), "Cost", "CastingCostImage", "COLUMN_TEXT_CASTING_COST", DataGridViewColumnSortMode.NotSortable, -1, false);
+				Tools.AddViewColumn(dgvDeckCards, new DataGridViewTextBoxColumn(), "CostText", "CastingCost", "COLUMN_TEXT_CASTING_COST_TEXT", DataGridViewColumnSortMode.Automatic, -1, false);
+				Tools.AddViewColumn(dgvDeckCards, new DataGridViewTextBoxColumn(), "CMC", "ConvertedManaCost", "COLUMN_TEXT_CMC", DataGridViewColumnSortMode.Automatic, -1, false);
+				Tools.AddViewColumn(dgvDeckCards, new DataGridViewTextBoxColumn(), "Type", "LocalizedTypeLine", "COLUMN_TEXT_TYPE", DataGridViewColumnSortMode.Automatic, -1, false);
+				Tools.AddViewColumn(dgvDeckCards, new DataGridViewTextBoxColumn(), "Power", "Power", "COLUMN_TEXT_POWER", DataGridViewColumnSortMode.Automatic, -1, false);
+				Tools.AddViewColumn(dgvDeckCards, new DataGridViewTextBoxColumn(), "Toughness", "Toughness", "COLUMN_TEXT_TOUGHNESS", DataGridViewColumnSortMode.Automatic, -1, false);
+				Tools.AddViewColumn(dgvDeckCards, new DataGridViewCheckBoxColumn(), "Token", "Token", "COLUMN_TEXT_TOKEN", DataGridViewColumnSortMode.Automatic, -1, false);
+				Tools.AddViewColumn(dgvDeckCards, new DataGridViewTextBoxColumn(), "Rarity", "Rarity", "COLUMN_TEXT_RARITY", DataGridViewColumnSortMode.Automatic, -1, false);
+				Tools.AddViewColumn(dgvDeckCards, new DataGridViewTextBoxColumn(), "Artist", "Artist", "COLUMN_TEXT_ARTIST", DataGridViewColumnSortMode.Automatic, -1, false);
+				Tools.AddViewColumn(dgvDeckCards, new DataGridViewTextBoxColumn(), "Expansion", "Expansion", "COLUMN_TEXT_EXPANSION", DataGridViewColumnSortMode.Automatic, -1, false);
+				Tools.AddViewColumn(dgvDeckCards, new DataGridViewTextBoxColumn(), "Wad", "PresentInWad", "COLUMN_TEXT_WAD", DataGridViewColumnSortMode.Automatic, 130);
 
 				Settings.GetSetting("DeckCardViewColumns", dgvDeckCards.Columns);
 			}
@@ -410,22 +449,22 @@ namespace RSN.DotP
 				dgvList.AllowUserToAddRows = false;
 				dgvList.AllowUserToDeleteRows = true;
 
-				AddViewColumn(dgvList, new DataGridViewTextBoxColumn(), "Name", "LocalizedCardName", "COLUMN_TEXT_NAME", DataGridViewColumnSortMode.Automatic, 130);
-				AddViewColumn(dgvList, new DataGridViewTextBoxColumn(), "Bias", "Bias", "COLUMN_TEXT_BIAS", DataGridViewColumnSortMode.Automatic, 35);
-				AddViewColumn(dgvList, new DataGridViewCheckBoxColumn(), "Promo", "Promo", "COLUMN_TEXT_PROMO", DataGridViewColumnSortMode.Automatic, 44);
-				AddViewColumn(dgvList, new DataGridViewTextBoxColumn(), "Filename", "Filename", "COLUMN_TEXT_FILE_NAME", DataGridViewColumnSortMode.Automatic, -1, false);
-				AddViewColumn(dgvList, new DataGridViewTextBoxColumn(), "Colour", "ColourText", "COLUMN_TEXT_COLOUR", DataGridViewColumnSortMode.Automatic, -1, false);
-				AddViewColumn(dgvList, new DataGridViewImageColumn(), "Cost", "CastingCostImage", "COLUMN_TEXT_CASTING_COST", DataGridViewColumnSortMode.NotSortable, -1, false);
-				AddViewColumn(dgvList, new DataGridViewTextBoxColumn(), "CostText", "CastingCost", "COLUMN_TEXT_CASTING_COST_TEXT", DataGridViewColumnSortMode.Automatic, -1, false);
-				AddViewColumn(dgvList, new DataGridViewTextBoxColumn(), "CMC", "ConvertedManaCost", "COLUMN_TEXT_CMC", DataGridViewColumnSortMode.Automatic, -1, false);
-				AddViewColumn(dgvList, new DataGridViewTextBoxColumn(), "Type", "LocalizedTypeLine", "COLUMN_TEXT_TYPE", DataGridViewColumnSortMode.Automatic, -1, false);
-				AddViewColumn(dgvList, new DataGridViewTextBoxColumn(), "Power", "Power", "COLUMN_TEXT_POWER", DataGridViewColumnSortMode.Automatic, -1, false);
-				AddViewColumn(dgvList, new DataGridViewTextBoxColumn(), "Toughness", "Toughness", "COLUMN_TEXT_TOUGHNESS", DataGridViewColumnSortMode.Automatic, -1, false);
-				AddViewColumn(dgvList, new DataGridViewCheckBoxColumn(), "Token", "Token", "COLUMN_TEXT_TOKEN", DataGridViewColumnSortMode.Automatic, -1, false);
-				AddViewColumn(dgvList, new DataGridViewTextBoxColumn(), "Rarity", "Rarity", "COLUMN_TEXT_RARITY", DataGridViewColumnSortMode.Automatic, -1, false);
-				AddViewColumn(dgvList, new DataGridViewTextBoxColumn(), "Artist", "Artist", "COLUMN_TEXT_ARTIST", DataGridViewColumnSortMode.Automatic, -1, false);
-				AddViewColumn(dgvList, new DataGridViewTextBoxColumn(), "Expansion", "Expansion", "COLUMN_TEXT_EXPANSION", DataGridViewColumnSortMode.Automatic, -1, false);
-				AddViewColumn(dgvList, new DataGridViewTextBoxColumn(), "Wad", "PresentInWad", "COLUMN_TEXT_WAD", DataGridViewColumnSortMode.Automatic, 130);
+				Tools.AddViewColumn(dgvList, new DataGridViewTextBoxColumn(), "Name", "LocalizedCardName", "COLUMN_TEXT_NAME", DataGridViewColumnSortMode.Automatic, 130);
+				Tools.AddViewColumn(dgvList, new DataGridViewTextBoxColumn(), "Bias", "Bias", "COLUMN_TEXT_BIAS", DataGridViewColumnSortMode.Automatic, 35);
+				Tools.AddViewColumn(dgvList, new DataGridViewCheckBoxColumn(), "Promo", "Promo", "COLUMN_TEXT_PROMO", DataGridViewColumnSortMode.Automatic, 44);
+				Tools.AddViewColumn(dgvList, new DataGridViewTextBoxColumn(), "Filename", "Filename", "COLUMN_TEXT_FILE_NAME", DataGridViewColumnSortMode.Automatic, -1, false);
+				Tools.AddViewColumn(dgvList, new DataGridViewTextBoxColumn(), "Colour", "ColourText", "COLUMN_TEXT_COLOUR", DataGridViewColumnSortMode.Automatic, -1, false);
+				Tools.AddViewColumn(dgvList, new DataGridViewImageColumn(), "Cost", "CastingCostImage", "COLUMN_TEXT_CASTING_COST", DataGridViewColumnSortMode.NotSortable, -1, false);
+				Tools.AddViewColumn(dgvList, new DataGridViewTextBoxColumn(), "CostText", "CastingCost", "COLUMN_TEXT_CASTING_COST_TEXT", DataGridViewColumnSortMode.Automatic, -1, false);
+				Tools.AddViewColumn(dgvList, new DataGridViewTextBoxColumn(), "CMC", "ConvertedManaCost", "COLUMN_TEXT_CMC", DataGridViewColumnSortMode.Automatic, -1, false);
+				Tools.AddViewColumn(dgvList, new DataGridViewTextBoxColumn(), "Type", "LocalizedTypeLine", "COLUMN_TEXT_TYPE", DataGridViewColumnSortMode.Automatic, -1, false);
+				Tools.AddViewColumn(dgvList, new DataGridViewTextBoxColumn(), "Power", "Power", "COLUMN_TEXT_POWER", DataGridViewColumnSortMode.Automatic, -1, false);
+				Tools.AddViewColumn(dgvList, new DataGridViewTextBoxColumn(), "Toughness", "Toughness", "COLUMN_TEXT_TOUGHNESS", DataGridViewColumnSortMode.Automatic, -1, false);
+				Tools.AddViewColumn(dgvList, new DataGridViewCheckBoxColumn(), "Token", "Token", "COLUMN_TEXT_TOKEN", DataGridViewColumnSortMode.Automatic, -1, false);
+				Tools.AddViewColumn(dgvList, new DataGridViewTextBoxColumn(), "Rarity", "Rarity", "COLUMN_TEXT_RARITY", DataGridViewColumnSortMode.Automatic, -1, false);
+				Tools.AddViewColumn(dgvList, new DataGridViewTextBoxColumn(), "Artist", "Artist", "COLUMN_TEXT_ARTIST", DataGridViewColumnSortMode.Automatic, -1, false);
+				Tools.AddViewColumn(dgvList, new DataGridViewTextBoxColumn(), "Expansion", "Expansion", "COLUMN_TEXT_EXPANSION", DataGridViewColumnSortMode.Automatic, -1, false);
+				Tools.AddViewColumn(dgvList, new DataGridViewTextBoxColumn(), "Wad", "PresentInWad", "COLUMN_TEXT_WAD", DataGridViewColumnSortMode.Automatic, 130);
 
 				Settings.GetSetting(strSetting, dgvList.Columns);
 
@@ -440,6 +479,36 @@ namespace RSN.DotP
 		{
 			foreach (DataGridViewColumn dgvcColumn in dgvList.Columns)
 				dgvcColumn.HeaderText = Settings.UIStrings[(string)dgvcColumn.Tag];
+		}
+
+		private void dgvCards_ColumnHeaderMouseClick(object sender, DataGridViewCellMouseEventArgs e)
+		{
+			if ((e.ColumnIndex >= 0) && (e.ColumnIndex < dgvCards.Columns.Count))
+			{
+				DataGridViewColumn dgvcColumn = dgvCards.Columns[e.ColumnIndex];
+				if (dgvcColumn.SortMode == DataGridViewColumnSortMode.Programmatic)
+				{
+					if (Control.ModifierKeys == Keys.Shift)
+					{
+						// Add or Modify an existing sort.
+						Tools.AdjustSort(dgvCards, m_bsCards, m_lstCardSort, dgvcColumn.DataPropertyName, false);
+					}
+					else if (Control.ModifierKeys == Keys.Control)
+					{
+						Tools.AdjustSort(dgvCards, m_bsCards, m_lstCardSort, dgvcColumn.DataPropertyName, true);
+					}
+					else
+					{
+						// Regular single sort (or reverse).
+						string strProp = dgvcColumn.DataPropertyName;
+						SortOrder soDirection = (dgvcColumn.HeaderCell.SortGlyphDirection == SortOrder.Ascending ? SortOrder.Descending : SortOrder.Ascending);
+						m_lstCardSort = new List<ColumnSort>();
+						m_lstCardSort.Add(new ColumnSort(dgvcColumn.Name, strProp, soDirection));
+						Tools.SortFromList(dgvCards, m_bsCards, m_lstCardSort);
+					}
+					SaveCardSort();
+				}
+			}
 		}
 
 		private void dgvCards_CellMouseEnter(object sender, DataGridViewCellEventArgs e)
@@ -635,11 +704,10 @@ namespace RSN.DotP
 				if (dgvCards.DataSource != m_gdWads.Cards)
 				{
 					Settings.SaveSetting("Filtering", false);
-					dgvCards.DataSource = m_gdWads.Cards;
+					m_bsCards.DataSource = m_gdWads.Cards;
+					sslblCardsInListNum.Text = m_gdWads.Cards.Count.ToString();
 					// Restore the previous sort.
-					string strSortColumnName = Settings.GetSetting("CardViewSortColumn", "Name");
-					ListSortDirection eSortDir = (ListSortDirection)Enum.Parse(typeof(ListSortDirection), Settings.GetSetting("CardViewSortDirection", "Ascending"));
-					dgvCards.Sort(dgvCards.Columns[strSortColumnName], eSortDir);
+					RestoreCardSort();
 				}
 			}
 			dgvCards.Focus();
@@ -657,11 +725,10 @@ namespace RSN.DotP
 					m_fltCardFilter = Settings.GetSerializableSetting("CardFilters", new Filters());
 					Settings.SaveSetting("Filtering", true);
 					Settings.SaveSetting("AdvancedFiltering", false);
-					dgvCards.DataSource = new SortableBindingList<CardInfo>(m_gdWads.Cards.Where(x => m_fltCardFilter.CheckAgainstFilter(x)));
+					m_bsCards.DataSource = new SortableBindingList<CardInfo>(m_gdWads.Cards.Where(x => m_fltCardFilter.CheckAgainstFilter(x)));
+					sslblCardsInListNum.Text = ((SortableBindingList<CardInfo>)m_bsCards.DataSource).Count.ToString();
 					// Restore the previous sort.
-					string strSortColumnName = Settings.GetSetting("CardViewSortColumn", "Name");
-					ListSortDirection eSortDir = (ListSortDirection)Enum.Parse(typeof(ListSortDirection), Settings.GetSetting("CardViewSortDirection", "Ascending"));
-					dgvCards.Sort(dgvCards.Columns[strSortColumnName], eSortDir);
+					RestoreCardSort();
 				}
 			}
 			dgvCards.Focus();
@@ -679,11 +746,10 @@ namespace RSN.DotP
 					m_cfsCardFilterAdvanced = Settings.GetSerializableSetting("CardFilterAdvanced", new CardFilterSet());
 					Settings.SaveSetting("Filtering", true);
 					Settings.SaveSetting("AdvancedFiltering", true);
-					dgvCards.DataSource = new SortableBindingList<CardInfo>(m_gdWads.Cards.Where(x => m_cfsCardFilterAdvanced.IsAllowed(x)));
+					m_bsCards.DataSource = new SortableBindingList<CardInfo>(m_gdWads.Cards.Where(x => m_cfsCardFilterAdvanced.IsAllowed(x)));
+					sslblCardsInListNum.Text = ((SortableBindingList<CardInfo>)m_bsCards.DataSource).Count.ToString();
 					// Restore the previous sort.
-					string strSortColumnName = Settings.GetSetting("CardViewSortColumn", "Name");
-					ListSortDirection eSortDir = (ListSortDirection)Enum.Parse(typeof(ListSortDirection), Settings.GetSetting("CardViewSortDirection", "Ascending"));
-					dgvCards.Sort(dgvCards.Columns[strSortColumnName], eSortDir);
+					RestoreCardSort();
 				}
 			}
 			dgvCards.Focus();
@@ -725,10 +791,34 @@ namespace RSN.DotP
 			}
 		}
 
-		private void dgvCards_Sorted(object sender, EventArgs e)
+		private void dgvDeckCards_ColumnHeaderMouseClick(object sender, DataGridViewCellMouseEventArgs e)
 		{
-			Settings.SaveSetting("CardViewSortColumn", dgvCards.SortedColumn.Name);
-			Settings.SaveSetting("CardViewSortDirection", dgvCards.SortOrder.ToString());
+			if ((e.ColumnIndex >= 0) && (e.ColumnIndex < dgvDeckCards.Columns.Count))
+			{
+				DataGridViewColumn dgvcColumn = dgvDeckCards.Columns[e.ColumnIndex];
+				if (dgvcColumn.SortMode == DataGridViewColumnSortMode.Programmatic)
+				{
+					if (Control.ModifierKeys == Keys.Shift)
+					{
+						// Add or Modify an existing sort.
+						Tools.AdjustSort(dgvDeckCards, m_bsDeckCards, m_lstDeckCardSort, dgvcColumn.DataPropertyName, false);
+					}
+					else if (Control.ModifierKeys == Keys.Control)
+					{
+						Tools.AdjustSort(dgvDeckCards, m_bsDeckCards, m_lstDeckCardSort, dgvcColumn.DataPropertyName, true);
+					}
+					else
+					{
+						// Regular single sort (or reverse).
+						string strProp = dgvcColumn.DataPropertyName;
+						SortOrder soDirection = (dgvcColumn.HeaderCell.SortGlyphDirection == SortOrder.Ascending ? SortOrder.Descending : SortOrder.Ascending);
+						m_lstDeckCardSort = new List<ColumnSort>();
+						m_lstDeckCardSort.Add(new ColumnSort(dgvcColumn.Name, strProp, soDirection));
+						Tools.SortFromList(dgvDeckCards, m_bsDeckCards, m_lstDeckCardSort);
+					}
+					SaveDeckCardSort();
+				}
+			}
 		}
 
 		private void dgvUnlocksPromo_RowsRemoved(object sender, DataGridViewRowsRemovedEventArgs e)

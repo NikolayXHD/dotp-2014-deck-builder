@@ -1,5 +1,5 @@
 --------------------------------------------------------------------------------
----- Riiak Shi Nal's Duels of the Planeswalkers 2014 Deck Builder v1.1.0.0 -----
+---- Riiak Shi Nal's Duels of the Planeswalkers 2014 Deck Builder v1.2.0.0 -----
 --------------------------------------------------------------------------------
 
     This is the first Deck Builder for DotP 2014 and it will ask for the DotP
@@ -37,6 +37,7 @@ Contents:
 - Promo Unlocks
 - Advanced Filtering
 - Tools: Custom Data Folder & Creating a Core Wad
+- Multi-Column Sorting
 - Notes
 - Planned Enhancements
 - Considered Features
@@ -486,6 +487,21 @@ put anything in the custom data folder.  This is NOT a substitute for manually
 building/placing cards and their images.
 
 --------------------------------------------------------------------------------
+Multi-Column Sorting:
+--------------------------------------------------------------------------------
+    In the Card, Main Deck, and Create from Existing Deck views you can sort on
+one or more columns.  To sort on a single column simply click the header of that
+column, click again to reverse it.  To sort on multiple columns click on the
+column header of the primary sort solumn, then hold "Shift" and click on the
+header of each subsequent column you want to sort by.  You can reverse a sort on
+a column in multiple column sort mode by holding "Shift" and clicking that
+column's header.  To remove a column from a multiple column sort hold "Control"
+(usually abreviated as CTRL on most keyboards) and click that column's header.
+
+Your current sort will be saved for Card and Create from Existing Deck views.
+They will also be restored when you go back to that view.
+
+--------------------------------------------------------------------------------
 Notes:
 --------------------------------------------------------------------------------
 - DotP 2014 has definitions for several deck strings including Deck tag (actual
@@ -494,6 +510,12 @@ Notes:
     in-game where the others are used so I have omitted them from the builder at
     this time.  If someone can point out where they are used (maybe I'm just
     blind) then I'll be happy to add those fields into the builder.
+
+- When upgrading from 1.1.0.0 or any previous version to v1.2.0.0 or later you
+    will need to either delete your Settings.xml file, or manually go in and
+    change the SortMode on the view columns from "Automatic" to "Programmatic"
+    for the multiple column sorting to properly take effect.  Previous sort
+    settings will not carry over from older versions.
 
 --------------------------------------------------------------------------------
 Planned Enhancements (in no particular order):
@@ -829,6 +851,26 @@ Everyone else on the forums - For keeping the community alive and fun.
 --------------------------------------------------------------------------------
 Change History:
 --------------------------------------------------------------------------------
+- v1.2.0.0
+    - Changed CardInfo class constructor to take in the actual filename of the
+        card and store it for later checks.
+    - Added ActualFilename to the CardInfo class, it is now possible to add this
+        property to the card view columns, though I have not done so by default.
+    - Added mismatched filename check to cards so the builder will now report
+        when a card has a mismatched actual filename and FILENAME tag.
+    - Fixed a rounding bug when calculating the closest MoF size.
+    - Added a status bar with the total loaded cards and the cards currently in
+        the card list (after filtering).
+    - Changes to SortableBindingList to support sorting on multiple properties.
+        Basically, I implemented IBindingListView for advanced sorting (not
+        filtering).
+    - Added the ability to sort on multiple columns (at least for those views in
+        which it is possible to sort).
+    - Moved AddViewColumn to Tools so I could use it on the Create from Existing
+        Deck window.
+    - Added 2 strings to localization files to support the new status strip at
+        the bottom of the main window.
+
 - v1.1.0.0
     - Changed default availability to locked due to DotP 2014 problem with lots
         of decks with always_available="true" set (probably within the same

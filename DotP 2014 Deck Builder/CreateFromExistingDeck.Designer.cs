@@ -55,8 +55,8 @@
 			this.dgvDecks.Size = new System.Drawing.Size(398, 176);
 			this.dgvDecks.TabIndex = 0;
 			this.dgvDecks.CellDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgvDecks_CellDoubleClick);
+			this.dgvDecks.ColumnHeaderMouseClick += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.dgvDecks_ColumnHeaderMouseClick);
 			this.dgvDecks.SelectionChanged += new System.EventHandler(this.dgvDecks_SelectionChanged);
-			this.dgvDecks.Sorted += new System.EventHandler(this.dgvDecks_Sorted);
 			this.dgvDecks.MouseClick += new System.Windows.Forms.MouseEventHandler(this.dgvDecks_MouseClick);
 			// 
 			// cmdCancel
