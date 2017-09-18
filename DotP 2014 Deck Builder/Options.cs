@@ -80,6 +80,7 @@ namespace RSN.DotP
 
 			// Initialize the Id Scheme Example
 			numChosenId_ValueChanged(null, null);
+			chkIdBlock_CheckedChanged(null, null);
 		}
 
 		private void LoadLocalizedStrings(string strLangCode = "")

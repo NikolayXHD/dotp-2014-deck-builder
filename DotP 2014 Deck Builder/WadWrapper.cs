@@ -167,28 +167,28 @@ namespace RSN.DotP
 			return set;
 		}
 
-		private HashSet<string> LoadImageList()
+		private HashSet<KeyValuePair<string, LoadImageType>> LoadImageList()
 		{
-			HashSet<string> set = new HashSet<string>();
+			HashSet<KeyValuePair<string, LoadImageType>> set = new HashSet<KeyValuePair<string, LoadImageType>>();
 
-			LoadImageListFrom(set, FindDir(m_wadArchive.Directories, CARD_IMAGES_LOCATION));
-			LoadImageListFrom(set, FindDir(m_wadArchive.Directories, DECK_IMAGES_LOCATION));
-			LoadImageListFrom(set, FindDir(m_wadArchive.Directories, AI_PERSONALITY_IMAGES_LOCATION));
-			LoadImageListFrom(set, FindDir(m_wadArchive.Directories, CARD_FRAME_IMAGES_LOCATION));
-			LoadImageListFrom(set, FindDir(m_wadArchive.Directories, TEXTURE_IMAGES_LOCATION));
-			LoadImageListFrom(set, FindDir(m_wadArchive.Directories, MANA_IMAGES_LOCATION));
+			LoadImageListFrom(set, FindDir(m_wadArchive.Directories, CARD_IMAGES_LOCATION), LoadImageType.Card);
+			LoadImageListFrom(set, FindDir(m_wadArchive.Directories, DECK_IMAGES_LOCATION), LoadImageType.Deck);
+			LoadImageListFrom(set, FindDir(m_wadArchive.Directories, AI_PERSONALITY_IMAGES_LOCATION), LoadImageType.Personality);
+			LoadImageListFrom(set, FindDir(m_wadArchive.Directories, CARD_FRAME_IMAGES_LOCATION), LoadImageType.Frame);
+			LoadImageListFrom(set, FindDir(m_wadArchive.Directories, TEXTURE_IMAGES_LOCATION), LoadImageType.Texture);
+			LoadImageListFrom(set, FindDir(m_wadArchive.Directories, MANA_IMAGES_LOCATION), LoadImageType.Mana);
 
 			return set;
 		}
 
-		private void LoadImageListFrom(HashSet<string> set, Wad.DirectoryEntry dir)
+		private void LoadImageListFrom(HashSet<KeyValuePair<string, LoadImageType>> set, Wad.DirectoryEntry dir, LoadImageType eType)
 		{
 			if (dir != null)
 			{
 				foreach (Wad.FileEntry feFile in dir.Files)
 				{
 					if (Path.GetExtension(feFile.Name).Equals(".tdx", StringComparison.OrdinalIgnoreCase))
-						set.Add(Path.GetFileNameWithoutExtension(feFile.Name).ToUpper());
+						set.Add(new KeyValuePair<string, LoadImageType>(Path.GetFileNameWithoutExtension(feFile.Name).ToUpper(), eType));
 				}
 			}
 		}
@@ -310,7 +310,9 @@ namespace RSN.DotP
 			if (m_dicCachedImages.ContainsKey(eType.ToString() + ":" + strId.ToUpper()))
 				return m_dicCachedImages[eType.ToString() + ":" + strId.ToUpper()];
 
-			if (m_hsetImages.Contains(strId.ToUpper()))
+			TdxWrapper tdx = null;
+
+			if (m_hsetImages.Contains(new KeyValuePair<string,LoadImageType>(strId, eType)))
 			{
 				// This also refreshes the directory in case the WAD changed.
 				using (FileStream fsInput = OpenWadStream())
@@ -342,7 +344,7 @@ namespace RSN.DotP
 
 					if (feFile != null)
 					{
-						TdxWrapper tdx = new TdxWrapper();
+						tdx = new TdxWrapper();
 
 						using (MemoryStream msImage = RetrieveFile(fsInput, feFile))
 						{
@@ -362,11 +364,11 @@ namespace RSN.DotP
 
 						fsInput.Close();
 						fsInput.Dispose();
-						return tdx;
 					}
 				}
 			}
-			return null;
+
+			return tdx;
 		}
 
 		private TdxWrapper LoadImageSearch(string strId)
@@ -375,7 +377,19 @@ namespace RSN.DotP
 			if (m_dicCachedImages.ContainsKey(strId.ToUpper()))
 				return m_dicCachedImages[strId.ToUpper()];
 
-			if (m_hsetImages.Contains(strId.ToUpper()))
+			TdxWrapper tdx = null;
+
+			bool bFound = false;
+			foreach (KeyValuePair<string, LoadImageType> kvp in m_hsetImages)
+			{
+				if (kvp.Key.Equals(strId, StringComparison.OrdinalIgnoreCase))
+				{
+					bFound = true;
+					break;
+				}
+			}
+
+			if (bFound)
 			{
 				// This also refreshes the directory in case the WAD changed.
 				using (FileStream fsInput = OpenWadStream())
@@ -417,7 +431,7 @@ namespace RSN.DotP
 
 					if (feFile != null)
 					{
-						TdxWrapper tdx = new TdxWrapper();
+						tdx = new TdxWrapper();
 
 						using (MemoryStream msImage = RetrieveFile(fsInput, feFile))
 						{
@@ -437,11 +451,11 @@ namespace RSN.DotP
 
 						fsInput.Close();
 						fsInput.Dispose();
-						return tdx;
 					}
 				}
 			}
-			return null;
+
+			return tdx;
 		}
 
 		private string RetrieveTextFile(FileStream fsInput, Wad.FileEntry feFile)

@@ -14,7 +14,7 @@ namespace RSN.DotP
 		private SortableBindingList<WadBase> m_lstWads;
 		private SortableBindingList<CardInfo> m_lstCards;
 		private SortableBindingList<Deck> m_lstDecks;
-		private Dictionary<string, WadBase> m_dicImages;
+		private Dictionary<KeyValuePair<string, LoadImageType>, WadBase> m_dicImages;
 		private Dictionary<string, TdxWrapper> m_dicCachedImages;
 		private Dictionary<string, Dictionary<string, string>> m_dicStringTable;
 		private Dictionary<int, string> m_dicUsedIds;
@@ -108,9 +108,28 @@ namespace RSN.DotP
 				if (m_dicCachedImages.ContainsKey(eType.ToString() + ":" + strImage))
 					return m_dicCachedImages[eType.ToString() + ":" + strImage];
 
-				if (m_dicImages.ContainsKey(strImage))
+				KeyValuePair<string, LoadImageType> kvpFound = new KeyValuePair<string,LoadImageType>(string.Empty, LoadImageType.SearchAll);
+				if (eType != LoadImageType.SearchAll)
 				{
-					TdxWrapper tdx = m_dicImages[strImage].LoadImage(strImage, eType);
+					KeyValuePair<string, LoadImageType> kvpTest = new KeyValuePair<string, LoadImageType>(strImage, eType);
+					if (m_dicImages.ContainsKey(kvpTest))
+						kvpFound = kvpTest;
+				}
+				else
+				{
+					foreach (KeyValuePair<string, LoadImageType> kvpTest in m_dicImages.Keys)
+					{
+						if (kvpTest.Key.Equals(strImage, StringComparison.OrdinalIgnoreCase))
+						{
+							kvpFound = kvpTest;
+							break;
+						}
+					}
+				}
+
+				if (kvpFound.Key.Length > 0)
+				{
+					TdxWrapper tdx = m_dicImages[kvpFound].LoadImage(strImage, eType);
 					if (Settings.GetSetting("MaintainImageCache", Settings.MAINTAIN_IMAGE_CACHE_DEFAULT))
 					{
 						m_dicCachedImages.Add(eType.ToString() + ":" + strImage, tdx);
@@ -195,7 +214,7 @@ namespace RSN.DotP
 
 				m_lstWads = new SortableBindingList<WadBase>();
 				m_lstCards = new SortableBindingList<CardInfo>();
-				m_dicImages = new Dictionary<string, WadBase>();
+				m_dicImages = new Dictionary<KeyValuePair<string, LoadImageType>, WadBase>();
 
 				// Check for packed WADs (actual WAD files) that the game might actually load.
 				IEnumerable<string> files = Directory.EnumerateFiles(m_strGameDirectory, "*.wad");
@@ -209,10 +228,10 @@ namespace RSN.DotP
 							m_lstWads.Add(wad);
 							foreach (CardInfo ciCard in wad.Cards)
 								m_lstCards.Add(ciCard);
-							foreach (string strImage in wad.Images)
+							foreach (KeyValuePair<string, LoadImageType> kvpImage in wad.Images)
 							{
-								if (!m_dicImages.ContainsKey(strImage))
-									m_dicImages.Add(strImage, wad);
+								if (!m_dicImages.ContainsKey(kvpImage))
+									m_dicImages.Add(kvpImage, wad);
 							}
 							MergeInStringTable(wad.StringTable);
 						}
@@ -237,12 +256,12 @@ namespace RSN.DotP
 								m_lstWads.Add(wad);
 								foreach (CardInfo ciCard in wad.Cards)
 									m_lstCards.Add(ciCard);
-								foreach (string strImage in wad.Images)
+								foreach (KeyValuePair<string, LoadImageType> kvpImage in wad.Images)
 								{
-									if (m_dicImages.ContainsKey(strImage))
-										m_dicImages[strImage] = wad;
+									if (m_dicImages.ContainsKey(kvpImage))
+										m_dicImages[kvpImage] = wad;
 									else
-										m_dicImages.Add(strImage, wad);
+										m_dicImages.Add(kvpImage, wad);
 								}
 								MergeInStringTable(wad.StringTable);
 							}

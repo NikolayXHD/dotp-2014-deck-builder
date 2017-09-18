@@ -1,5 +1,5 @@
 --------------------------------------------------------------------------------
----- Riiak Shi Nal's Duels of the Planeswalkers 2014 Deck Builder v1.0.0.0 -----
+---- Riiak Shi Nal's Duels of the Planeswalkers 2014 Deck Builder v1.0.1.0 -----
 --------------------------------------------------------------------------------
 
     This is the first Deck Builder for DotP 2014 and it will ask for the DotP
@@ -820,13 +820,22 @@ kevlahnota, thefiremind, and all other modders - For providing lots of mods and
 
 Mythial - Beta testing for the 2013 version of this program.
 
-BloodReyvyn & drleg3nd - Reporting bugs they found in the 2013 version.
+BloodReyvyn & drleg3nd - Reporting bugs they found in the 2013 & 2014 versions.
 
 Everyone else on the forums - For keeping the community alive and fun.
 
 --------------------------------------------------------------------------------
 Change History:
 --------------------------------------------------------------------------------
+- v1.0.1.0
+    - Fixed a bug with the individual Id Change fields being editable with the
+        use Id Block checkbox checked.
+    - Fixed an enabled bug with Export Card Previews being enabled even when a
+        card wasn't selected.
+    - Changed how the image files names were stored to eliminate a problem if
+        a mod has an image present with the same name as another image of a
+        different type (different location) in the mod.
+
 - v1.0.0.0 - Initial release for DotP 2014 version. Changes from 2013 version:
     - Deck updated with new attributes.
     - AiPersonality updated with new tags.

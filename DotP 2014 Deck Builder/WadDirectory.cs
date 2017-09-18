@@ -116,20 +116,21 @@ namespace RSN.DotP
 			return set;
 		}
 
-		private HashSet<string> LoadImageList()
+		private HashSet<KeyValuePair<string, LoadImageType>> LoadImageList()
 		{
-			HashSet<string> set = new HashSet<string>();
+			HashSet<KeyValuePair<string, LoadImageType>> set = new HashSet<KeyValuePair<string, LoadImageType>>();
 
-			LoadImageListFrom(set, m_strFullDir + CARD_IMAGES_LOCATION);
-			LoadImageListFrom(set, m_strFullDir + DECK_IMAGES_LOCATION);
-			LoadImageListFrom(set, m_strFullDir + AI_PERSONALITY_IMAGES_LOCATION);
-			LoadImageListFrom(set, m_strFullDir + CARD_FRAME_IMAGES_LOCATION);
-			LoadImageListFrom(set, m_strFullDir + TEXTURE_IMAGES_LOCATION);
+			LoadImageListFrom(set, m_strFullDir + CARD_IMAGES_LOCATION, LoadImageType.Card);
+			LoadImageListFrom(set, m_strFullDir + DECK_IMAGES_LOCATION, LoadImageType.Deck);
+			LoadImageListFrom(set, m_strFullDir + AI_PERSONALITY_IMAGES_LOCATION, LoadImageType.Personality);
+			LoadImageListFrom(set, m_strFullDir + CARD_FRAME_IMAGES_LOCATION, LoadImageType.Frame);
+			LoadImageListFrom(set, m_strFullDir + TEXTURE_IMAGES_LOCATION, LoadImageType.Texture);
+			LoadImageListFrom(set, m_strFullDir + MANA_IMAGES_LOCATION, LoadImageType.Mana);
 
 			return set;
 		}
 
-		private void LoadImageListFrom(HashSet<string> set, string strDir)
+		private void LoadImageListFrom(HashSet<KeyValuePair<string, LoadImageType>> set, string strDir, LoadImageType eType)
 		{
 			if (Directory.Exists(strDir))
 			{
@@ -137,7 +138,7 @@ namespace RSN.DotP
 				foreach (string strFile in files)
 				{
 					string strId = Path.GetFileNameWithoutExtension(strFile);
-					set.Add(strId.ToUpper());
+					set.Add(new KeyValuePair<string, LoadImageType>(strId.ToUpper(), eType));
 				}
 			}
 		}
@@ -251,44 +252,40 @@ namespace RSN.DotP
 			if (m_dicCachedImages.ContainsKey(strId.ToUpper()))
 				return m_dicCachedImages[strId.ToUpper()];
 
-			if (m_hsetImages.Contains(strId.ToUpper()))
+			string strFile = string.Empty;
+			if (File.Exists(m_strFullDir + CARD_IMAGES_LOCATION + strId + ".tdx"))
+				strFile = m_strFullDir + CARD_IMAGES_LOCATION + strId + ".tdx";
+			else if (File.Exists(m_strFullDir + DECK_IMAGES_LOCATION + strId + ".tdx"))
+				strFile = m_strFullDir + DECK_IMAGES_LOCATION + strId + ".tdx";
+			else if (File.Exists(m_strFullDir + AI_PERSONALITY_IMAGES_LOCATION + strId + ".tdx"))
+				strFile = m_strFullDir + AI_PERSONALITY_IMAGES_LOCATION + strId + ".tdx";
+			else if (File.Exists(m_strFullDir + CARD_FRAME_IMAGES_LOCATION + strId + ".tdx"))
+				strFile = m_strFullDir + CARD_FRAME_IMAGES_LOCATION + strId + ".tdx";
+			else if (File.Exists(m_strFullDir + TEXTURE_IMAGES_LOCATION + strId + ".tdx"))
+				strFile = m_strFullDir + TEXTURE_IMAGES_LOCATION + strId + ".tdx";
+			else if (File.Exists(m_strFullDir + MANA_IMAGES_LOCATION + strId + ".tdx"))
+				strFile = m_strFullDir + MANA_IMAGES_LOCATION + strId + ".tdx";
+
+			TdxWrapper tdx = null;
+
+			if (strFile.Length > 0)
 			{
-				string strFile = string.Empty;
-				if (File.Exists(m_strFullDir + CARD_IMAGES_LOCATION + strId + ".tdx"))
-					strFile = m_strFullDir + CARD_IMAGES_LOCATION + strId + ".tdx";
-				else if (File.Exists(m_strFullDir + DECK_IMAGES_LOCATION + strId + ".tdx"))
-					strFile = m_strFullDir + DECK_IMAGES_LOCATION + strId + ".tdx";
-				else if (File.Exists(m_strFullDir + AI_PERSONALITY_IMAGES_LOCATION + strId + ".tdx"))
-					strFile = m_strFullDir + AI_PERSONALITY_IMAGES_LOCATION + strId + ".tdx";
-				else if (File.Exists(m_strFullDir + CARD_FRAME_IMAGES_LOCATION + strId + ".tdx"))
-					strFile = m_strFullDir + CARD_FRAME_IMAGES_LOCATION + strId + ".tdx";
-				else if (File.Exists(m_strFullDir + TEXTURE_IMAGES_LOCATION + strId + ".tdx"))
-					strFile = m_strFullDir + TEXTURE_IMAGES_LOCATION + strId + ".tdx";
-				else if (File.Exists(m_strFullDir + MANA_IMAGES_LOCATION + strId + ".tdx"))
-					strFile = m_strFullDir + MANA_IMAGES_LOCATION + strId + ".tdx";
-
-				TdxWrapper tdx = null;
-
-				if (strFile.Length > 0)
+				tdx = new TdxWrapper();
+				try
 				{
-					tdx = new TdxWrapper();
-					try
-					{
-						tdx.LoadTdx(strFile);
-						// Cache the image to avoid having to load it multiple times.
-						if (Settings.GetSetting("MaintainImageCache", Settings.MAINTAIN_IMAGE_CACHE_DEFAULT)) 
-							m_dicCachedImages.Add(strId.ToUpper(), tdx);
-					}
-					catch (Exception e)
-					{
-						tdx = null;
-						Settings.ReportError(e, ErrorPriority.Low, "Could not load: " + strFile);
-					}
+					tdx.LoadTdx(strFile);
+					// Cache the image to avoid having to load it multiple times.
+					if (Settings.GetSetting("MaintainImageCache", Settings.MAINTAIN_IMAGE_CACHE_DEFAULT)) 
+						m_dicCachedImages.Add(strId.ToUpper(), tdx);
 				}
-
-				return tdx;
+				catch (Exception e)
+				{
+					tdx = null;
+					Settings.ReportError(e, ErrorPriority.Low, "Could not load: " + strFile);
+				}
 			}
-			return null;
+
+			return tdx;
 		}
 
 		public override void LoadPersonalities(GameDirectory gdData)

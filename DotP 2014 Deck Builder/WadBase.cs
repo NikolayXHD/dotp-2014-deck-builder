@@ -34,7 +34,7 @@ namespace RSN.DotP
 		protected const string UNLOCKS_LOCATION = @"DATA_ALL_PLATFORMS\UNLOCKS\";
 
 		protected string m_strName;
-		protected HashSet<string> m_hsetImages;
+		protected HashSet<KeyValuePair<string, LoadImageType>> m_hsetImages;
 		protected Dictionary<string, TdxWrapper> m_dicCachedImages;
 		protected Dictionary<string, Dictionary<string, string>> m_dicStringTable;
 		protected SortableBindingList<CardInfo> m_lstCards;
@@ -62,7 +62,7 @@ namespace RSN.DotP
 			get { return m_lstCards; }
 		}
 
-		public HashSet<string> Images
+		public HashSet<KeyValuePair<string, LoadImageType>> Images
 		{
 			get { return m_hsetImages; }
 		}

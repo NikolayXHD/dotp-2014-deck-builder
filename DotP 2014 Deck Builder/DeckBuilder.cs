@@ -1487,11 +1487,13 @@ namespace RSN.DotP
 					m_ciContextCard = (CardInfo)dgvCards.Rows[htiInfo.RowIndex].DataBoundItem;
 					cmnuiViewCard.Enabled = true;
 					cmnuiDecksUsedIn.Enabled = true;
+					cmnuiExportPreviews.Enabled = true;
 				}
 				else
 				{
 					cmnuiViewCard.Enabled = false;
 					cmnuiDecksUsedIn.Enabled = false;
+					cmnuiExportPreviews.Enabled = false;
 				}
 
 				// Always disable remove card for the master card list.
@@ -1516,12 +1518,14 @@ namespace RSN.DotP
 					cmnuiViewCard.Enabled = true;
 					cmnuiDecksUsedIn.Enabled = true;
 					cmnuiRemoveCard.Enabled = true;
+					cmnuiExportPreviews.Enabled = true;
 				}
 				else
 				{
 					cmnuiViewCard.Enabled = false;
 					cmnuiDecksUsedIn.Enabled = false;
 					cmnuiRemoveCard.Enabled = false;
+					cmnuiExportPreviews.Enabled = false;
 				}
 
 				// Information for remove card.
@@ -1547,12 +1551,14 @@ namespace RSN.DotP
 					cmnuiViewCard.Enabled = true;
 					cmnuiDecksUsedIn.Enabled = true;
 					cmnuiRemoveCard.Enabled = true;
+					cmnuiExportPreviews.Enabled = true;
 				}
 				else
 				{
 					cmnuiViewCard.Enabled = false;
 					cmnuiDecksUsedIn.Enabled = false;
 					cmnuiRemoveCard.Enabled = false;
+					cmnuiExportPreviews.Enabled = false;
 				}
 
 				// Information for remove card.
@@ -1578,12 +1584,14 @@ namespace RSN.DotP
 					cmnuiViewCard.Enabled = true;
 					cmnuiDecksUsedIn.Enabled = true;
 					cmnuiRemoveCard.Enabled = true;
+					cmnuiExportPreviews.Enabled = true;
 				}
 				else
 				{
 					cmnuiViewCard.Enabled = false;
 					cmnuiDecksUsedIn.Enabled = false;
 					cmnuiRemoveCard.Enabled = false;
+					cmnuiExportPreviews.Enabled = false;
 				}
 
 				// Information for remove card.
