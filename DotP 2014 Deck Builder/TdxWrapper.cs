@@ -38,20 +38,20 @@ namespace RSN.DotP
 			m_bmpImage = ConvertTdxToBitmap();
 		}
 
-		public void LoadImage(string strFile, Tdx.D3DFormat eFormat = Tdx.D3DFormat.A8R8G8B8)
+		public void LoadImage(string strFile, Tdx.D3DFormat eFormat = Tdx.D3DFormat.A8R8G8B8, bool bGenerateMipMaps = true)
 		{
 			if (File.Exists(strFile))
 			{
 				m_strName = Path.GetFileNameWithoutExtension(strFile);
 				m_bmpImage = new Bitmap(strFile);
-				m_tdxImage = ConvertBitmapToTdx(eFormat);
+				m_tdxImage = ConvertBitmapToTdx(eFormat, bGenerateMipMaps);
 			}
 		}
 
-		public void LoadImage(Image imgImage, Tdx.D3DFormat eFormat = Tdx.D3DFormat.A8R8G8B8)
+		public void LoadImage(Image imgImage, Tdx.D3DFormat eFormat = Tdx.D3DFormat.A8R8G8B8, bool bGenerateMipMaps = true)
 		{
 			m_bmpImage = new Bitmap(imgImage);
-			m_tdxImage = ConvertBitmapToTdx(eFormat);
+			m_tdxImage = ConvertBitmapToTdx(eFormat, bGenerateMipMaps);
 		}
 
 		public string Name
@@ -144,7 +144,7 @@ namespace RSN.DotP
 			return bitmap;
 		}
 
-		private TdxFile ConvertBitmapToTdx(Tdx.D3DFormat eFormat)
+		private TdxFile ConvertBitmapToTdx(Tdx.D3DFormat eFormat, bool bGenerateMipMaps)
 		{
 			// We want nice colour conversion.
 			Native.Flags eFlags = Native.Flags.ColourIterativeClusterFit;
@@ -199,25 +199,63 @@ namespace RSN.DotP
 			tdx.Flags = 0;
 			tdx.Format = eFormat;
 
-			var mip = new Tdx.Mipmap();
-			mip.Width = tdx.Width;
-			mip.Height = tdx.Height;
+			// Add our main image (top level).
+			AddMipMap(tdx, bitmap, tdx.Width, tdx.Height, eFlags, bCompressing);
+
+			if ((bCompressing) && (bGenerateMipMaps))
+			{
+				// Add the lower levels.
+				ushort usLevelWidth = tdx.Width;
+				ushort usLevelHeight = tdx.Height;
+				while ((usLevelWidth > 1) || (usLevelHeight > 1))
+				{
+					// Reduce size and keep to MoF sizing.
+					usLevelWidth /= 2;
+					usLevelWidth -= (ushort)(usLevelWidth % 2);
+					if (usLevelWidth < 1)
+						usLevelWidth = 1;
+					usLevelHeight /= 2;
+					usLevelHeight -= (ushort)(usLevelHeight % 2);
+					if (usLevelHeight < 1)
+						usLevelHeight = 1;
+					AddMipMap(tdx, bitmap, usLevelWidth, usLevelHeight, eFlags, bCompressing);
+				}
+			}
+
+			return tdx;
+		}
+
+		private void AddMipMap(TdxFile tdx, Bitmap bmpImage, ushort usWidth, ushort usHeight, Native.Flags eFlags, bool bCompress)
+		{
+			Tdx.Mipmap mip = new Tdx.Mipmap();
+			mip.Width = usWidth;
+			mip.Height = usHeight;
 
 			int stride = mip.Width * 4;
 
-			Rectangle area = new Rectangle(0, 0, bitmap.Width, bitmap.Height);
+			if ((bmpImage.Width != usWidth) || (bmpImage.Height != usHeight))
+			{
+				Size szNewSize = new Size(usWidth, usHeight);
+				Bitmap bmpNew = new Bitmap(szNewSize.Width, szNewSize.Height);
+				Graphics grfx = Graphics.FromImage(bmpNew);
+				grfx.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.HighQualityBicubic;
+				grfx.DrawImage(bmpImage, 0, 0, szNewSize.Width, szNewSize.Height);
+				bmpImage = bmpNew;
+			}
+
+			Rectangle area = new Rectangle(0, 0, usWidth, usHeight);
 			byte[] buffer = new byte[mip.Height * stride];
 
-			BitmapData bitmapData = bitmap.LockBits(area, ImageLockMode.ReadOnly, PixelFormat.Format32bppArgb);
+			BitmapData bitmapData = bmpImage.LockBits(area, ImageLockMode.ReadOnly, PixelFormat.Format32bppArgb);
 			IntPtr scan = bitmapData.Scan0;
 			for (int y = 0, o = 0; y < mip.Height; y++, o += stride)
 			{
 				Marshal.Copy(scan, buffer, o, stride);
 				scan += bitmapData.Stride;
 			}
-			bitmap.UnlockBits(bitmapData);
+			bmpImage.UnlockBits(bitmapData);
 
-			if (bCompressing)
+			if (bCompress)
 			{
 				for (uint i = 0; i < mip.Width * mip.Height * 4; i += 4)
 				{
@@ -226,15 +264,13 @@ namespace RSN.DotP
 					buffer[i + 0] = buffer[i + 2];
 					buffer[i + 2] = r;
 				}
-				int nNewImageSize = tdx.GetMipSize(tdx.Format, tdx.Width, tdx.Height);
-				mip.Data = Native.CompressImage(buffer, tdx.Width, tdx.Height, eFlags, nNewImageSize);
+				int nNewImageSize = tdx.GetMipSize(tdx.Format, usWidth, usHeight);
+				mip.Data = Native.CompressImage(buffer, usWidth, usHeight, eFlags, nNewImageSize);
 			}
 			else
 				mip.Data = buffer;
 
 			tdx.Mipmaps.Add(mip);
-
-			return tdx;
 		}
 
 		private Bitmap MakeBitmapFromDXT(uint width, uint height, byte[] buffer, bool keepAlpha)

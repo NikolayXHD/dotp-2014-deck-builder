@@ -501,7 +501,7 @@
 			this.chkMultiColoured.Name = "chkMultiColoured";
 			this.chkMultiColoured.Size = new System.Drawing.Size(93, 17);
 			this.chkMultiColoured.TabIndex = 6;
-			this.chkMultiColoured.Tag = "MANA_MULTICOLOURED";
+			this.chkMultiColoured.Tag = "MANA_MULTICOLOUR";
 			this.chkMultiColoured.Text = "Multi-Coloured";
 			this.chkMultiColoured.UseVisualStyleBackColor = true;
 			// 

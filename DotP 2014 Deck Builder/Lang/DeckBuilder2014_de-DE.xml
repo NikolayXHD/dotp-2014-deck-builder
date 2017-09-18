@@ -6,7 +6,7 @@
 			untranslated, so anyone who completes this translation and corrects the
 			errors (if any) should remove my name and credit themselves. -->
 	<STRING key="LOCALIZED_BY"><![CDATA[Localized by Riiak Shi Nal - 2013]]></STRING>
-	<STRING key="LOCALIZATION_VERSION"><![CDATA[Deutsch v1.0.0.0]]></STRING>
+	<STRING key="LOCALIZATION_VERSION"><![CDATA[Deutsch v1.0.0.1]]></STRING>
 	<!-- Strings for Main Window -->
 	<STRING key="MISSING_DOTP_DIRECTORY_TITLE"><![CDATA[DotP 2014 Directory not set.]]></STRING>
 	<STRING key="MISSING_DOTP_DIRECTORY_MESSAGE"><![CDATA[The Duels of the Planeswalkers 2014 game directory has not yet been set.  Please do so now.]]></STRING>
@@ -186,6 +186,7 @@ Please give one before applying.]]></STRING>
 	<STRING key="ID_SCHEME_EXAMPLE"><![CDATA[Id Scheme Example:]]></STRING>
 	<STRING key="INVALID"><![CDATA[(Invalid)]]></STRING>
 	<STRING key="PRE_SHUFFLE_ON_EXPORT"><![CDATA[Pre-Shuffle Deck on Export]]></STRING>
+	<STRING key="INCLUDE_MIPMAPS_TDX"><![CDATA[Include MipMaps in Compressed TDX Images]]></STRING>
 	<!-- Strings for Filter Settings window -->
 	<STRING key="FILTER_SETTINGS"><![CDATA[Filter Settings ...]]></STRING>
 	<STRING key="CARD_NAME"><![CDATA[Card Name]]></STRING>

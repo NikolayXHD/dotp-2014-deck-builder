@@ -70,6 +70,7 @@ namespace RSN.DotP
 
 			chkBasicScreenChecks.Checked = Settings.GetSetting("PerformBasicScreenChecks", true);
 			chkPreShuffleOnExport.Checked = Settings.GetSetting("PreShuffleOnExport", false);
+			chkIncludeMipMaps.Checked = Settings.GetSetting("IncludeMipMaps", true);
 
 			if (txtGameDir.Text.Length == 0)
 				cmdCancel.Enabled = false;
@@ -111,6 +112,7 @@ namespace RSN.DotP
 			Tools.ResizeRelatedControl(cboLanguage, lblLanguage);
 			chkBasicScreenChecks.Text = lsStrings[(string)chkBasicScreenChecks.Tag];
 			chkPreShuffleOnExport.Text = lsStrings[(string)chkPreShuffleOnExport.Tag];
+			chkIncludeMipMaps.Text = lsStrings[(string)chkIncludeMipMaps.Tag];
 			cmdApply.Text = lsStrings[(string)cmdApply.Tag];
 			cmdCancel.Text = lsStrings[(string)cmdCancel.Tag];
 
@@ -182,6 +184,7 @@ namespace RSN.DotP
 			m_frmMain.LoadLocalizedStrings();
 			Settings.SaveSetting("PerformBasicScreenChecks", chkBasicScreenChecks.Checked);
 			Settings.SaveSetting("PreShuffleOnExport", chkPreShuffleOnExport.Checked);
+			Settings.SaveSetting("IncludeMipMaps", chkIncludeMipMaps.Checked);
 
 			// Id Scheme Options
 			Settings.SaveSerializableSetting("CurrentIdScheme", m_isScheme);

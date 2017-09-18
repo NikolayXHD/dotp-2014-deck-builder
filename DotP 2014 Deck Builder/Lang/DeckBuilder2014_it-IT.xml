@@ -187,6 +187,7 @@ Si prega di impostarne una prima di applicare.]]></STRING>
 	<STRING key="ID_SCHEME_EXAMPLE"><![CDATA[Esempio dello schema ID:]]></STRING>
 	<STRING key="INVALID"><![CDATA[(Non valido)]]></STRING>
 	<STRING key="PRE_SHUFFLE_ON_EXPORT"><![CDATA[Pre-Shuffle Deck on Export]]></STRING>
+	<STRING key="INCLUDE_MIPMAPS_TDX"><![CDATA[Include MipMaps in Compressed TDX Images]]></STRING>
 	<!-- Strings for Filter Settings window -->
 	<STRING key="FILTER_SETTINGS"><![CDATA[Impostazioni filtro...]]></STRING>
 	<STRING key="CARD_NAME"><![CDATA[Nome carta]]></STRING>

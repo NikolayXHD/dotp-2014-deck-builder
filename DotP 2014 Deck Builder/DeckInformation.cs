@@ -521,7 +521,7 @@ namespace RSN.DotP
 			if (strFilename.Length > 0)
 			{
 				TdxWrapper twImage = new TdxWrapper();
-				twImage.LoadImage(picDeckBox.Image, Gibbed.Duels.FileFormats.Tdx.D3DFormat.DXT5);
+				twImage.LoadImage(picDeckBox.Image, Gibbed.Duels.FileFormats.Tdx.D3DFormat.DXT5, Settings.GetSetting("IncludeMipMaps", true));
 				twImage.Save(strFilename);
 				twImage.Dispose();
 			}

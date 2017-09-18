@@ -568,9 +568,12 @@ namespace RSN.DotP
 				szReturn.Height = (int)(szReturn.Width * dRatio);
 				if (((szReturn.Width % 4) == 0) && ((szReturn.Height % 4) == 0))
 					break;
-				// No luck enlarging so lets try reducing.
-				szReturn.Width = nWidthMof - (4 * nDistance);
-				szReturn.Height = (int)(szReturn.Width * dRatio);
+				// No luck enlarging so lets try reducing (as long as it would remain above 0.
+				if ((nWidthMof - (4 * nDistance)) > 0)
+				{
+					szReturn.Width = nWidthMof - (4 * nDistance);
+					szReturn.Height = (int)(szReturn.Width * dRatio);
+				}
 				// loop will do our checking for us so no need for an extra if.
 			}
 

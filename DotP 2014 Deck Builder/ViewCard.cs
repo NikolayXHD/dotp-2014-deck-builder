@@ -153,7 +153,7 @@ namespace RSN.DotP
 				{
 					// The card preview we show here does not have any transparency so we have no problems saving as DXT1
 					TdxWrapper twImage = new TdxWrapper();
-					twImage.LoadImage(picCard.Image, Gibbed.Duels.FileFormats.Tdx.D3DFormat.DXT1);
+					twImage.LoadImage(picCard.Image, Gibbed.Duels.FileFormats.Tdx.D3DFormat.DXT1, Settings.GetSetting("IncludeMipMaps", true));
 					twImage.Save(strFilename);
 					twImage.Dispose();
 				}

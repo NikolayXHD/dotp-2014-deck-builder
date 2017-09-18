@@ -29,6 +29,7 @@
 		private void InitializeComponent()
 		{
 			this.gbGeneral = new System.Windows.Forms.GroupBox();
+			this.chkIncludeMipMaps = new System.Windows.Forms.CheckBox();
 			this.chkPreShuffleOnExport = new System.Windows.Forms.CheckBox();
 			this.chkBasicScreenChecks = new System.Windows.Forms.CheckBox();
 			this.cboLanguage = new System.Windows.Forms.ComboBox();
@@ -50,6 +51,8 @@
 			this.numDeckChange = new System.Windows.Forms.NumericUpDown();
 			this.lblLandPoolChange = new System.Windows.Forms.Label();
 			this.gbIdScheme = new System.Windows.Forms.GroupBox();
+			this.chkIdBlock = new System.Windows.Forms.CheckBox();
+			this.numIdBlock = new System.Windows.Forms.NumericUpDown();
 			this.numChosenId = new System.Windows.Forms.NumericUpDown();
 			this.lblPromoUnlockId = new System.Windows.Forms.Label();
 			this.lblRegularUnlockId = new System.Windows.Forms.Label();
@@ -61,23 +64,22 @@
 			this.numRegularUnlockChange = new System.Windows.Forms.NumericUpDown();
 			this.lblRegularUnlockChange = new System.Windows.Forms.Label();
 			this.numLandPoolChange = new System.Windows.Forms.NumericUpDown();
-			this.numIdBlock = new System.Windows.Forms.NumericUpDown();
-			this.chkIdBlock = new System.Windows.Forms.CheckBox();
 			this.gbGeneral.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.numMinDigits)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.numMinId)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.numMaxId)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.numDeckChange)).BeginInit();
 			this.gbIdScheme.SuspendLayout();
+			((System.ComponentModel.ISupportInitialize)(this.numIdBlock)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.numChosenId)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.numPromoUnlockChange)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.numRegularUnlockChange)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.numLandPoolChange)).BeginInit();
-			((System.ComponentModel.ISupportInitialize)(this.numIdBlock)).BeginInit();
 			this.SuspendLayout();
 			// 
 			// gbGeneral
 			// 
+			this.gbGeneral.Controls.Add(this.chkIncludeMipMaps);
 			this.gbGeneral.Controls.Add(this.chkPreShuffleOnExport);
 			this.gbGeneral.Controls.Add(this.chkBasicScreenChecks);
 			this.gbGeneral.Controls.Add(this.cboLanguage);
@@ -87,11 +89,22 @@
 			this.gbGeneral.Controls.Add(this.lblGameDir);
 			this.gbGeneral.Location = new System.Drawing.Point(12, 12);
 			this.gbGeneral.Name = "gbGeneral";
-			this.gbGeneral.Size = new System.Drawing.Size(398, 131);
+			this.gbGeneral.Size = new System.Drawing.Size(398, 160);
 			this.gbGeneral.TabIndex = 0;
 			this.gbGeneral.TabStop = false;
 			this.gbGeneral.Tag = "GENERAL_OPTIONS";
 			this.gbGeneral.Text = "General Options";
+			// 
+			// chkIncludeMipMaps
+			// 
+			this.chkIncludeMipMaps.AutoSize = true;
+			this.chkIncludeMipMaps.Location = new System.Drawing.Point(6, 131);
+			this.chkIncludeMipMaps.Name = "chkIncludeMipMaps";
+			this.chkIncludeMipMaps.Size = new System.Drawing.Size(241, 17);
+			this.chkIncludeMipMaps.TabIndex = 5;
+			this.chkIncludeMipMaps.Tag = "INCLUDE_MIPMAPS_TDX";
+			this.chkIncludeMipMaps.Text = "Include MipMaps in Compressed TDX Images";
+			this.chkIncludeMipMaps.UseVisualStyleBackColor = true;
 			// 
 			// chkPreShuffleOnExport
 			// 
@@ -171,7 +184,7 @@
 			// cmdApply
 			// 
 			this.cmdApply.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-			this.cmdApply.Location = new System.Drawing.Point(214, 471);
+			this.cmdApply.Location = new System.Drawing.Point(214, 500);
 			this.cmdApply.Name = "cmdApply";
 			this.cmdApply.Size = new System.Drawing.Size(95, 21);
 			this.cmdApply.TabIndex = 2;
@@ -183,7 +196,7 @@
 			// cmdCancel
 			// 
 			this.cmdCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-			this.cmdCancel.Location = new System.Drawing.Point(315, 471);
+			this.cmdCancel.Location = new System.Drawing.Point(315, 500);
 			this.cmdCancel.Name = "cmdCancel";
 			this.cmdCancel.Size = new System.Drawing.Size(95, 21);
 			this.cmdCancel.TabIndex = 3;
@@ -364,13 +377,44 @@
 			this.gbIdScheme.Controls.Add(this.lblMinDigits);
 			this.gbIdScheme.Controls.Add(this.cboSchemeType);
 			this.gbIdScheme.Controls.Add(this.lblSchemeType);
-			this.gbIdScheme.Location = new System.Drawing.Point(12, 149);
+			this.gbIdScheme.Location = new System.Drawing.Point(12, 178);
 			this.gbIdScheme.Name = "gbIdScheme";
 			this.gbIdScheme.Size = new System.Drawing.Size(398, 316);
 			this.gbIdScheme.TabIndex = 1;
 			this.gbIdScheme.TabStop = false;
 			this.gbIdScheme.Tag = "ID_SCHEME";
 			this.gbIdScheme.Text = "Id Numbering Scheme";
+			// 
+			// chkIdBlock
+			// 
+			this.chkIdBlock.AutoSize = true;
+			this.chkIdBlock.Location = new System.Drawing.Point(9, 138);
+			this.chkIdBlock.Name = "chkIdBlock";
+			this.chkIdBlock.Size = new System.Drawing.Size(90, 17);
+			this.chkIdBlock.TabIndex = 4;
+			this.chkIdBlock.Tag = "USE_ID_BLOCK";
+			this.chkIdBlock.Text = "Use Id Block:";
+			this.chkIdBlock.UseVisualStyleBackColor = true;
+			this.chkIdBlock.CheckedChanged += new System.EventHandler(this.chkIdBlock_CheckedChanged);
+			// 
+			// numIdBlock
+			// 
+			this.numIdBlock.Location = new System.Drawing.Point(105, 137);
+			this.numIdBlock.Maximum = new decimal(new int[] {
+            999999900,
+            0,
+            0,
+            0});
+			this.numIdBlock.Name = "numIdBlock";
+			this.numIdBlock.Size = new System.Drawing.Size(287, 20);
+			this.numIdBlock.TabIndex = 5;
+			this.numIdBlock.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+			this.numIdBlock.Value = new decimal(new int[] {
+            1000,
+            0,
+            0,
+            0});
+			this.numIdBlock.ValueChanged += new System.EventHandler(this.numIdBlock_ValueChanged);
 			// 
 			// numChosenId
 			// 
@@ -517,42 +561,11 @@
             0});
 			this.numLandPoolChange.ValueChanged += new System.EventHandler(this.numLandPoolChange_ValueChanged);
 			// 
-			// numIdBlock
-			// 
-			this.numIdBlock.Location = new System.Drawing.Point(105, 137);
-			this.numIdBlock.Maximum = new decimal(new int[] {
-            999999900,
-            0,
-            0,
-            0});
-			this.numIdBlock.Name = "numIdBlock";
-			this.numIdBlock.Size = new System.Drawing.Size(287, 20);
-			this.numIdBlock.TabIndex = 5;
-			this.numIdBlock.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-			this.numIdBlock.Value = new decimal(new int[] {
-            1000,
-            0,
-            0,
-            0});
-			this.numIdBlock.ValueChanged += new System.EventHandler(this.numIdBlock_ValueChanged);
-			// 
-			// chkIdBlock
-			// 
-			this.chkIdBlock.AutoSize = true;
-			this.chkIdBlock.Location = new System.Drawing.Point(9, 138);
-			this.chkIdBlock.Name = "chkIdBlock";
-			this.chkIdBlock.Size = new System.Drawing.Size(90, 17);
-			this.chkIdBlock.TabIndex = 4;
-			this.chkIdBlock.Tag = "USE_ID_BLOCK";
-			this.chkIdBlock.Text = "Use Id Block:";
-			this.chkIdBlock.UseVisualStyleBackColor = true;
-			this.chkIdBlock.CheckedChanged += new System.EventHandler(this.chkIdBlock_CheckedChanged);
-			// 
 			// Options
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			this.ClientSize = new System.Drawing.Size(422, 504);
+			this.ClientSize = new System.Drawing.Size(422, 533);
 			this.ControlBox = false;
 			this.Controls.Add(this.gbIdScheme);
 			this.Controls.Add(this.cmdCancel);
@@ -573,11 +586,11 @@
 			((System.ComponentModel.ISupportInitialize)(this.numDeckChange)).EndInit();
 			this.gbIdScheme.ResumeLayout(false);
 			this.gbIdScheme.PerformLayout();
+			((System.ComponentModel.ISupportInitialize)(this.numIdBlock)).EndInit();
 			((System.ComponentModel.ISupportInitialize)(this.numChosenId)).EndInit();
 			((System.ComponentModel.ISupportInitialize)(this.numPromoUnlockChange)).EndInit();
 			((System.ComponentModel.ISupportInitialize)(this.numRegularUnlockChange)).EndInit();
 			((System.ComponentModel.ISupportInitialize)(this.numLandPoolChange)).EndInit();
-			((System.ComponentModel.ISupportInitialize)(this.numIdBlock)).EndInit();
 			this.ResumeLayout(false);
 
 		}
@@ -619,5 +632,6 @@
 		private System.Windows.Forms.CheckBox chkPreShuffleOnExport;
 		private System.Windows.Forms.CheckBox chkIdBlock;
 		private System.Windows.Forms.NumericUpDown numIdBlock;
+		private System.Windows.Forms.CheckBox chkIncludeMipMaps;
 	}
 }

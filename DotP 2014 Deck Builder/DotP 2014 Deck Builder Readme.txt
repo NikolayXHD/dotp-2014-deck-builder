@@ -1,5 +1,5 @@
 --------------------------------------------------------------------------------
----- Riiak Shi Nal's Duels of the Planeswalkers 2014 Deck Builder v1.0.1.0 -----
+---- Riiak Shi Nal's Duels of the Planeswalkers 2014 Deck Builder v1.0.2.0 -----
 --------------------------------------------------------------------------------
 
     This is the first Deck Builder for DotP 2014 and it will ask for the DotP
@@ -827,6 +827,14 @@ Everyone else on the forums - For keeping the community alive and fun.
 --------------------------------------------------------------------------------
 Change History:
 --------------------------------------------------------------------------------
+- v1.0.2.0
+    - Added creation of MipMap chain to the compression of TDX images (enabled
+        by default).
+    - Added Option of whether to generate MipMaps to the Options window.
+    - Fixed a language display bug on the Basic Filters window (Multi-Coloured
+        was not showing properly).
+    - Added 1 string to localization files to support the new MipMap option.
+
 - v1.0.1.0
     - Fixed a bug with the individual Id Change fields being editable with the
         use Id Block checkbox checked.

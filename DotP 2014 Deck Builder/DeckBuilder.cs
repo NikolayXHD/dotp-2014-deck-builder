@@ -1252,9 +1252,9 @@ namespace RSN.DotP
 				//	transparency so we'll compress to DXT5.
 				twImage = new TdxWrapper();
 				if (bHasTransparency)
-					twImage.LoadImage(bmpImage, Gibbed.Duels.FileFormats.Tdx.D3DFormat.DXT5);
+					twImage.LoadImage(bmpImage, Gibbed.Duels.FileFormats.Tdx.D3DFormat.DXT5, Settings.GetSetting("IncludeMipMaps", true));
 				else
-					twImage.LoadImage(bmpImage, Gibbed.Duels.FileFormats.Tdx.D3DFormat.DXT1);
+					twImage.LoadImage(bmpImage, Gibbed.Duels.FileFormats.Tdx.D3DFormat.DXT1, Settings.GetSetting("IncludeMipMaps", true));
 			}
 
 			return twImage;
@@ -1271,7 +1271,7 @@ namespace RSN.DotP
 				//	no need to worry about that.  Since our Card Border will add
 				//	transparency to have the nice rounded look we need to use DXT5.
 				twPreview = new TdxWrapper();
-				twPreview.LoadImage(bmpPreview, Gibbed.Duels.FileFormats.Tdx.D3DFormat.DXT5);
+				twPreview.LoadImage(bmpPreview, Gibbed.Duels.FileFormats.Tdx.D3DFormat.DXT5, Settings.GetSetting("IncludeMipMaps", true));
 			}
 
 			return twPreview;
@@ -1795,7 +1795,7 @@ namespace RSN.DotP
 				{
 					// The card preview we show here does not have any transparency so we have no problems saving as DXT1
 					TdxWrapper twImage = new TdxWrapper();
-					twImage.LoadImage(picFrame.Image, Gibbed.Duels.FileFormats.Tdx.D3DFormat.DXT1);
+					twImage.LoadImage(picFrame.Image, Gibbed.Duels.FileFormats.Tdx.D3DFormat.DXT1, Settings.GetSetting("IncludeMipMaps", true));
 					twImage.Save(strFilename);
 					twImage.Dispose();
 				}

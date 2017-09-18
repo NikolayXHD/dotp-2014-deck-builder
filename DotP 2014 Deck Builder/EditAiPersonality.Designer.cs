@@ -66,11 +66,11 @@
 			this.cmdApply = new System.Windows.Forms.Button();
 			this.scFullImage = new System.Windows.Forms.SplitContainer();
 			this.rbUseThisImageFull = new System.Windows.Forms.RadioButton();
+			this.rbLoadImageFull = new System.Windows.Forms.RadioButton();
 			this.cmnuPictures = new System.Windows.Forms.ContextMenuStrip(this.components);
 			this.cmnuiExport = new System.Windows.Forms.ToolStripMenuItem();
 			this.cmnuiExportPng = new System.Windows.Forms.ToolStripMenuItem();
 			this.cmnuiExportTdx = new System.Windows.Forms.ToolStripMenuItem();
-			this.rbLoadImageFull = new System.Windows.Forms.RadioButton();
 			((System.ComponentModel.ISupportInitialize)(this.picPersonalitySmall)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.picPersonalityLarge)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.scSmallLarge)).BeginInit();
@@ -705,6 +705,18 @@
 			this.rbUseThisImageFull.UseVisualStyleBackColor = true;
 			this.rbUseThisImageFull.CheckedChanged += new System.EventHandler(this.rbUseThisImageFull_CheckedChanged);
 			// 
+			// rbLoadImageFull
+			// 
+			this.rbLoadImageFull.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.rbLoadImageFull.Location = new System.Drawing.Point(0, 0);
+			this.rbLoadImageFull.Name = "rbLoadImageFull";
+			this.rbLoadImageFull.Size = new System.Drawing.Size(153, 21);
+			this.rbLoadImageFull.TabIndex = 2;
+			this.rbLoadImageFull.Tag = "LOAD_IMAGE";
+			this.rbLoadImageFull.Text = "Load an image";
+			this.rbLoadImageFull.UseVisualStyleBackColor = true;
+			this.rbLoadImageFull.CheckedChanged += new System.EventHandler(this.rbLoadImageFull_CheckedChanged);
+			// 
 			// cmnuPictures
 			// 
 			this.cmnuPictures.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
@@ -735,18 +747,6 @@
 			this.cmnuiExportTdx.Size = new System.Drawing.Size(110, 22);
 			this.cmnuiExportTdx.Text = "&TDX ...";
 			this.cmnuiExportTdx.Click += new System.EventHandler(this.cmnuiExportTdx_Click);
-			// 
-			// rbLoadImageFull
-			// 
-			this.rbLoadImageFull.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.rbLoadImageFull.Location = new System.Drawing.Point(0, 0);
-			this.rbLoadImageFull.Name = "rbLoadImageFull";
-			this.rbLoadImageFull.Size = new System.Drawing.Size(153, 21);
-			this.rbLoadImageFull.TabIndex = 2;
-			this.rbLoadImageFull.Tag = "LOAD_IMAGE";
-			this.rbLoadImageFull.Text = "Load an image";
-			this.rbLoadImageFull.UseVisualStyleBackColor = true;
-			this.rbLoadImageFull.CheckedChanged += new System.EventHandler(this.rbLoadImageFull_CheckedChanged);
 			// 
 			// EditAiPersonality
 			// 

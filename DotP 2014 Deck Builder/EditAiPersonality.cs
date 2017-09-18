@@ -737,7 +737,10 @@ namespace RSN.DotP
 				if (strFilename.Length > 0)
 				{
 					TdxWrapper twImage = new TdxWrapper();
-					twImage.LoadImage(m_picContextPicBox.Image, Gibbed.Duels.FileFormats.Tdx.D3DFormat.DXT5);
+					if (m_picContextPicBox == picPersonalityFull)
+						twImage.LoadImage(m_picContextPicBox.Image, Gibbed.Duels.FileFormats.Tdx.D3DFormat.DXT1, Settings.GetSetting("IncludeMipMaps", true));
+					else
+						twImage.LoadImage(m_picContextPicBox.Image, Gibbed.Duels.FileFormats.Tdx.D3DFormat.DXT5, Settings.GetSetting("IncludeMipMaps", true));
 					twImage.Save(strFilename);
 					twImage.Dispose();
 				}
