@@ -221,6 +221,7 @@ Por favor escolha um antes de aplicar.]]></STRING>
 	<STRING key="RARITY_UNCOMMON"><![CDATA[Incomum]]></STRING>
 	<STRING key="RARITY_RARE"><![CDATA[Rara]]></STRING>
 	<STRING key="RARITY_MYTHIC"><![CDATA[Mítica Rara]]></STRING>
+	<STRING key="RARITY_SPECIAL"><![CDATA[Special]]></STRING>
 	<STRING key="ABILITIES"><![CDATA[Habilidades]]></STRING>
 	<STRING key="CHECK_ABILITIES"><![CDATA[Verificar Habilidades]]></STRING>
 	<STRING key="CHECK_GRANTED_ABILITIES"><![CDATA[Verificar Habilidades Garantidas]]></STRING>
@@ -628,4 +629,13 @@ Por favor escolha um antes de aplicar.]]></STRING>
 	<STRING key="CARD_SUBTYPE_VENSER"><![CDATA[Venser]]></STRING>
 	<!-- Strings for the Card Sub-Types - Spell -->
 	<STRING key="CARD_SUBTYPE_ARCANE"><![CDATA[Arcana]]></STRING>
+	<!-- Strings added for v1.4.0.0 -->
+	<STRING key="ID_BLOCK_INPUT"><![CDATA[ID Block Input]]></STRING>
+	<STRING key="ID_BLOCK_TO_GENERATE"><![CDATA[ID Block to generate:]]></STRING>
+	<STRING key="MENU_TOOLS_GENERATE_CPE"><![CDATA[&Generate Content Pack Enabler]]></STRING>
+	<STRING key="MENU_TOOLS_COMBINE_SPEC_DATA"><![CDATA[&Combine SPEC Data]]></STRING>
+	<STRING key="MENU_MOVE_CARD_TO"><![CDATA[&Move Card to]]></STRING>
+	<STRING key="MENU_MOVE_CARD_TO_MAIN_DECK"><![CDATA[M&ain Deck]]></STRING>
+	<STRING key="MENU_MOVE_CARD_TO_REGULAR_UNLOCKS"><![CDATA[Re&gular Unlocks]]></STRING>
+	<STRING key="MENU_MOVE_CARD_TO_PROMO_UNLOCKS"><![CDATA[Pr&omo Unlocks]]></STRING>
 </LOCALIZATION>

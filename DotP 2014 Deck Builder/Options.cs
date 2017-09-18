@@ -65,8 +65,7 @@ namespace RSN.DotP
 			cboLanguage.ValueMember = "LanguageCode";
 			foreach (KeyValuePair<string, LanguageEntry> lang in Settings.Languages)
 				cboLanguage.Items.Add(lang.Value);
-			if (Settings.Languages.ContainsKey(Settings.LanguageCode))
-				cboLanguage.SelectedItem = Settings.Languages[Settings.LanguageCode];
+			cboLanguage.SelectedItem = Settings.Language;
 
 			chkBasicScreenChecks.Checked = Settings.GetSetting("PerformBasicScreenChecks", true);
 			chkPreShuffleOnExport.Checked = Settings.GetSetting("PreShuffleOnExport", false);

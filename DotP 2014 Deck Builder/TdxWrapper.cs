@@ -210,12 +210,13 @@ namespace RSN.DotP
 				while ((usLevelWidth > 1) || (usLevelHeight > 1))
 				{
 					// Reduce size and keep to MoF sizing.
+					//  Even mipmap sizing removed as it has proven problematic in game for sizes that do not have even decay.
 					usLevelWidth /= 2;
-					usLevelWidth -= (ushort)(usLevelWidth % 2);
+					//usLevelWidth -= (ushort)(usLevelWidth % 2);
 					if (usLevelWidth < 1)
 						usLevelWidth = 1;
 					usLevelHeight /= 2;
-					usLevelHeight -= (ushort)(usLevelHeight % 2);
+					//usLevelHeight -= (ushort)(usLevelHeight % 2);
 					if (usLevelHeight < 1)
 						usLevelHeight = 1;
 					AddMipMap(tdx, bitmap, usLevelWidth, usLevelHeight, eFlags, bCompressing);

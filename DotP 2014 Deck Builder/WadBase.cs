@@ -21,18 +21,19 @@ namespace RSN.DotP
 
 	public abstract class WadBase
 	{
-		protected const string AI_PERSONALITY_IMAGES_LOCATION = @"DATA_ALL_PLATFORMS\ART_ASSETS\TEXTURES\PLANESWALKERS\";
-		protected const string AI_PERSONALITY_LOCATION = @"DATA_ALL_PLATFORMS\AI_PERSONALITIES\";
-		protected const string CARD_DIRECTORY_LOCATION = @"DATA_ALL_PLATFORMS\CARDS\";
-		protected const string CARD_FRAME_IMAGES_LOCATION = @"DATA_ALL_PLATFORMS\ART_ASSETS\TEXTURES\CARD_FRAMES\";
-		protected const string CARD_IMAGES_LOCATION = @"DATA_ALL_PLATFORMS\ART_ASSETS\ILLUSTRATIONS\";
-		protected const string DECK_IMAGES_LOCATION = @"DATA_ALL_PLATFORMS\ART_ASSETS\TEXTURES\DECKS\";
-		protected const string DECK_LOCATION = @"DATA_ALL_PLATFORMS\DECKS\";
-		protected const string FUNCTIONS_LOCATION = @"DATA_ALL_PLATFORMS\FUNCTIONS\";
-		protected const string MANA_IMAGES_LOCATION = @"DATA_ALL_PLATFORMS\ART_ASSETS\TEXTURES\MANA\";
-		protected const string TEXT_LOCATION = @"DATA_ALL_PLATFORMS\TEXT_PERMANENT\";
-		protected const string TEXTURE_IMAGES_LOCATION = @"DATA_ALL_PLATFORMS\ART_ASSETS\TEXTURES\";
-		protected const string UNLOCKS_LOCATION = @"DATA_ALL_PLATFORMS\UNLOCKS\";
+		public const string AI_PERSONALITY_IMAGES_LOCATION = @"DATA_ALL_PLATFORMS\ART_ASSETS\TEXTURES\PLANESWALKERS\";
+		public const string AI_PERSONALITY_LOCATION = @"DATA_ALL_PLATFORMS\AI_PERSONALITIES\";
+		public const string CARD_DIRECTORY_LOCATION = @"DATA_ALL_PLATFORMS\CARDS\";
+		public const string CARD_FRAME_IMAGES_LOCATION = @"DATA_ALL_PLATFORMS\ART_ASSETS\TEXTURES\CARD_FRAMES\";
+		public const string CARD_IMAGES_LOCATION = @"DATA_ALL_PLATFORMS\ART_ASSETS\ILLUSTRATIONS\";
+		public const string DECK_IMAGES_LOCATION = @"DATA_ALL_PLATFORMS\ART_ASSETS\TEXTURES\DECKS\";
+		public const string DECK_LOCATION = @"DATA_ALL_PLATFORMS\DECKS\";
+		public const string FUNCTIONS_LOCATION = @"DATA_ALL_PLATFORMS\FUNCTIONS\";
+		public const string MANA_IMAGES_LOCATION = @"DATA_ALL_PLATFORMS\ART_ASSETS\TEXTURES\MANA\";
+		public const string SPECS_LOCATION = @"DATA_ALL_PLATFORMS\SPECS\";
+		public const string TEXT_LOCATION = @"DATA_ALL_PLATFORMS\TEXT_PERMANENT\";
+		public const string TEXTURE_IMAGES_LOCATION = @"DATA_ALL_PLATFORMS\ART_ASSETS\TEXTURES\";
+		public const string UNLOCKS_LOCATION = @"DATA_ALL_PLATFORMS\UNLOCKS\";
 
 		protected string m_strName;
 		protected HashSet<KeyValuePair<string, LoadImageType>> m_hsetImages;
@@ -41,6 +42,10 @@ namespace RSN.DotP
 		protected SortableBindingList<CardInfo> m_lstCards;
 		protected SortableBindingList<Deck> m_lstDecks;
 		protected SortableBindingList<AiPersonality> m_lstPersonalities;
+
+		// For sub-types and ordering
+		protected Dictionary<string, Dictionary<string, int>> m_dicSubTypeOrdering;
+		protected Dictionary<CardSubTypeArchetypes, List<string>> m_dicSubTypes;
 
 		// For building Wads
 		protected SortedDictionary<string, MemoryStream> m_sdicOutputFiles;
@@ -83,6 +88,23 @@ namespace RSN.DotP
 		public SortableBindingList<AiPersonality> AiPersonalities
 		{
 			get { return m_lstPersonalities; }
+		}
+
+		public Dictionary<string, Dictionary<string, int>> SubTypeOrdering
+		{
+			get { return m_dicSubTypeOrdering; }
+		}
+
+		public Dictionary<CardSubTypeArchetypes, List<string>> SubTypes
+		{
+			get { return m_dicSubTypes; }
+		}
+
+		public List<string> GetSubTypes(CardSubTypeArchetypes eType)
+		{
+			if (m_dicSubTypes != null)
+				return m_dicSubTypes[eType];
+			return null;
 		}
 
 		public void AddHeader(WadHeaderInfo whiInfo = null)
@@ -235,16 +257,27 @@ namespace RSN.DotP
 
 			XmlTools.AddAttributeToNode(xdHeader, xnEntry, "alias", "Content");
 
-			if ((whiInfo != null) && (whiInfo.ForAppIdLinking))
+			if (whiInfo != null)
 			{
-				XmlTools.AddAttributeToNode(xdHeader, xnEntry, "order", "4");
+				if (whiInfo.OrderPriority > 0)
+				{
+					XmlTools.AddAttributeToNode(xdHeader, xnEntry, "order", whiInfo.OrderPriority.ToString());
+				}
+				else if (whiInfo.ForAppIdLinking)
+				{
+					XmlTools.AddAttributeToNode(xdHeader, xnEntry, "order", "4");
+				}
+				else
+				{
+					XmlTools.AddAttributeToNode(xdHeader, xnEntry, "order", "3");
+				}
 			}
 			else
 			{
 				XmlTools.AddAttributeToNode(xdHeader, xnEntry, "order", "3");
 			}
 
-			if (whiInfo != null)
+			if ((whiInfo != null) && (whiInfo.ContentPackId > 0))
 			{
 				XmlNode xnContentPack = XmlTools.AddElementToNode(xdHeader, xnHeader, "CONTENTPACK");
 				XmlTools.AddAttributeToNode(xdHeader, xnContentPack, "UID", whiInfo.ContentPackId.ToString());

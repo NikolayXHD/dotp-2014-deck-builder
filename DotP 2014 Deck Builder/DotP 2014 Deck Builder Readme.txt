@@ -1,5 +1,5 @@
 --------------------------------------------------------------------------------
----- Riiak Shi Nal's Duels of the Planeswalkers 2014 Deck Builder v1.3.2.0 -----
+---- Riiak Shi Nal's Duels of the Planeswalkers 2014 Deck Builder v1.4.0.0 -----
 --------------------------------------------------------------------------------
 
     This is the first Deck Builder for DotP 2014 and it will ask for the DotP
@@ -520,12 +520,21 @@ Notes:
 --------------------------------------------------------------------------------
 Planned Enhancements (in no particular order):
 --------------------------------------------------------------------------------
-None at this time.
 
 --------------------------------------------------------------------------------
 Considered Features (in no particular order):
 --------------------------------------------------------------------------------
-None at this time.
+* Custom card tags and values (for example tags for Author and/or Version).
+
+* Dynamically adjust the HEADER.XML from DATA_DLC_DECK_BUILDER_CUSTOM when
+    creating a core instead of trashing it and creating a new one.
+
+* Create an option to allow simple updating of a deck to a new Id Block.
+
+* Duplicate Card Filtering based on FILENAME, CARDNAME, or Card XML.
+
+* Allow for overriding the deck colour display in-game (will not remove auto-
+    colour determination for deck/lands).
 
 --------------------------------------------------------------------------------
 Known Issues:
@@ -540,8 +549,8 @@ Known Issues:
 
 - Special code has not been added for the display of Planes, Schemes,
     Phenomenon, or Planeswalkers so if any are added/present they will probably
-    not display correctly.  The game does not currently have any of these cards
-    so I don't really expect a problem here.
+    not display correctly.  The game does not currently have actual support for
+    any of these cards so I don't really expect much of a problem here.
 
 - As of initial release English is the only complete localization all other
     languages are only partially complete.
@@ -828,6 +837,8 @@ thefiremind - Provided Italian localization.
 
 Vulasuw - Provided Portuguese-Brazil localization.
 
+sumomole - Provided the Chinese (Simplified & Traditional) localizations.
+
 Scion of Darkness - Provided shading layer and planeswalker symbol for the Deck
     Box template.
     http://www.slightlymagic.net/forum/viewtopic.php?f=109&t=10970
@@ -851,6 +862,73 @@ Everyone else on the forums - For keeping the community alive and fun.
 --------------------------------------------------------------------------------
 Change History:
 --------------------------------------------------------------------------------
+- v1.4.0.0
+    - Added "Wad" column to the "Create from Existing Deck" window to make
+        finding missing cards from unlocks easier and allowing people to easily
+        identify which wad a deck belongs to.
+    - Added ability to make a language "Masquerade" as another language.  This
+        allows for languages that the game does not support to have their own
+        translations for the Deck Builder.  For example Traditional Chinese
+        (Taiwan) which has language code zh-TW to have a translation for Deck
+        Builder, but use card/deck strings from zh-HK which are relatively close
+        to be used for items that pull text from game resources like cards and
+        Permanent Text files.
+    - Removed even mipmap sizing as it has proven problematic in game for image
+        sizes that do not evenly decay.  The game expects each mipmap to have
+        dimensions that are 1/2 of the previous mipmap in the chain with any
+        decimals being truncated.  This should only effect images that are
+        imported into the Builder rather than built as the built images are
+        already in sizes that evenly decay.
+    - DataGridViews are now Double Buffered for a performance increase on some
+        systems (I did not notice any performance increase on my system).
+        Memory usage slightly increased as a result.  This was reported by
+        Springwight on the forums.
+    - Added Cell validation for Quantity and Bias for Main deck and unlock
+        lists to prevent the user from entering invalid data and causing an
+        exception.
+    - Added a read capability to the MessageLog class to support showing the
+        log during run-time (implemented for popping up the error log after
+        load if errors occurred).
+    - Added Error Report Window to pop-up and do limited filtering on the error
+        log if errors occurred during load.  NOTE: English Interface Only.
+    - Changed Cards DataGridView to Virtual mode for hopefully better
+        performance.  This entailed changes to most of the events for that
+        DataGridView as well as adding an event to prevent Edit mode appearing
+        as well as minor changes to other events (filtering buttons) to
+        facilitate the change (as virtual mode only properly works if you don't
+        set an actual data source for the control).
+    - Will now attempt to first associate unlocks with decks inside the same
+        WAD before trying to associate unlocks with any matching deck.  This
+        way if there is an override WAD that changes an already existing deck
+        and unlocks you should be able to see the differences depending on
+        which deck you try to create new from.
+    - Will now attempt to merge unlocks of the same game type if more than one
+        file exists for the same deck.  This prevents unlock objects from over-
+        writing each other when multiple are found for the same deck.  For
+        example if someone creates an override WAD to move Promo unlocks to the
+        Regular unlock game type.
+    - Made a change to loading of existing decks, now the Deck Builder does not
+        preload the Deck Box Images for existing decks and instead only loads
+        one when creating a new deck based off of an existing deck.  This has
+        no visual change to the user, but it reduces memory overhead and should
+        reduce load time slightly.  On my test setup this reduces memory usage
+        by approximately 160 MB.
+    - Added support for "Special" Rarity.
+    - Added internal ability for outputing different order attributes to the
+        WAD header to support additional special functions such as combining
+        sub-types to allow mods that use custom sub-types to play well with
+        each other.
+    - Added loading of SPECS files for better sub-type support.
+    - Added merging and exporting of merged SPEC data.  This allows multiple
+        mods to make their own custom sub-types and get the types merged into a
+        single combined WAD that should override all of the other entries so
+        they can operate properly together without conflicts.
+    - Added ability to move cards between the main deck and unlocks.
+    - Fixed Loading of localized strings for the Context Menus.
+    - Added ability to create a Content Pack Enabler for any Id Block without
+        having to export a deck or change Id Scheme settings.
+    - Added several new strings to localizations to support added features.
+
 - v1.3.2.0
     - Fixed language display in Options.  Apparently .Net ComboBoxes don't like
         to reference public variables only public properties so I had to change

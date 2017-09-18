@@ -7,22 +7,24 @@ namespace RSN.Tools
 {
 	public class LanguageEntry
 	{
-		public string m_strLanguageCode;
-		public string m_strShortCode;
-		public string m_strText;
-		public string m_strTextHeader;
-		public int m_nTextIndex;
+		private string m_strLanguageCode;
+		private string m_strShortCode;
+		private string m_strText;
+		private string m_strTextHeader;
+		private int m_nTextIndex;
+		private string m_strMasqueradeLangCode;
 
 		public LanguageEntry()
 		{ }
 		
-		public LanguageEntry(string strLangCode, string strShortCode, string strText, string strTextHeader, int nTextIndex)
+		public LanguageEntry(string strLangCode, string strShortCode, string strText, string strTextHeader, int nTextIndex, string strMasqueradeLangCode = null)
 		{
 			m_strLanguageCode = strLangCode;
 			m_strShortCode = strShortCode;
 			m_strText = strText;
 			m_strTextHeader = strTextHeader;
 			m_nTextIndex = nTextIndex;
+			m_strMasqueradeLangCode = strMasqueradeLangCode;
 		}
 
 		public string LanguageCode
@@ -53,6 +55,12 @@ namespace RSN.Tools
 		{
 			get { return m_nTextIndex; }
 			set { m_nTextIndex = value; }
+		}
+
+		public string MasqueradeAsLangCode
+		{
+			get { return m_strMasqueradeLangCode; }
+			set { m_strMasqueradeLangCode = value; }
 		}
 	}
 }

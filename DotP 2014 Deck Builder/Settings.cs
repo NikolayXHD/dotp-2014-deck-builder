@@ -30,7 +30,7 @@ namespace RSN.Tools
 
 		public static bool LogAllErrors = false;
 		public static bool IncludeBOM = true;
-		public static string LanguageCode = "en-US";
+		public static LanguageEntry Language = null;
 		public static Dictionary<string, LanguageEntry> Languages;
 		public static LanguageStrings UIStrings;
 
@@ -48,7 +48,10 @@ namespace RSN.Tools
 			Languages.Add("ru-RU", new LanguageEntry("ru-RU", "RU", "русский", "Russian", 11));
 			Languages.Add("pt-BR", new LanguageEntry("pt-BR", "PT", "português", "Portuguese (Brazil)", 12));
 			Languages.Add("zh-CN", new LanguageEntry("zh-CN", "CN", "中文（简体）", "Chinese Simplified", 15));
-			Languages.Add("zh-HK", new LanguageEntry("zh-HK", "HK", "中文（繁体）", "Chinese Traditional", 16));
+			Languages.Add("zh-HK", new LanguageEntry("zh-HK", "HK", "中文（繁體）", "Chinese Traditional", 16));
+			Languages.Add("zh-TW", new LanguageEntry("zh-TW", "TW", "中文（繁體，台灣）", "Chinese Traditional (Taiwan)", -1, "zh-HK"));
+			// Set Default Language
+			Language = Languages["en-US"];
 		}
 
 		public static void LoadSettings()
@@ -64,13 +67,17 @@ namespace RSN.Tools
 					// Here is where we recover the global settings
 					IncludeBOM = GetSetting("IncludeBOM", IncludeBOM);
 					LogAllErrors = GetSetting("LogAllErrors", LogAllErrors);
-					LanguageCode = GetSetting("LanguageCode", LanguageCode);
+					string strLanguageCode = GetSetting("LanguageCode", Language.LanguageCode);
 					List<LanguageEntry> lstLangs = GetSerializableSetting("LanguageEntries", new List<LanguageEntry>());
 					if (lstLangs.Count > 0)
 					{
 						Languages = new Dictionary<string,LanguageEntry>();
 						foreach (LanguageEntry lang in lstLangs)
+						{
 							Languages.Add(lang.LanguageCode, lang);
+							if (lang.LanguageCode.Equals(strLanguageCode, StringComparison.OrdinalIgnoreCase))
+								Language = lang;
+						}
 					}
 				}
 				catch (Exception e)
@@ -86,7 +93,7 @@ namespace RSN.Tools
 				XmlDeclaration xdDeclaration = m_xdSettings.CreateXmlDeclaration("1.0", Encoding.UTF8.WebName, null);
 				m_xdSettings.AppendChild(xdDeclaration);
 			}
-			UIStrings = new LanguageStrings(LanguageCode);
+			UIStrings = new LanguageStrings(Language.LanguageCode);
 		}
 
 		public static void SaveSettings()
@@ -96,7 +103,7 @@ namespace RSN.Tools
 				// Save out our global settings.
 				SaveSetting("IncludeBOM", IncludeBOM);
 				SaveSetting("LogAllErrors", LogAllErrors);
-				SaveSetting("LanguageCode", LanguageCode);
+				SaveSetting("LanguageCode", Language.LanguageCode);
 				SaveSerializableSetting("LanguageEntries", new List<LanguageEntry>(Languages.Values));
 
 				// Save out the settings file.
@@ -116,8 +123,8 @@ namespace RSN.Tools
 
 		public static void ChangeLanguage(string strLangCode)
 		{
-			LanguageCode = strLangCode;
-			UIStrings = new LanguageStrings(LanguageCode);
+			Language = Languages[strLangCode];
+			UIStrings = new LanguageStrings(Language.LanguageCode);
 		}
 
 		public static void ReportError(Exception eError, ErrorPriority epPriority, string strOptionalInfo = "")
@@ -578,6 +585,11 @@ namespace RSN.Tools
 			}
 
 			return xnReturn;
+		}
+
+		public static MessageLog ErrorLog
+		{
+			get { return m_mlErrorLog; }
 		}
 	}
 }

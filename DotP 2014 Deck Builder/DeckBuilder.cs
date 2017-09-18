@@ -6,6 +6,7 @@ using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Security.AccessControl;
 using System.Security.Principal;
 using System.Text;
@@ -30,6 +31,7 @@ namespace RSN.DotP
 		private ListChangedEventHandler m_lcehListHandler;
 		private EventHandler m_ehColumnMenuItemClick;
 		private CardInfo m_ciContextCard;
+		private DeckCard m_dcContextCard;
 		private int m_nContextRow;
 		private DeckLocation m_eLocation;
 
@@ -39,11 +41,14 @@ namespace RSN.DotP
 		private string m_strUnlockRegularCellValue;
 		private string m_strUnlockPromoCellValue;
 
-		// For multi-column filtering.
+		// For multi-column sorting.
 		private BindingSource m_bsCards;
 		private BindingSource m_bsDeckCards;
 		private List<ColumnSort> m_lstCardSort;
 		private List<ColumnSort> m_lstDeckCardSort;
+
+		// To minimize reflection calls (columns aren't created/destroyed after start-up).
+		private Dictionary<DataGridViewColumn, PropertyInfo> m_dicColumnMap;
 
 		private enum DeckLocation
 		{
@@ -56,6 +61,9 @@ namespace RSN.DotP
 		{
 			InitializeComponent();
 
+			// This will set the double buffering for the Data Grids well before we start loading data.
+			SetDoubleBufferingForDataGrids();
+
 			Settings.InitDefaults();
 			Settings.LoadSettings();
 
@@ -66,6 +74,9 @@ namespace RSN.DotP
 
 			// Initialize necessary internal variables.
 			m_ciCurrentViewingCard = null;
+
+			// Initialize the column map.
+			m_dicColumnMap = new Dictionary<DataGridViewColumn, PropertyInfo>();
 
 			Rectangle rcPosition = Settings.GetSetting("MainPosition", new Rectangle(-1, -1, -1, -1));
 			if (rcPosition.X != -1)
@@ -100,6 +111,13 @@ namespace RSN.DotP
 
 			// Load strings for the Menus:
 			foreach (ToolStripItem mnuiItem in mnuMain.Items)
+			{
+				if (mnuiItem.GetType() == typeof(ToolStripMenuItem))
+					LoadMenuItemStrings((ToolStripMenuItem)mnuiItem);
+			}
+
+			// Load strings for the context menus:
+			foreach (ToolStripItem mnuiItem in cmnuContext.Items)
 			{
 				if (mnuiItem.GetType() == typeof(ToolStripMenuItem))
 					LoadMenuItemStrings((ToolStripMenuItem)mnuiItem);
@@ -186,7 +204,8 @@ namespace RSN.DotP
 				m_bsCards.DataSource = new SortableBindingList<CardInfo>(m_gdWads.Cards.Where(x => m_fltCardFilter.CheckAgainstFilter(x)));
 			else
 				m_bsCards.DataSource = m_gdWads.Cards;
-			dgvCards.DataSource = m_bsCards;
+			//dgvCards.DataSource = m_bsCards;
+			dgvCards.RowCount = ((SortableBindingList<CardInfo>)m_bsCards.DataSource).Count;
 			// Update status numbers.
 			sslblLoadedCardsNum.Text = m_gdWads.Cards.Count.ToString();
 			sslblCardsInListNum.Text = ((SortableBindingList<CardInfo>)m_bsCards.DataSource).Count.ToString();
@@ -369,15 +388,6 @@ namespace RSN.DotP
 			dgvUnlocksPromo.DataSource = m_dkWorking.PromoUnlocks.Cards;
 			dgvUnlocksPromo.Refresh();
 			CheckPromoButtons();
-			// Check to make sure we don't have a full promo unlock list.
-			if (m_dkWorking.PromoUnlocks.Cards.Count >= 10)
-			{
-				if (rbDoubleClickPromoUnlock.Checked)
-					rbDoubleClickRegularUnlock.Checked = true;
-				rbDoubleClickPromoUnlock.Enabled = false;
-			}
-			else
-				rbDoubleClickPromoUnlock.Enabled = true;
 		}
 
 		// This is merely to setup the columns for the card list.
@@ -520,10 +530,10 @@ namespace RSN.DotP
 		{
 			if (!m_bScrolling)
 			{
-				if ((e.RowIndex > -1) && (e.RowIndex < dgvCards.Rows.Count) &&
+				if ((e.RowIndex > -1) && (e.RowIndex < dgvCards.RowCount) &&
 					(e.ColumnIndex > -1) && (e.ColumnIndex < dgvCards.Columns.Count))
 				{
-					CardInfo ciCard = (CardInfo)dgvCards.Rows[e.RowIndex].DataBoundItem;
+					CardInfo ciCard = ((SortableBindingList<CardInfo>)m_bsCards.DataSource)[e.RowIndex];
 					ShowCardInfo(ciCard);
 				}
 			}
@@ -532,10 +542,11 @@ namespace RSN.DotP
 		private void dgvCards_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
 		{
 			// Here I add cards to either the deck or one of the unlocks (which is still in the deck object).
-			if ((e.RowIndex > -1) && (e.RowIndex < dgvCards.Rows.Count) &&
+			if ((e.RowIndex > -1) && (e.RowIndex < dgvCards.RowCount) &&
 				(e.ColumnIndex > -1) && (e.ColumnIndex < dgvCards.Columns.Count))
 			{
-				CardInfo ciCard = (CardInfo)dgvCards.Rows[e.RowIndex].DataBoundItem;
+				CardInfo ciCard = ((SortableBindingList<CardInfo>)m_bsCards.DataSource)[e.RowIndex];
+				m_dkWorking.Edited = true;
 				if (rbDoubleClickDeck.Checked)
 				{
 					m_dkWorking.AddCard(ciCard);
@@ -551,12 +562,6 @@ namespace RSN.DotP
 				{
 					// Only thing left is the Promo Unlocks.
 					m_dkWorking.PromoUnlocks.Cards.Add(new DeckCard(ciCard));
-					if (m_dkWorking.PromoUnlocks.Cards.Count >= 10)
-					{
-						// We've hit the maximum allowed number of promo unlocks so disallow adding any more.
-						rbDoubleClickPromoUnlock.Enabled = false;
-						rbDoubleClickRegularUnlock.Checked = true;
-					}
 					CheckPromoButtons();
 				}
 			}
@@ -700,16 +705,25 @@ namespace RSN.DotP
 			RefreshGameData();
 			// We just started the program so give us a new deck to work with.
 			mnuiFileNew_Click(null, null);
+
+			// Check to see if there were any errors during load.
+			if (Settings.ErrorLog.Opened)
+			{
+				// Error log was opened so we have errors, now we need to show them to user.
+				ErrorReportWindow frmErrors = new ErrorReportWindow(Settings.ErrorLog);
+				frmErrors.Show(this);
+			}
 		}
 
 		private void cmdClearFilters_Click(object sender, EventArgs e)
 		{
 			if (m_gdWads != null)
 			{
-				if (dgvCards.DataSource != m_gdWads.Cards)
+				if (m_bsCards.DataSource != m_gdWads.Cards)
 				{
 					Settings.SaveSetting("Filtering", false);
 					m_bsCards.DataSource = m_gdWads.Cards;
+					dgvCards.RowCount = m_gdWads.Cards.Count;
 					sslblCardsInListNum.Text = m_gdWads.Cards.Count.ToString();
 					// Restore the previous sort.
 					RestoreCardSort();
@@ -731,6 +745,7 @@ namespace RSN.DotP
 					Settings.SaveSetting("Filtering", true);
 					Settings.SaveSetting("AdvancedFiltering", false);
 					m_bsCards.DataSource = new SortableBindingList<CardInfo>(m_gdWads.Cards.Where(x => m_fltCardFilter.CheckAgainstFilter(x)));
+					dgvCards.RowCount = ((SortableBindingList<CardInfo>)m_bsCards.DataSource).Count;
 					sslblCardsInListNum.Text = ((SortableBindingList<CardInfo>)m_bsCards.DataSource).Count.ToString();
 					// Restore the previous sort.
 					RestoreCardSort();
@@ -752,6 +767,7 @@ namespace RSN.DotP
 					Settings.SaveSetting("Filtering", true);
 					Settings.SaveSetting("AdvancedFiltering", true);
 					m_bsCards.DataSource = new SortableBindingList<CardInfo>(m_gdWads.Cards.Where(x => m_cfsCardFilterAdvanced.IsAllowed(x)));
+					dgvCards.RowCount = ((SortableBindingList<CardInfo>)m_bsCards.DataSource).Count;
 					sslblCardsInListNum.Text = ((SortableBindingList<CardInfo>)m_bsCards.DataSource).Count.ToString();
 					// Restore the previous sort.
 					RestoreCardSort();
@@ -830,11 +846,6 @@ namespace RSN.DotP
 		{
 			if (m_dkWorking != null)
 			{
-				if (m_dkWorking.PromoUnlocks.Cards.Count < 10)
-				{
-					// We're under the maximum number of promo unlocks so allow Promo unlocks to be added.
-					rbDoubleClickPromoUnlock.Enabled = true;
-				}
 				m_dkWorking.Edited = true;
 				CheckPromoButtons();
 			}
@@ -960,7 +971,7 @@ namespace RSN.DotP
 			}
 			catch (Exception err)
 			{
-				Settings.ReportError(err, ErrorPriority.High);
+				Settings.ReportError(err, ErrorPriority.High, "Unable to fully load deck: " + strFilename);
 				MessageBox.Show(Settings.UIStrings["UNABLE_TO_LOAD_DECK_MESSAGE"], Settings.UIStrings["UNABLE_TO_LOAD_DECK_CAPTION"], MessageBoxButtons.OK, MessageBoxIcon.Error);
 			}
 		}
@@ -1051,6 +1062,9 @@ namespace RSN.DotP
 				if (m_dkWorking != null)
 					m_dkWorking.Cards.ListChanged -= m_lcehListHandler;
 				m_dkWorking = frmCreate.CreatedDeck;
+				TdxWrapper twDeckBox = m_gdWads.LoadImage(m_dkWorking.DeckBoxImageName, LoadImageType.Deck);
+				if (twDeckBox != null)
+					m_dkWorking.DeckBoxImage = twDeckBox.Image;
 				// Changed from clamping to get next available id to be more new-user friendly.
 				IdScheme isScheme = Settings.GetSerializableSetting("CurrentIdScheme", new IdScheme());
 				int nUid = isScheme.GetNextAvailableId(m_gdWads.UsedIds);
@@ -1398,6 +1412,22 @@ namespace RSN.DotP
 				cmdPromoMoveUp.Enabled = false;
 				cmdPromoMoveDown.Enabled = false;
 			}
+
+			// This is added to centralize promo status checking for all controls.
+			if (m_dkWorking.PromoUnlocks.Cards.Count >= 10)
+			{
+				// Disable anything that could put a card into the promo unlocks.
+				cmnuiMoveToPromoUnlocks.Enabled = false;
+				if (rbDoubleClickPromoUnlock.Checked)
+					rbDoubleClickRegularUnlock.Checked = true;
+				rbDoubleClickPromoUnlock.Enabled = false;
+			}
+			else
+			{
+				// Enable controls that can put card(s) into promo unlocks.
+				cmnuiMoveToPromoUnlocks.Enabled = true;
+				rbDoubleClickPromoUnlock.Enabled = true;
+			}
 		}
 
 		private void SwapListIndexes<T>(SortableBindingList<T> lstItems, int nIndex1, int nIndex2)
@@ -1557,7 +1587,8 @@ namespace RSN.DotP
 				DataGridView.HitTestInfo htiInfo = dgvCards.HitTest(e.X, e.Y);
 				if ((htiInfo.RowIndex > -1) && (htiInfo.RowIndex < dgvCards.RowCount))
 				{
-					m_ciContextCard = (CardInfo)dgvCards.Rows[htiInfo.RowIndex].DataBoundItem;
+					//m_ciContextCard = (CardInfo)dgvCards.Rows[htiInfo.RowIndex].DataBoundItem;
+					m_ciContextCard = ((SortableBindingList<CardInfo>)m_bsCards.DataSource)[htiInfo.RowIndex];
 					cmnuiViewCard.Enabled = true;
 					cmnuiDecksUsedIn.Enabled = true;
 					cmnuiExportPreviews.Enabled = true;
@@ -1577,6 +1608,9 @@ namespace RSN.DotP
 				// Always disable remove card for the master card list.
 				cmnuiRemoveCard.Enabled = false;
 
+				// Always disable move to menu.
+				SetMenuEnabled(cmnuiMoveTo, false);
+
 				// Now show the context menu
 				cmnuContext.Show(Cursor.Position);
 			}
@@ -1592,7 +1626,8 @@ namespace RSN.DotP
 				DataGridView.HitTestInfo htiInfo = dgvDeckCards.HitTest(e.X, e.Y);
 				if ((htiInfo.RowIndex > -1) && (htiInfo.RowIndex < dgvDeckCards.RowCount))
 				{
-					m_ciContextCard = ((DeckCard)dgvDeckCards.Rows[htiInfo.RowIndex].DataBoundItem).Card;
+					m_dcContextCard = (DeckCard)dgvDeckCards.Rows[htiInfo.RowIndex].DataBoundItem;
+					m_ciContextCard = m_dcContextCard.Card;
 					cmnuiViewCard.Enabled = true;
 					cmnuiDecksUsedIn.Enabled = true;
 					cmnuiRemoveCard.Enabled = true;
@@ -1600,6 +1635,9 @@ namespace RSN.DotP
 					cmnuiExportCard.Enabled = true;
 					TdxWrapper twImage = m_gdWads.LoadImage(m_ciContextCard.ImageFilename, LoadImageType.Card);
 					cmnuiExportImageCrop.Enabled = (twImage != null);
+					SetMenuEnabled(cmnuiMoveTo, (m_dcContextCard != null));
+					cmnuiMoveToMainDeck.Enabled = false;
+					cmnuiMoveToPromoUnlocks.Enabled = (m_dkWorking.PromoUnlockCardCount < 10);
 				}
 				else
 				{
@@ -1609,6 +1647,7 @@ namespace RSN.DotP
 					cmnuiExportPreviews.Enabled = false;
 					cmnuiExportCard.Enabled = false;
 					cmnuiExportImageCrop.Enabled = false;
+					SetMenuEnabled(cmnuiMoveTo, false);
 				}
 
 				// Information for remove card.
@@ -1630,7 +1669,8 @@ namespace RSN.DotP
 				DataGridView.HitTestInfo htiInfo = dgvUnlocksRegular.HitTest(e.X, e.Y);
 				if ((htiInfo.RowIndex > -1) && (htiInfo.RowIndex < dgvUnlocksRegular.RowCount))
 				{
-					m_ciContextCard = ((DeckCard)dgvUnlocksRegular.Rows[htiInfo.RowIndex].DataBoundItem).Card;
+					m_dcContextCard = (DeckCard)dgvUnlocksRegular.Rows[htiInfo.RowIndex].DataBoundItem;
+					m_ciContextCard = m_dcContextCard.Card;
 					cmnuiViewCard.Enabled = true;
 					cmnuiDecksUsedIn.Enabled = true;
 					cmnuiRemoveCard.Enabled = true;
@@ -1638,6 +1678,9 @@ namespace RSN.DotP
 					cmnuiExportCard.Enabled = true;
 					TdxWrapper twImage = m_gdWads.LoadImage(m_ciContextCard.ImageFilename, LoadImageType.Card);
 					cmnuiExportImageCrop.Enabled = (twImage != null);
+					SetMenuEnabled(cmnuiMoveTo, (m_dcContextCard != null));
+					cmnuiMoveToRegularUnlocks.Enabled = false;
+					cmnuiMoveToPromoUnlocks.Enabled = (m_dkWorking.PromoUnlockCardCount < 10);
 				}
 				else
 				{
@@ -1647,6 +1690,7 @@ namespace RSN.DotP
 					cmnuiExportPreviews.Enabled = false;
 					cmnuiExportCard.Enabled = false;
 					cmnuiExportImageCrop.Enabled = false;
+					SetMenuEnabled(cmnuiMoveTo, false);
 				}
 
 				// Information for remove card.
@@ -1668,7 +1712,8 @@ namespace RSN.DotP
 				DataGridView.HitTestInfo htiInfo = dgvUnlocksPromo.HitTest(e.X, e.Y);
 				if ((htiInfo.RowIndex > -1) && (htiInfo.RowIndex < dgvUnlocksPromo.RowCount))
 				{
-					m_ciContextCard = ((DeckCard)dgvUnlocksPromo.Rows[htiInfo.RowIndex].DataBoundItem).Card;
+					m_dcContextCard = (DeckCard)dgvUnlocksPromo.Rows[htiInfo.RowIndex].DataBoundItem;
+					m_ciContextCard = m_dcContextCard.Card;
 					cmnuiViewCard.Enabled = true;
 					cmnuiDecksUsedIn.Enabled = true;
 					cmnuiRemoveCard.Enabled = true;
@@ -1676,6 +1721,8 @@ namespace RSN.DotP
 					cmnuiExportCard.Enabled = true;
 					TdxWrapper twImage = m_gdWads.LoadImage(m_ciContextCard.ImageFilename, LoadImageType.Card);
 					cmnuiExportImageCrop.Enabled = (twImage != null);
+					SetMenuEnabled(cmnuiMoveTo, (m_dcContextCard != null));
+					cmnuiMoveToPromoUnlocks.Enabled = false;
 				}
 				else
 				{
@@ -1685,6 +1732,7 @@ namespace RSN.DotP
 					cmnuiExportPreviews.Enabled = false;
 					cmnuiExportCard.Enabled = false;
 					cmnuiExportImageCrop.Enabled = false;
+					SetMenuEnabled(cmnuiMoveTo, false);
 				}
 
 				// Information for remove card.
@@ -1849,9 +1897,10 @@ namespace RSN.DotP
 		private void dgvCards_SelectionChanged(object sender, EventArgs e)
 		{
 			// When the selection changes we should update which image is being viewed.
-			if ((dgvCards.SelectedRows != null) && (dgvCards.SelectedRows.Count > 0))
+			if ((dgvCards.SelectedRows != null) && (dgvCards.SelectedRows.Count > 0) && (dgvCards.SelectedRows[0].Index < ((SortableBindingList<CardInfo>)m_bsCards.DataSource).Count))
 			{
-				CardInfo ciCard = ((CardInfo)dgvCards.SelectedRows[0].DataBoundItem);
+				//CardInfo ciCard = ((CardInfo)dgvCards.SelectedRows[0].DataBoundItem);
+				CardInfo ciCard = ((SortableBindingList<CardInfo>)m_bsCards.DataSource)[dgvCards.SelectedRows[0].Index];
 				ShowCardInfo(ciCard);
 			}
 		}
@@ -1913,9 +1962,12 @@ namespace RSN.DotP
 					// Save for each language entry.
 					foreach (LanguageEntry lang in Settings.Languages.Values)
 					{
-						Bitmap bmpPreview = Tools.AddCardBorder(ciCard.GetPreviewImage(lang.LanguageCode));
-						if (bmpPreview != null)
-							bmpPreview.Save(strDir + lang.ShortCode + "_" + strFileBase, ImageFormat.Png);
+						if (lang.MasqueradeAsLangCode == null)
+						{
+							Bitmap bmpPreview = Tools.AddCardBorder(ciCard.GetPreviewImage(lang.LanguageCode));
+							if (bmpPreview != null)
+								bmpPreview.Save(strDir + lang.ShortCode + "_" + strFileBase, ImageFormat.Png);
+						}
 					}
 				}
 			}
@@ -1939,11 +1991,14 @@ namespace RSN.DotP
 					// Save for each language entry.
 					foreach (LanguageEntry lang in Settings.Languages.Values)
 					{
-						TdxWrapper twPreview = GetTdxPreview(ciCard, lang.LanguageCode);
-						if (twPreview != null)
+						if (lang.MasqueradeAsLangCode == null)
 						{
-							twPreview.Save(strDir + lang.ShortCode + "_" + strFileBase);
-							twPreview.Dispose();
+							TdxWrapper twPreview = GetTdxPreview(ciCard, lang.LanguageCode);
+							if (twPreview != null)
+							{
+								twPreview.Save(strDir + lang.ShortCode + "_" + strFileBase);
+								twPreview.Dispose();
+							}
 						}
 					}
 				}
@@ -2025,7 +2080,9 @@ namespace RSN.DotP
 			{
 				if ((dgvCards.SelectedRows != null) && (dgvCards.SelectedRows.Count > 0))
 				{
-					CardInfo ciCard = (CardInfo)dgvCards.SelectedRows[0].DataBoundItem;
+					//CardInfo ciCard = (CardInfo)dgvCards.SelectedRows[0].DataBoundItem;
+					CardInfo ciCard = ((SortableBindingList<CardInfo>)m_bsCards.DataSource)[dgvCards.SelectedRows[0].Index];
+					m_dkWorking.Edited = true;
 					if (rbDoubleClickDeck.Checked)
 					{
 						m_dkWorking.AddCard(ciCard);
@@ -2041,12 +2098,6 @@ namespace RSN.DotP
 					{
 						// Only thing left is the Promo Unlocks.
 						m_dkWorking.PromoUnlocks.Cards.Add(new DeckCard(ciCard));
-						if (m_dkWorking.PromoUnlocks.Cards.Count >= 10)
-						{
-							// We've hit the maximum allowed number of promo unlocks so disallow adding any more.
-							rbDoubleClickPromoUnlock.Enabled = false;
-							rbDoubleClickRegularUnlock.Checked = true;
-						}
 						CheckPromoButtons();
 					}
 				}
@@ -2097,6 +2148,292 @@ namespace RSN.DotP
 					string strFilename = Tools.SaveDialog(Settings.UIStrings["IMAGE_SAVE_TITLE"], Settings.UIStrings["TDX_FILTER"], ".TDX", m_ciContextCard.ImageFilename + ".TDX");
 					if (strFilename.Length > 0)
 						twImage.Save(strFilename);
+				}
+			}
+		}
+
+		private void SetDoubleBufferingForDataGrids()
+		{
+			// Set all the lists at once to make things a bit more efficient.
+			PropertyInfo piDoubleBuffered = dgvCards.GetType().GetProperty("DoubleBuffered", BindingFlags.Instance | BindingFlags.NonPublic);
+			piDoubleBuffered.SetValue(dgvCards, true, null);
+			piDoubleBuffered.SetValue(dgvDeckCards, true, null);
+			piDoubleBuffered.SetValue(dgvUnlocksPromo, true, null);
+			piDoubleBuffered.SetValue(dgvUnlocksRegular, true, null);
+		}
+
+		private void DeckCards_CellValidating(object sender, DataGridViewCellValidatingEventArgs e)
+		{
+			// Here I need to check to see that valid values were entered.
+			DataGridView dgvList = sender as DataGridView;
+			DataGridViewColumn dgvcColumn = dgvList.Columns[e.ColumnIndex];
+			if (dgvcColumn.DataPropertyName.Equals("Quantity", StringComparison.OrdinalIgnoreCase) ||
+				dgvcColumn.DataPropertyName.Equals("Bias", StringComparison.OrdinalIgnoreCase))
+			{
+				// Must be a positive integer (I don't allow 0).
+				int nTest = 0;
+				if (int.TryParse(e.FormattedValue.ToString(), out nTest))
+				{
+					if (nTest <= 0)
+					{
+						// Not greater than 0 so not valid.
+						e.Cancel = true;
+					}
+				}
+				else
+				{
+					// Not a valid integer so prevent the push.
+					e.Cancel = true;
+				}
+			}
+		}
+
+		private void dgvCards_CellValueNeeded(object sender, DataGridViewCellValueEventArgs e)
+		{
+			DataGridViewColumn dgvcColumn = dgvCards.Columns[e.ColumnIndex];
+			SortableBindingList<CardInfo> lstCards = ((SortableBindingList<CardInfo>)m_bsCards.DataSource);
+			PropertyInfo piProp = null;
+
+			if (e.RowIndex < lstCards.Count)
+			{
+				// Look up this column and get the property without a reflection look up.
+				if (m_dicColumnMap.ContainsKey(dgvcColumn))
+					piProp = m_dicColumnMap[dgvcColumn];
+				else
+				{
+					try
+					{
+						piProp = lstCards[e.RowIndex].GetType().GetProperty(dgvcColumn.DataPropertyName, BindingFlags.GetProperty | BindingFlags.Instance | BindingFlags.Public);
+						// Make sure we don't need to do any more expensive reflection look ups.
+						m_dicColumnMap.Add(dgvcColumn, piProp);
+					}
+					catch (Exception ex)
+					{
+						Settings.ReportError(ex, ErrorPriority.Zero, "Problem reflecting property: " + dgvcColumn.DataPropertyName);
+						// This next bit prevents lots and lots of repeated failed reflection look ups.
+						m_dicColumnMap.Add(dgvcColumn, null);
+					}
+				}
+				if (piProp != null)
+					e.Value = piProp.GetValue(lstCards[e.RowIndex], null);
+			}
+		}
+
+		private void dgvCards_CellBeginEdit(object sender, DataGridViewCellCancelEventArgs e)
+		{
+			// The Cards view should always be read only.
+			e.Cancel = true;
+		}
+
+		private void mnuiToolsCombineSpecData_Click(object sender, EventArgs e)
+		{
+			// This will create a custom WAD file that only contains a header and merged SPEC data from all loaded WADs.
+			//	Currently this will only handle SubTypeOrderingData and SubTypes as those are the only ones we can edit
+			//	properly without the source code of the game.
+
+			// Create Header
+			WadHeaderInfo whiInfo = new WadHeaderInfo();
+			whiInfo.OrderPriority = 99;	// By default I will use Order 99 to ensure overriding of files.
+
+			// Start creating our WAD
+			WadWrapper wwMerged = new WadWrapper("Data_DLC_Combined_Spec_Data");
+			wwMerged.AddHeader(whiInfo);
+
+			// Now to create and add our merged sub-types data.
+			//	The hard part of reading in and merging all the data is already done by GameDirectory.
+			MemoryStream msMergedLol = new MemoryStream();
+			StreamWriter swMergedLol = new StreamWriter(msMergedLol);
+			using (AboutBox frmAbout = new AboutBox())
+			{
+				swMergedLol.WriteLine("-- This file was autogenerated by " + frmAbout.AssemblyProduct + " on " + DateTime.Now);
+			}
+
+			foreach (CardSubTypeArchetypes eType in m_gdWads.SubTypes.Keys)
+			{
+				MemoryStream msSubTypes = new MemoryStream();
+				StreamWriter swSubTypes = new StreamWriter(msSubTypes);
+				List<string> lstSubTypes = m_gdWads.SubTypes[eType];
+				string strSubTypeConstantPrefix = "";
+				int nSubTypeIndexStart = 0;
+				switch (eType)
+				{
+					case CardSubTypeArchetypes.Artifact:
+						strSubTypeConstantPrefix = "ARTIFACT_";
+						nSubTypeIndexStart = 0;
+						break;
+					case CardSubTypeArchetypes.Creature:
+						strSubTypeConstantPrefix = "CREATURE_";
+						nSubTypeIndexStart = 1000;
+						break;
+					case CardSubTypeArchetypes.Enchantment:
+						strSubTypeConstantPrefix = "ENCHANTMENT_";
+						nSubTypeIndexStart = 2000;
+						break;
+					case CardSubTypeArchetypes.Land:
+						strSubTypeConstantPrefix = "LAND_";
+						nSubTypeIndexStart = 4000;
+						break;
+					case CardSubTypeArchetypes.Plane:
+						strSubTypeConstantPrefix = "PLANE_";
+						nSubTypeIndexStart = 9000;
+						break;
+					case CardSubTypeArchetypes.Planeswalker:
+						strSubTypeConstantPrefix = "PLANESWALKER_";
+						nSubTypeIndexStart = 5000;
+						break;
+					case CardSubTypeArchetypes.Scheme:
+						strSubTypeConstantPrefix = "SCHEME_";
+						nSubTypeIndexStart = 8000;
+						break;
+					case CardSubTypeArchetypes.Spell:
+						strSubTypeConstantPrefix = "SPELL_";
+						nSubTypeIndexStart = 3000;
+						break;
+				}
+				int nSubTypeIndex = nSubTypeIndexStart;
+
+				swMergedLol.WriteLine();
+				swMergedLol.WriteLine("_" + strSubTypeConstantPrefix + "TYPE_FIRST = " + nSubTypeIndex.ToString());
+
+				if (lstSubTypes.Count > 0)
+				{
+					foreach (string strSubType in lstSubTypes)
+					{
+						swSubTypes.WriteLine(strSubType);
+						swMergedLol.WriteLine(strSubTypeConstantPrefix + "TYPE_" + strSubType + " = " + nSubTypeIndex.ToString());
+						nSubTypeIndex++;
+					}
+					nSubTypeIndex--;
+				}
+
+				swMergedLol.WriteLine("_" + strSubTypeConstantPrefix + "TYPE_LAST = " + nSubTypeIndex.ToString());
+				swMergedLol.WriteLine("_" + strSubTypeConstantPrefix + "COUNT = " + lstSubTypes.Count.ToString());
+
+				if (lstSubTypes.Count > 0)
+				{
+					// Now to add the SPEC file to the WAD.
+					swSubTypes.Flush();
+					wwMerged.AddFile(WadBase.SPECS_LOCATION + eType.ToString().ToUpper() + "_TYPES.TXT", msSubTypes);
+				}
+			}
+
+			// Now to add the LOL file to the WAD.
+			swMergedLol.Flush();
+			wwMerged.AddFile(WadBase.FUNCTIONS_LOCATION + "DECK_BUILDER_MERGED_SPEC_CONSTANTS.LOL", msMergedLol);
+
+			// Now loop through the SubTypeOrdering Data and output it.
+			foreach (string strLangCode in m_gdWads.SubTypeOrdering.Keys)
+			{
+				Dictionary<string, int> dicSubTypeOrdering = m_gdWads.SubTypeOrdering[strLangCode];
+				if (dicSubTypeOrdering.Keys.Count > 0)
+				{
+					MemoryStream msSubTypeOrdering = new MemoryStream();
+					StreamWriter swSubTypeOrdering = new StreamWriter(msSubTypeOrdering);
+
+					// Write our file.
+					foreach (string strKey in dicSubTypeOrdering.Keys)
+						swSubTypeOrdering.WriteLine(strKey + "," + dicSubTypeOrdering[strKey].ToString());
+
+					// Add it to the WAD.
+					swSubTypeOrdering.Flush();
+					wwMerged.AddFile(WadBase.SPECS_LOCATION + "SUBTYPEORDERINGDATA_" + strLangCode + ".TXT", msSubTypeOrdering);
+				}
+			}
+
+			// Write out the finalized WAD file.
+			try
+			{
+				wwMerged.WriteWad(m_gdWads.GameDir);
+				MessageBox.Show(Settings.UIStrings["EXPORT_COMPLETE_CAPTION"], this.Text);
+			}
+			catch (Exception ex)
+			{
+				// This is probably due to a permissions problem (read-only directory).
+				Settings.ReportError(ex, ErrorPriority.Medium, "Unable to Export Wad: Data_DLC_Combined_Spec_Data");
+				MessageBox.Show(Settings.UIStrings["EXPORT_UNSUCCESSFUL"], Settings.UIStrings["EXPORT_UNSUCCESSFUL"], MessageBoxButtons.OK, MessageBoxIcon.Error);
+			}
+		}
+
+		private void MoveCardTo(object sender, EventArgs e)
+		{
+			if (m_dcContextCard != null)
+			{
+				DeckCard dcCardToAdd = null;
+
+				if (m_dcContextCard.Quantity > 1)
+					dcCardToAdd = new DeckCard(m_dcContextCard.Card, 1, m_dcContextCard.Bias, m_dcContextCard.Promo);
+				else
+					dcCardToAdd = m_dcContextCard;
+
+				// Add to new location.
+				if (sender == cmnuiMoveToMainDeck)
+				{
+					m_dkWorking.AddCard(dcCardToAdd.Card, dcCardToAdd.Bias, dcCardToAdd.Promo);
+					lblBasicLandCount.Text = m_dkWorking.BasicLandAmount.ToString();
+					dgvDeckCards.Refresh();
+				}
+				else if (sender == cmnuiMoveToRegularUnlocks)
+				{
+					m_dkWorking.RegularUnlocks.Cards.Add(dcCardToAdd);
+					CheckRegularButtons();
+				}
+				else if (sender == cmnuiMoveToPromoUnlocks)
+				{
+					m_dkWorking.PromoUnlocks.Cards.Add(dcCardToAdd);
+					CheckPromoButtons();
+				}
+
+				// Remove from previous location.
+				switch (m_eLocation)
+				{
+					case DeckLocation.MainDeck:
+						if (m_dcContextCard.Quantity > 1)
+							m_dcContextCard.Quantity--;
+						else
+							m_dkWorking.Cards.Remove(m_dcContextCard);
+						lblBasicLandCount.Text = m_dkWorking.BasicLandAmount.ToString();
+						dgvDeckCards.Refresh();
+						break;
+					case DeckLocation.RegularUnlocks:
+						m_dkWorking.RegularUnlocks.Cards.Remove(m_dcContextCard);
+						CheckRegularButtons();
+						break;
+					case DeckLocation.PromoUnlocks:
+						m_dkWorking.PromoUnlocks.Cards.Remove(m_dcContextCard);
+						CheckPromoButtons();
+						break;
+				}
+			}
+		}
+
+		private void SetMenuEnabled(ToolStripMenuItem mnuiMenu, bool bEnabled)
+		{
+			if (mnuiMenu.DropDownItems.Count > 0)
+			{
+				foreach (ToolStripItem mnuiItem in mnuiMenu.DropDownItems)
+					if (mnuiItem.GetType() == typeof(ToolStripMenuItem))
+						SetMenuEnabled((ToolStripMenuItem)mnuiItem, bEnabled);
+			}
+			mnuiMenu.Enabled = bEnabled;
+		}
+
+		private void mnuiToolsGenerateCPE_Click(object sender, EventArgs e)
+		{
+			IdScheme isScheme = Settings.GetSerializableSetting("CurrentIdScheme", new IdScheme());
+			IdBlockInput frmInput = new IdBlockInput(isScheme.IdBlock);
+			DialogResult drResult = frmInput.ShowDialog(this);
+			if (drResult == DialogResult.OK)
+			{
+				try
+				{
+					Tools.CreateContentPackEnabler(m_gdWads.GameDir, frmInput.IdBlock);
+					MessageBox.Show(Settings.UIStrings["EXPORT_COMPLETE_CAPTION"], this.Text);
+				}
+				catch (Exception ex)
+				{
+					// This is probably due to a permissions problem (read-only directory).
+					Settings.ReportError(ex, ErrorPriority.Medium, "Unable to Export Wad: Data_DLC_" + frmInput.IdBlock.ToString() + "Content_Pack_Enabler.wad");
+					MessageBox.Show(Settings.UIStrings["EXPORT_UNSUCCESSFUL"], Settings.UIStrings["EXPORT_UNSUCCESSFUL"], MessageBoxButtons.OK, MessageBoxIcon.Error);
 				}
 			}
 		}

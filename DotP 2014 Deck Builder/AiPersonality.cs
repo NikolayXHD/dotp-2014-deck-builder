@@ -167,8 +167,10 @@ namespace RSN.DotP
 		{
 			get
 			{
-				if (m_dicName.ContainsKey(Settings.LanguageCode))
-					return m_dicName[Settings.LanguageCode];
+				if (m_dicName.ContainsKey(Settings.Language.LanguageCode))
+					return m_dicName[Settings.Language.LanguageCode];
+				else if ((Settings.Language.MasqueradeAsLangCode != null) && (m_dicName.ContainsKey(Settings.Language.MasqueradeAsLangCode)))
+					return m_dicName[Settings.Language.MasqueradeAsLangCode];
 				else if (m_dicName.ContainsKey("en-US"))
 					return m_dicName["en-US"];
 				else

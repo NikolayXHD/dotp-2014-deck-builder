@@ -26,6 +26,7 @@ namespace RSN.DotP
 		public int ContentPackId;
 		public WadHeaderContentFlags ContentFlags;
 		public int DeckId;
+		public int OrderPriority;
 
 		public WadHeaderInfo()
 			: this(0, 213850, 0, WadHeaderContentFlags.Deck | WadHeaderContentFlags.Glossary)
@@ -37,6 +38,7 @@ namespace RSN.DotP
 			ContentAppId = nContentAppId;
 			DeckId = nDeckId;
 			ContentFlags = eFlags;
+			OrderPriority = 0;
 		}
 	}
 }

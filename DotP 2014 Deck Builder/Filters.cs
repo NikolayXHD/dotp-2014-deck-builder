@@ -93,7 +93,7 @@ namespace RSN.DotP
 			ToughnessFilter = FilterIntComparisonType.GreaterThanOrEqualTo;
 
 			// A card can really only have one rarity so AllowOnly and Exact Match don't make sense and Exclude is easy enough for people to specify using Allow.
-			Rarity = CardRarity.Common | CardRarity.Land | CardRarity.Mythic | CardRarity.Rare | CardRarity.Uncommon;
+			Rarity = CardRarity.Common | CardRarity.Land | CardRarity.Mythic | CardRarity.Rare | CardRarity.Uncommon | CardRarity.Special;
 
 			// Don't want to do any ability checks at this time.
 			DoAbilityCheck = false;

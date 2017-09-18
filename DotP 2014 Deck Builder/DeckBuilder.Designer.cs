@@ -50,6 +50,9 @@
 			this.mnuiToolsSetupCustomData = new System.Windows.Forms.ToolStripMenuItem();
 			this.mnuiToolsCreateCoreWad = new System.Windows.Forms.ToolStripMenuItem();
 			this.toolStripSeparator8 = new System.Windows.Forms.ToolStripSeparator();
+			this.mnuiToolsGenerateCPE = new System.Windows.Forms.ToolStripMenuItem();
+			this.mnuiToolsCombineSpecData = new System.Windows.Forms.ToolStripMenuItem();
+			this.toolStripSeparator6 = new System.Windows.Forms.ToolStripSeparator();
 			this.mnuiToolsOptions = new System.Windows.Forms.ToolStripMenuItem();
 			this.mnuiAbout = new System.Windows.Forms.ToolStripMenuItem();
 			this.picFrame = new System.Windows.Forms.PictureBox();
@@ -87,10 +90,19 @@
 			this.cmnuiRemoveCard = new System.Windows.Forms.ToolStripMenuItem();
 			this.cmnuiViewCard = new System.Windows.Forms.ToolStripMenuItem();
 			this.cmnuiDecksUsedIn = new System.Windows.Forms.ToolStripMenuItem();
+			this.cmnuiExportCard = new System.Windows.Forms.ToolStripMenuItem();
 			this.toolStripSeparator7 = new System.Windows.Forms.ToolStripSeparator();
 			this.cmnuiExportPreviews = new System.Windows.Forms.ToolStripMenuItem();
 			this.cmnuiExportPreviewsPng = new System.Windows.Forms.ToolStripMenuItem();
 			this.cmnuiExportPreviewsTdx = new System.Windows.Forms.ToolStripMenuItem();
+			this.cmnuiExportImageCrop = new System.Windows.Forms.ToolStripMenuItem();
+			this.cmnuiExportImageCropPng = new System.Windows.Forms.ToolStripMenuItem();
+			this.cmnuiExportImageCropTdx = new System.Windows.Forms.ToolStripMenuItem();
+			this.toolStripSeparator9 = new System.Windows.Forms.ToolStripSeparator();
+			this.cmnuiMoveTo = new System.Windows.Forms.ToolStripMenuItem();
+			this.cmnuiMoveToMainDeck = new System.Windows.Forms.ToolStripMenuItem();
+			this.cmnuiMoveToRegularUnlocks = new System.Windows.Forms.ToolStripMenuItem();
+			this.cmnuiMoveToPromoUnlocks = new System.Windows.Forms.ToolStripMenuItem();
 			this.cmnuPictures = new System.Windows.Forms.ContextMenuStrip(this.components);
 			this.cmnuiExport = new System.Windows.Forms.ToolStripMenuItem();
 			this.cmnuiExportPng = new System.Windows.Forms.ToolStripMenuItem();
@@ -101,10 +113,6 @@
 			this.sslblLoadedCardsNum = new System.Windows.Forms.ToolStripStatusLabel();
 			this.sslblCardsInList = new System.Windows.Forms.ToolStripStatusLabel();
 			this.sslblCardsInListNum = new System.Windows.Forms.ToolStripStatusLabel();
-			this.cmnuiExportCard = new System.Windows.Forms.ToolStripMenuItem();
-			this.cmnuiExportImageCrop = new System.Windows.Forms.ToolStripMenuItem();
-			this.cmnuiExportImageCropPng = new System.Windows.Forms.ToolStripMenuItem();
-			this.cmnuiExportImageCropTdx = new System.Windows.Forms.ToolStripMenuItem();
 			((System.ComponentModel.ISupportInitialize)(this.dgvCards)).BeginInit();
 			this.mnuMain.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.picFrame)).BeginInit();
@@ -161,8 +169,11 @@
 			this.dgvCards.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
 			this.dgvCards.Size = new System.Drawing.Size(1086, 82);
 			this.dgvCards.TabIndex = 0;
+			this.dgvCards.VirtualMode = true;
+			this.dgvCards.CellBeginEdit += new System.Windows.Forms.DataGridViewCellCancelEventHandler(this.dgvCards_CellBeginEdit);
 			this.dgvCards.CellDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgvCards_CellDoubleClick);
 			this.dgvCards.CellMouseEnter += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgvCards_CellMouseEnter);
+			this.dgvCards.CellValueNeeded += new System.Windows.Forms.DataGridViewCellValueEventHandler(this.dgvCards_CellValueNeeded);
 			this.dgvCards.ColumnHeaderMouseClick += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.dgvCards_ColumnHeaderMouseClick);
 			this.dgvCards.Scroll += new System.Windows.Forms.ScrollEventHandler(this.dgvCards_Scroll);
 			this.dgvCards.SelectionChanged += new System.EventHandler(this.dgvCards_SelectionChanged);
@@ -296,6 +307,9 @@
             this.mnuiToolsSetupCustomData,
             this.mnuiToolsCreateCoreWad,
             this.toolStripSeparator8,
+            this.mnuiToolsGenerateCPE,
+            this.mnuiToolsCombineSpecData,
+            this.toolStripSeparator6,
             this.mnuiToolsOptions});
 			this.mnuiTools.Name = "mnuiTools";
 			this.mnuiTools.Size = new System.Drawing.Size(48, 20);
@@ -336,6 +350,27 @@
 			// 
 			this.toolStripSeparator8.Name = "toolStripSeparator8";
 			this.toolStripSeparator8.Size = new System.Drawing.Size(261, 6);
+			// 
+			// mnuiToolsGenerateCPE
+			// 
+			this.mnuiToolsGenerateCPE.Name = "mnuiToolsGenerateCPE";
+			this.mnuiToolsGenerateCPE.Size = new System.Drawing.Size(264, 22);
+			this.mnuiToolsGenerateCPE.Tag = "MENU_TOOLS_GENERATE_CPE";
+			this.mnuiToolsGenerateCPE.Text = "&Generate Content Pack Enabler";
+			this.mnuiToolsGenerateCPE.Click += new System.EventHandler(this.mnuiToolsGenerateCPE_Click);
+			// 
+			// mnuiToolsCombineSpecData
+			// 
+			this.mnuiToolsCombineSpecData.Name = "mnuiToolsCombineSpecData";
+			this.mnuiToolsCombineSpecData.Size = new System.Drawing.Size(264, 22);
+			this.mnuiToolsCombineSpecData.Tag = "MENU_TOOLS_COMBINE_SPEC_DATA";
+			this.mnuiToolsCombineSpecData.Text = "&Combine SPEC Data";
+			this.mnuiToolsCombineSpecData.Click += new System.EventHandler(this.mnuiToolsCombineSpecData_Click);
+			// 
+			// toolStripSeparator6
+			// 
+			this.toolStripSeparator6.Name = "toolStripSeparator6";
+			this.toolStripSeparator6.Size = new System.Drawing.Size(261, 6);
 			// 
 			// mnuiToolsOptions
 			// 
@@ -598,6 +633,7 @@
 			this.dgvDeckCards.CellBeginEdit += new System.Windows.Forms.DataGridViewCellCancelEventHandler(this.dgvDeckCards_CellBeginEdit);
 			this.dgvDeckCards.CellEndEdit += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgvDeckCards_CellEndEdit);
 			this.dgvDeckCards.CellMouseEnter += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgvDeckCards_CellMouseEnter);
+			this.dgvDeckCards.CellValidating += new System.Windows.Forms.DataGridViewCellValidatingEventHandler(this.DeckCards_CellValidating);
 			this.dgvDeckCards.ColumnHeaderMouseClick += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.dgvDeckCards_ColumnHeaderMouseClick);
 			this.dgvDeckCards.SelectionChanged += new System.EventHandler(this.dgvDeckCards_SelectionChanged);
 			this.dgvDeckCards.MouseClick += new System.Windows.Forms.MouseEventHandler(this.dgvDeckCards_MouseClick);
@@ -694,6 +730,7 @@
 			this.dgvUnlocksRegular.CellBeginEdit += new System.Windows.Forms.DataGridViewCellCancelEventHandler(this.dgvUnlocksRegular_CellBeginEdit);
 			this.dgvUnlocksRegular.CellEndEdit += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgvUnlocksRegular_CellEndEdit);
 			this.dgvUnlocksRegular.CellMouseEnter += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgvUnlocksRegular_CellMouseEnter);
+			this.dgvUnlocksRegular.CellValidating += new System.Windows.Forms.DataGridViewCellValidatingEventHandler(this.DeckCards_CellValidating);
 			this.dgvUnlocksRegular.RowsRemoved += new System.Windows.Forms.DataGridViewRowsRemovedEventHandler(this.dgvUnlocksRegular_RowsRemoved);
 			this.dgvUnlocksRegular.SelectionChanged += new System.EventHandler(this.dgvUnlocksRegular_SelectionChanged);
 			this.dgvUnlocksRegular.MouseClick += new System.Windows.Forms.MouseEventHandler(this.dgvUnlocksRegular_MouseClick);
@@ -773,6 +810,7 @@
 			this.dgvUnlocksPromo.CellBeginEdit += new System.Windows.Forms.DataGridViewCellCancelEventHandler(this.dgvUnlocksPromo_CellBeginEdit);
 			this.dgvUnlocksPromo.CellEndEdit += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgvUnlocksPromo_CellEndEdit);
 			this.dgvUnlocksPromo.CellMouseEnter += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgvUnlocksPromo_CellMouseEnter);
+			this.dgvUnlocksPromo.CellValidating += new System.Windows.Forms.DataGridViewCellValidatingEventHandler(this.DeckCards_CellValidating);
 			this.dgvUnlocksPromo.RowsRemoved += new System.Windows.Forms.DataGridViewRowsRemovedEventHandler(this.dgvUnlocksPromo_RowsRemoved);
 			this.dgvUnlocksPromo.SelectionChanged += new System.EventHandler(this.dgvUnlocksPromo_SelectionChanged);
 			this.dgvUnlocksPromo.MouseClick += new System.Windows.Forms.MouseEventHandler(this.dgvUnlocksPromo_MouseClick);
@@ -788,9 +826,11 @@
             this.cmnuiExportCard,
             this.toolStripSeparator7,
             this.cmnuiExportPreviews,
-            this.cmnuiExportImageCrop});
+            this.cmnuiExportImageCrop,
+            this.toolStripSeparator9,
+            this.cmnuiMoveTo});
 			this.cmnuContext.Name = "cmnuContext";
-			this.cmnuContext.Size = new System.Drawing.Size(185, 192);
+			this.cmnuContext.Size = new System.Drawing.Size(185, 220);
 			// 
 			// cmnuiColumns
 			// 
@@ -828,6 +868,14 @@
 			this.cmnuiDecksUsedIn.Text = "&Decks Used In ...";
 			this.cmnuiDecksUsedIn.Click += new System.EventHandler(this.cmnuiDecksUsedIn_Click);
 			// 
+			// cmnuiExportCard
+			// 
+			this.cmnuiExportCard.Name = "cmnuiExportCard";
+			this.cmnuiExportCard.Size = new System.Drawing.Size(184, 22);
+			this.cmnuiExportCard.Tag = "MENU_EXPORT_CARD_XML";
+			this.cmnuiExportCard.Text = "E&xport Card XML";
+			this.cmnuiExportCard.Click += new System.EventHandler(this.cmnuiExportCard_Click);
+			// 
 			// toolStripSeparator7
 			// 
 			this.toolStripSeparator7.Name = "toolStripSeparator7";
@@ -846,16 +894,80 @@
 			// cmnuiExportPreviewsPng
 			// 
 			this.cmnuiExportPreviewsPng.Name = "cmnuiExportPreviewsPng";
-			this.cmnuiExportPreviewsPng.Size = new System.Drawing.Size(152, 22);
+			this.cmnuiExportPreviewsPng.Size = new System.Drawing.Size(110, 22);
 			this.cmnuiExportPreviewsPng.Text = "&PNG ...";
 			this.cmnuiExportPreviewsPng.Click += new System.EventHandler(this.cmnuiExportPreviewsPng_Click);
 			// 
 			// cmnuiExportPreviewsTdx
 			// 
 			this.cmnuiExportPreviewsTdx.Name = "cmnuiExportPreviewsTdx";
-			this.cmnuiExportPreviewsTdx.Size = new System.Drawing.Size(152, 22);
+			this.cmnuiExportPreviewsTdx.Size = new System.Drawing.Size(110, 22);
 			this.cmnuiExportPreviewsTdx.Text = "&TDX ...";
 			this.cmnuiExportPreviewsTdx.Click += new System.EventHandler(this.cmnuiExportPreviewsTdx_Click);
+			// 
+			// cmnuiExportImageCrop
+			// 
+			this.cmnuiExportImageCrop.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.cmnuiExportImageCropPng,
+            this.cmnuiExportImageCropTdx});
+			this.cmnuiExportImageCrop.Name = "cmnuiExportImageCrop";
+			this.cmnuiExportImageCrop.Size = new System.Drawing.Size(184, 22);
+			this.cmnuiExportImageCrop.Tag = "MENU_EXPORT_IMAGE_CROP";
+			this.cmnuiExportImageCrop.Text = "Ex&port Image Crop";
+			// 
+			// cmnuiExportImageCropPng
+			// 
+			this.cmnuiExportImageCropPng.Name = "cmnuiExportImageCropPng";
+			this.cmnuiExportImageCropPng.Size = new System.Drawing.Size(98, 22);
+			this.cmnuiExportImageCropPng.Text = "&PNG";
+			this.cmnuiExportImageCropPng.Click += new System.EventHandler(this.cmnuiExportImageCropPng_Click);
+			// 
+			// cmnuiExportImageCropTdx
+			// 
+			this.cmnuiExportImageCropTdx.Name = "cmnuiExportImageCropTdx";
+			this.cmnuiExportImageCropTdx.Size = new System.Drawing.Size(98, 22);
+			this.cmnuiExportImageCropTdx.Text = "&TDX";
+			this.cmnuiExportImageCropTdx.Click += new System.EventHandler(this.cmnuiExportImageCropTdx_Click);
+			// 
+			// toolStripSeparator9
+			// 
+			this.toolStripSeparator9.Name = "toolStripSeparator9";
+			this.toolStripSeparator9.Size = new System.Drawing.Size(181, 6);
+			// 
+			// cmnuiMoveTo
+			// 
+			this.cmnuiMoveTo.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.cmnuiMoveToMainDeck,
+            this.cmnuiMoveToRegularUnlocks,
+            this.cmnuiMoveToPromoUnlocks});
+			this.cmnuiMoveTo.Name = "cmnuiMoveTo";
+			this.cmnuiMoveTo.Size = new System.Drawing.Size(184, 22);
+			this.cmnuiMoveTo.Tag = "MENU_MOVE_CARD_TO";
+			this.cmnuiMoveTo.Text = "&Move Card to";
+			// 
+			// cmnuiMoveToMainDeck
+			// 
+			this.cmnuiMoveToMainDeck.Name = "cmnuiMoveToMainDeck";
+			this.cmnuiMoveToMainDeck.Size = new System.Drawing.Size(159, 22);
+			this.cmnuiMoveToMainDeck.Tag = "MENU_MOVE_CARD_TO_MAIN_DECK";
+			this.cmnuiMoveToMainDeck.Text = "M&ain Deck";
+			this.cmnuiMoveToMainDeck.Click += new System.EventHandler(this.MoveCardTo);
+			// 
+			// cmnuiMoveToRegularUnlocks
+			// 
+			this.cmnuiMoveToRegularUnlocks.Name = "cmnuiMoveToRegularUnlocks";
+			this.cmnuiMoveToRegularUnlocks.Size = new System.Drawing.Size(159, 22);
+			this.cmnuiMoveToRegularUnlocks.Tag = "MENU_MOVE_CARD_TO_REGULAR_UNLOCKS";
+			this.cmnuiMoveToRegularUnlocks.Text = "Re&gular Unlocks";
+			this.cmnuiMoveToRegularUnlocks.Click += new System.EventHandler(this.MoveCardTo);
+			// 
+			// cmnuiMoveToPromoUnlocks
+			// 
+			this.cmnuiMoveToPromoUnlocks.Name = "cmnuiMoveToPromoUnlocks";
+			this.cmnuiMoveToPromoUnlocks.Size = new System.Drawing.Size(159, 22);
+			this.cmnuiMoveToPromoUnlocks.Tag = "MENU_MOVE_CARD_TO_PROMO_UNLOCKS";
+			this.cmnuiMoveToPromoUnlocks.Text = "Pr&omo Unlocks";
+			this.cmnuiMoveToPromoUnlocks.Click += new System.EventHandler(this.MoveCardTo);
 			// 
 			// cmnuPictures
 			// 
@@ -948,38 +1060,6 @@
 			this.sslblCardsInListNum.Name = "sslblCardsInListNum";
 			this.sslblCardsInListNum.Size = new System.Drawing.Size(17, 19);
 			this.sslblCardsInListNum.Text = "0";
-			// 
-			// cmnuiExportCard
-			// 
-			this.cmnuiExportCard.Name = "cmnuiExportCard";
-			this.cmnuiExportCard.Size = new System.Drawing.Size(184, 22);
-			this.cmnuiExportCard.Tag = "MENU_EXPORT_CARD_XML";
-			this.cmnuiExportCard.Text = "E&xport Card XML";
-			this.cmnuiExportCard.Click += new System.EventHandler(this.cmnuiExportCard_Click);
-			// 
-			// cmnuiExportImageCrop
-			// 
-			this.cmnuiExportImageCrop.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.cmnuiExportImageCropPng,
-            this.cmnuiExportImageCropTdx});
-			this.cmnuiExportImageCrop.Name = "cmnuiExportImageCrop";
-			this.cmnuiExportImageCrop.Size = new System.Drawing.Size(184, 22);
-			this.cmnuiExportImageCrop.Tag = "MENU_EXPORT_IMAGE_CROP";
-			this.cmnuiExportImageCrop.Text = "Ex&port Image Crop";
-			// 
-			// cmnuiExportImageCropPng
-			// 
-			this.cmnuiExportImageCropPng.Name = "cmnuiExportImageCropPng";
-			this.cmnuiExportImageCropPng.Size = new System.Drawing.Size(152, 22);
-			this.cmnuiExportImageCropPng.Text = "&PNG";
-			this.cmnuiExportImageCropPng.Click += new System.EventHandler(this.cmnuiExportImageCropPng_Click);
-			// 
-			// cmnuiExportImageCropTdx
-			// 
-			this.cmnuiExportImageCropTdx.Name = "cmnuiExportImageCropTdx";
-			this.cmnuiExportImageCropTdx.Size = new System.Drawing.Size(152, 22);
-			this.cmnuiExportImageCropTdx.Text = "&TDX";
-			this.cmnuiExportImageCropTdx.Click += new System.EventHandler(this.cmnuiExportImageCropTdx_Click);
 			// 
 			// DeckBuilder
 			// 
@@ -1123,6 +1203,14 @@
 		private System.Windows.Forms.ToolStripMenuItem cmnuiExportImageCrop;
 		private System.Windows.Forms.ToolStripMenuItem cmnuiExportImageCropPng;
 		private System.Windows.Forms.ToolStripMenuItem cmnuiExportImageCropTdx;
+		private System.Windows.Forms.ToolStripMenuItem mnuiToolsGenerateCPE;
+		private System.Windows.Forms.ToolStripSeparator toolStripSeparator6;
+		private System.Windows.Forms.ToolStripMenuItem mnuiToolsCombineSpecData;
+		private System.Windows.Forms.ToolStripSeparator toolStripSeparator9;
+		private System.Windows.Forms.ToolStripMenuItem cmnuiMoveTo;
+		private System.Windows.Forms.ToolStripMenuItem cmnuiMoveToMainDeck;
+		private System.Windows.Forms.ToolStripMenuItem cmnuiMoveToRegularUnlocks;
+		private System.Windows.Forms.ToolStripMenuItem cmnuiMoveToPromoUnlocks;
 	}
 }
 

@@ -100,6 +100,7 @@ namespace RSN.DotP
 				Tools.AddViewColumn(dgvDecks, new DataGridViewTextBoxColumn(), "BasicLands", "BasicLandAmount", "COLUMN_TEXT_BASIC_LANDS", DataGridViewColumnSortMode.Programmatic, 60);
 				Tools.AddViewColumn(dgvDecks, new DataGridViewTextBoxColumn(), "RegularUnlocks", "RegularUnlockCardCount", "COLUMN_TEXT_REGULAR_UNLOCKS", DataGridViewColumnSortMode.Programmatic, 60);
 				Tools.AddViewColumn(dgvDecks, new DataGridViewTextBoxColumn(), "PromoUnlocks", "PromoUnlockCardCount", "COLUMN_TEXT_PROMO_UNLOCKS", DataGridViewColumnSortMode.Programmatic, 60);
+				Tools.AddViewColumn(dgvDecks, new DataGridViewTextBoxColumn(), "Wad", "Wad", "COLUMN_TEXT_WAD", DataGridViewColumnSortMode.Programmatic, 100);
 
 				Settings.GetSetting("DeckViewColumns", dgvDecks.Columns);
 

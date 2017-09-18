@@ -95,6 +95,7 @@
 			this.chkTokens = new System.Windows.Forms.CheckBox();
 			this.cmdCancel = new System.Windows.Forms.Button();
 			this.cmdApply = new System.Windows.Forms.Button();
+			this.chkRaritySpecial = new System.Windows.Forms.CheckBox();
 			this.gbSupertype.SuspendLayout();
 			this.gbTypes.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.scTypes)).BeginInit();
@@ -574,6 +575,7 @@
 			// 
 			// gbRarity
 			// 
+			this.gbRarity.Controls.Add(this.chkRaritySpecial);
 			this.gbRarity.Controls.Add(this.chkRarityMythic);
 			this.gbRarity.Controls.Add(this.chkRarityRare);
 			this.gbRarity.Controls.Add(this.chkRarityUncommon);
@@ -582,7 +584,7 @@
 			this.gbRarity.Controls.Add(this.chkRarityToken);
 			this.gbRarity.Location = new System.Drawing.Point(440, 12);
 			this.gbRarity.Name = "gbRarity";
-			this.gbRarity.Size = new System.Drawing.Size(200, 157);
+			this.gbRarity.Size = new System.Drawing.Size(200, 180);
 			this.gbRarity.TabIndex = 7;
 			this.gbRarity.TabStop = false;
 			this.gbRarity.Tag = "RARITY";
@@ -764,7 +766,7 @@
 			this.gbAbilities.Controls.Add(this.cboAbilitiesFilter);
 			this.gbAbilities.Controls.Add(this.txtAbilities);
 			this.gbAbilities.Controls.Add(this.chkCheckAbilities);
-			this.gbAbilities.Location = new System.Drawing.Point(440, 175);
+			this.gbAbilities.Location = new System.Drawing.Point(440, 198);
 			this.gbAbilities.Name = "gbAbilities";
 			this.gbAbilities.Size = new System.Drawing.Size(200, 118);
 			this.gbAbilities.TabIndex = 8;
@@ -822,7 +824,7 @@
 			this.gbExtra.Controls.Add(this.chkRegularMana);
 			this.gbExtra.Controls.Add(this.chkCardsThatCreateTokens);
 			this.gbExtra.Controls.Add(this.chkTokens);
-			this.gbExtra.Location = new System.Drawing.Point(440, 299);
+			this.gbExtra.Location = new System.Drawing.Point(440, 322);
 			this.gbExtra.Name = "gbExtra";
 			this.gbExtra.Size = new System.Drawing.Size(200, 134);
 			this.gbExtra.TabIndex = 9;
@@ -888,7 +890,7 @@
 			// cmdCancel
 			// 
 			this.cmdCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-			this.cmdCancel.Location = new System.Drawing.Point(545, 439);
+			this.cmdCancel.Location = new System.Drawing.Point(545, 462);
 			this.cmdCancel.Name = "cmdCancel";
 			this.cmdCancel.Size = new System.Drawing.Size(95, 21);
 			this.cmdCancel.TabIndex = 11;
@@ -900,7 +902,7 @@
 			// cmdApply
 			// 
 			this.cmdApply.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-			this.cmdApply.Location = new System.Drawing.Point(444, 439);
+			this.cmdApply.Location = new System.Drawing.Point(444, 462);
 			this.cmdApply.Name = "cmdApply";
 			this.cmdApply.Size = new System.Drawing.Size(95, 21);
 			this.cmdApply.TabIndex = 10;
@@ -909,11 +911,22 @@
 			this.cmdApply.UseVisualStyleBackColor = true;
 			this.cmdApply.Click += new System.EventHandler(this.cmdApply_Click);
 			// 
+			// chkRaritySpecial
+			// 
+			this.chkRaritySpecial.AutoSize = true;
+			this.chkRaritySpecial.Location = new System.Drawing.Point(6, 157);
+			this.chkRaritySpecial.Name = "chkRaritySpecial";
+			this.chkRaritySpecial.Size = new System.Drawing.Size(61, 17);
+			this.chkRaritySpecial.TabIndex = 6;
+			this.chkRaritySpecial.Tag = "RARITY_SPECIAL";
+			this.chkRaritySpecial.Text = "Special";
+			this.chkRaritySpecial.UseVisualStyleBackColor = true;
+			// 
 			// FilterSettings
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			this.ClientSize = new System.Drawing.Size(652, 472);
+			this.ClientSize = new System.Drawing.Size(652, 495);
 			this.ControlBox = false;
 			this.Controls.Add(this.cmdCancel);
 			this.Controls.Add(this.cmdApply);
@@ -1037,5 +1050,6 @@
 		private System.Windows.Forms.Button cmdApply;
 		private System.Windows.Forms.TextBox txtToughness;
 		private System.Windows.Forms.TextBox txtPower;
+		private System.Windows.Forms.CheckBox chkRaritySpecial;
 	}
 }

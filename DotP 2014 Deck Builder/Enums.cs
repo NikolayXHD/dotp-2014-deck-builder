@@ -25,6 +25,7 @@ namespace RSN.DotP
 		Uncommon = 0x08,
 		Rare = 0x10,
 		Mythic = 0x20,
+		Special = 0x40,
 	}
 
 	public enum CardType
@@ -41,6 +42,19 @@ namespace RSN.DotP
 		Scheme = 0x0100,
 		Sorcery = 0x0200,
 		Tribal = 0x0400,
+	}
+
+	// These are specifically for loading of sub-types from the SPECS.
+	public enum CardSubTypeArchetypes
+	{
+		Artifact = 0,
+		Creature,
+		Enchantment,
+		Land,
+		Plane,
+		Planeswalker,
+		Scheme,
+		Spell,
 	}
 
 	public enum CardSuperType

@@ -47,8 +47,10 @@ namespace RSN.DotP
 				string strReturn = string.Empty;
 				if (m_dicText != null)
 				{
-					if (m_dicText.ContainsKey(Settings.LanguageCode))
-						strReturn = m_dicText[Settings.LanguageCode];
+					if (m_dicText.ContainsKey(Settings.Language.LanguageCode))
+						strReturn = m_dicText[Settings.Language.LanguageCode];
+					else if ((Settings.Language.MasqueradeAsLangCode != null) && (m_dicText.ContainsKey(Settings.Language.MasqueradeAsLangCode)))
+						strReturn = m_dicText[Settings.Language.MasqueradeAsLangCode];
 					else if (m_dicText.ContainsKey("en-US"))
 						strReturn = m_dicText["en-US"];
 				}

@@ -47,6 +47,9 @@ namespace RSN.DotP
 
 			// Load up all the strings present in TEXT_PERMANENT
 			m_dicStringTable = LoadStringTable();
+
+			// Load up the SPECS present (if any)
+			LoadSpecs();
 		}
 
 		private Dictionary<string, Dictionary<string, string>> LoadStringTable()
@@ -340,9 +343,10 @@ namespace RSN.DotP
 						{
 							Deck deck = new Deck(gdData, strFileName, strXml, m_strName);
 							// See if we can load the deck image (can make things easier for people who create from existing deck).
-							TdxWrapper twDeckBox = gdData.LoadImage(deck.DeckBoxImageName, LoadImageType.Deck);
+							/*TdxWrapper twDeckBox = gdData.LoadImage(deck.DeckBoxImageName, LoadImageType.Deck);
 							if (twDeckBox != null)
-								deck.DeckBoxImage = new System.Drawing.Bitmap(twDeckBox.Image);
+								deck.DeckBoxImage = twDeckBox.Image;//*/
+								//deck.DeckBoxImage = new System.Drawing.Bitmap(twDeckBox.Image);
 							m_lstDecks.Add(deck);
 						}
 						catch (Exception e)
@@ -375,30 +379,150 @@ namespace RSN.DotP
 							DeckUnlocks duUnlocks = new DeckUnlocks(gdData, strXml, strFileName);
 							if (!dicUsedIds.ContainsKey(duUnlocks.Uid))
 								dicUsedIds.Add(duUnlocks.Uid, strFileName);
-							Deck dkDeck = gdData.GetDeckById(duUnlocks.DeckUid);
+							Deck dkDeck = gdData.GetDeckById(duUnlocks.DeckUid, m_strName);
+							if (dkDeck == null)
+								dkDeck = gdData.GetDeckById(duUnlocks.DeckUid);
 							if (dkDeck != null)
 							{
 								if (duUnlocks.Promo)
-									dkDeck.PromoUnlocks = duUnlocks;
+								{
+									if (dkDeck.PromoUnlockCardCount == 0)
+										dkDeck.PromoUnlocks = duUnlocks;
+									else
+										dkDeck.PromoUnlocks.MergeUnlocks(duUnlocks);
+								}
 								else
-									dkDeck.RegularUnlocks = duUnlocks;
+								{
+									if (dkDeck.RegularUnlockCardCount == 0)
+										dkDeck.RegularUnlocks = duUnlocks;
+									else
+										dkDeck.RegularUnlocks.MergeUnlocks(duUnlocks);
+								}
 							}
 							else
 								Settings.ReportError(null, ErrorPriority.Low, "Unable to find deck with id " + duUnlocks.DeckUid.ToString() + " to associate unlock file " + strFileName + " with.");
 						}
 						catch (Exception e)
 						{
-							Settings.ReportError(e, ErrorPriority.Medium, "Unable to load unlock file: " + strFile);
+							Settings.ReportError(e, ErrorPriority.Medium, "Unable to load unlock file: " + strFile + " in " + m_strName);
 						}
 					}
 					catch (Exception e)
 					{
-						Settings.ReportError(e, ErrorPriority.Medium, "Unable to read unlock file: " + strFile);
+						Settings.ReportError(e, ErrorPriority.Medium, "Unable to read unlock file: " + strFile + " in " + m_strName);
 					}
 				}
 			}
 
 			return dicUsedIds;
+		}
+
+		private void LoadSpecs()
+		{
+			if (Directory.Exists(m_strFullDir + SPECS_LOCATION))
+			{
+				m_dicSubTypeOrdering = new Dictionary<string, Dictionary<string, int>>();
+				m_dicSubTypes = new Dictionary<CardSubTypeArchetypes, List<string>>();
+
+				// Loop through the SUBTYPEORDERINGDATA_* files for sub-type ordering data.
+				IEnumerable<string> files = Directory.EnumerateFiles(m_strFullDir + SPECS_LOCATION, "SUBTYPEORDERINGDATA_*");
+				foreach (string strFile in files)
+				{
+					if (Path.GetExtension(strFile).Equals(".txt", StringComparison.OrdinalIgnoreCase))
+					{
+						string strLangCode = Path.GetFileNameWithoutExtension(strFile).ToUpper().Replace("SUBTYPEORDERINGDATA_", "");
+						try
+						{
+							string strContents = FileTools.ReadFileString(strFile);
+							try
+							{
+								// Now we need to make sure the contents are clean enough to properly process.
+								//	Mainly this unifies all line endings to a common line ending so I can split on it.
+								strContents = strContents.Replace("\r\n", "{{RN}}").Replace("\r", "{{RN}}").Replace("\n", "{{RN}}").Replace("{{RN}}", "\r\n");
+
+								// Now we create a dictionary for the ordering data and add it.
+								Dictionary<string, int> dicOrdering = new Dictionary<string, int>();
+								m_dicSubTypeOrdering.Add(strLangCode, dicOrdering);
+
+								// And Load in the data.
+								string[] astrEntries = strContents.Split(new string[] { "\r\n" }, StringSplitOptions.RemoveEmptyEntries);
+								foreach (string strEntry in astrEntries)
+								{
+									if (!strEntry.StartsWith("//"))
+									{
+										string[] astrEntryParts = strEntry.Split(new char[] { ',' });
+										if (astrEntryParts.Length >= 2)
+										{
+											string strSubType = astrEntryParts[0].Trim().ToUpper();
+											// Verify that we have something other than a blank line (which should be the case)
+											//	and that it isn't already in the list.
+											if ((strSubType.Length > 0) && (!dicOrdering.ContainsKey(strSubType)))
+											{
+												int nOrder = 0;
+												if (int.TryParse(astrEntryParts[1].Trim(), out nOrder))
+												{
+													dicOrdering.Add(strSubType, nOrder);
+												}
+											}
+										}
+									}
+								}
+							}
+							catch (Exception e)
+							{
+								Settings.ReportError(e, ErrorPriority.Medium, "Unable to load SPEC file: " + Path.GetFileName(strFile) + " in " + m_strName);
+							}
+						}
+						catch (Exception e)
+						{
+							Settings.ReportError(e, ErrorPriority.Low, "Unable to read SPEC file: " + Path.GetFileName(strFile) + " in " + m_strName);
+						}
+					}
+				}
+
+				// Loop through the CardSubTypeArchetypes to load the sub-types for each archetype.
+				foreach (CardSubTypeArchetypes eType in Enum.GetValues(typeof(CardSubTypeArchetypes)))
+				{
+					string strFile = m_strFullDir + SPECS_LOCATION + eType.ToString().ToUpper() + "_TYPES.TXT";
+					if (File.Exists(strFile))
+					{
+						// Great, we have a SPEC file to attempt to read in and process.
+						try
+						{
+							string strContents = FileTools.ReadFileString(strFile);
+							try
+							{
+								// Now we need to make sure the contents are clean enough to properly process.
+								//	Mainly this unifies all line endings to a common line ending so I can split on it.
+								strContents = strContents.Replace("\r\n", "{{RN}}").Replace("\r", "{{RN}}").Replace("\n", "{{RN}}").Replace("{{RN}}", "\r\n");
+
+								// Now we create our list and add it to the Sub-Types dictionary.
+								List<string> lstSubTypes = new List<string>();
+								m_dicSubTypes.Add(eType, lstSubTypes);
+
+								// Now we parse our entries and add them to the Sub-Types list.
+								string[] astrEntries = strContents.Split(new string[] { "\r\n" }, StringSplitOptions.RemoveEmptyEntries);
+								foreach (string strEntry in astrEntries)
+								{
+									string strKey = strEntry.Trim().ToUpper();
+									// Verify that we have something other than a blank line (which should be the case)
+									//	and that it isn't already in the list.
+									if ((strKey.Length > 0) && (!lstSubTypes.Contains(strKey)))
+										lstSubTypes.Add(strKey);
+								}
+							}
+							catch (Exception e)
+							{
+								Settings.ReportError(e, ErrorPriority.Medium, "Unable to load SPEC file: " + Path.GetFileName(strFile) + " in " + m_strName);
+							}
+						}
+						catch (Exception e)
+						{
+							Settings.ReportError(e, ErrorPriority.Medium, "Unable to read SPEC file: " + Path.GetFileName(strFile) + " in " + m_strName);
+						}
+					}
+				}
+			}
 		}
 
 		// For directories this is pretty easy.

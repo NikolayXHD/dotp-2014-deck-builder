@@ -99,6 +99,7 @@ namespace RSN.DotP
 			chkRarityUncommon.Checked = ((m_fltSettings.Rarity & CardRarity.Uncommon) == CardRarity.Uncommon);
 			chkRarityRare.Checked = ((m_fltSettings.Rarity & CardRarity.Rare) == CardRarity.Rare);
 			chkRarityMythic.Checked = ((m_fltSettings.Rarity & CardRarity.Mythic) == CardRarity.Mythic);
+			chkRaritySpecial.Checked = ((m_fltSettings.Rarity & CardRarity.Special) == CardRarity.Special);
 
 			// Abilities
 			chkCheckAbilities.Checked = m_fltSettings.DoAbilityCheck;
@@ -186,6 +187,7 @@ namespace RSN.DotP
 			chkRarityUncommon.Text = Settings.UIStrings[(string)chkRarityUncommon.Tag];
 			chkRarityRare.Text = Settings.UIStrings[(string)chkRarityRare.Tag];
 			chkRarityMythic.Text = Settings.UIStrings[(string)chkRarityMythic.Tag];
+			chkRaritySpecial.Text = Settings.UIStrings[(string)chkRaritySpecial.Tag];
 
 			// Abilities
 			gbAbilities.Text = Settings.UIStrings[(string)gbAbilities.Tag];
@@ -309,6 +311,7 @@ namespace RSN.DotP
 			m_fltSettings.Rarity |= (chkRarityUncommon.Checked ? CardRarity.Uncommon : 0);
 			m_fltSettings.Rarity |= (chkRarityRare.Checked ? CardRarity.Rare : 0);
 			m_fltSettings.Rarity |= (chkRarityMythic.Checked ? CardRarity.Mythic : 0);
+			m_fltSettings.Rarity |= (chkRaritySpecial.Checked ? CardRarity.Special : 0);
 
 			// Abilities
 			m_fltSettings.DoAbilityCheck = chkCheckAbilities.Checked;

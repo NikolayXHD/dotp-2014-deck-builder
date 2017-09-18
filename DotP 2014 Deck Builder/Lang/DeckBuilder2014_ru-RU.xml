@@ -6,7 +6,7 @@
 			untranslated, so anyone who completes this translation and corrects the
 			errors (if any) should remove my name and credit themselves. -->
 	<STRING key="LOCALIZED_BY"><![CDATA[Localized by Riiak Shi Nal - 2013]]></STRING>
-	<STRING key="LOCALIZATION_VERSION"><![CDATA[русский v1.0.0.3]]></STRING>
+	<STRING key="LOCALIZATION_VERSION"><![CDATA[русский v1.0.0.4]]></STRING>
 	<!-- Strings for Main Window -->
 	<STRING key="MISSING_DOTP_DIRECTORY_TITLE"><![CDATA[DotP 2014 Directory not set.]]></STRING>
 	<STRING key="MISSING_DOTP_DIRECTORY_MESSAGE"><![CDATA[The Duels of the Planeswalkers 2013 game directory has not yet been set.  Please do so now.]]></STRING>
@@ -224,6 +224,7 @@ Please give one before applying.]]></STRING>
 	<STRING key="RARITY_UNCOMMON"><![CDATA[Uncommon]]></STRING>
 	<STRING key="RARITY_RARE"><![CDATA[Rare]]></STRING>
 	<STRING key="RARITY_MYTHIC"><![CDATA[Mythic Rare]]></STRING>
+	<STRING key="RARITY_SPECIAL"><![CDATA[Special]]></STRING>
 	<STRING key="ABILITIES"><![CDATA[Abilities]]></STRING>
 	<STRING key="CHECK_ABILITIES"><![CDATA[Check Abilities]]></STRING>
 	<STRING key="CHECK_GRANTED_ABILITIES"><![CDATA[Check Granted Abilities]]></STRING>
@@ -631,4 +632,13 @@ Please give one before applying.]]></STRING>
 	<STRING key="CARD_SUBTYPE_VENSER"><![CDATA[Венсер]]></STRING>
 	<!-- Strings for the Card Sub-Types - Spell -->
 	<STRING key="CARD_SUBTYPE_ARCANE"><![CDATA[Тайные_знания]]></STRING>
+	<!-- Strings added for v1.4.0.0 -->
+	<STRING key="ID_BLOCK_INPUT"><![CDATA[ID Block Input]]></STRING>
+	<STRING key="ID_BLOCK_TO_GENERATE"><![CDATA[ID Block to generate:]]></STRING>
+	<STRING key="MENU_TOOLS_GENERATE_CPE"><![CDATA[&Generate Content Pack Enabler]]></STRING>
+	<STRING key="MENU_TOOLS_COMBINE_SPEC_DATA"><![CDATA[&Combine SPEC Data]]></STRING>
+	<STRING key="MENU_MOVE_CARD_TO"><![CDATA[&Move Card to]]></STRING>
+	<STRING key="MENU_MOVE_CARD_TO_MAIN_DECK"><![CDATA[M&ain Deck]]></STRING>
+	<STRING key="MENU_MOVE_CARD_TO_REGULAR_UNLOCKS"><![CDATA[Re&gular Unlocks]]></STRING>
+	<STRING key="MENU_MOVE_CARD_TO_PROMO_UNLOCKS"><![CDATA[Pr&omo Unlocks]]></STRING>
 </LOCALIZATION>

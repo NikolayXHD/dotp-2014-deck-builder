@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Text;
 using System.Xml;
 using Be.Timvw.Framework.ComponentModel;
@@ -85,10 +86,12 @@ namespace RSN.DotP
 						strCardName = strCardName.Substring(0, strCardName.IndexOf('#')).Trim();
 						bPromo = true;
 					}
+					int nOrderId = -1;
+					int.TryParse(XmlTools.GetValueFromAttribute(xnItem, "deckOrderId"), out nOrderId);
 					DeckCard dcCard = null;
 					CardInfo ciCard = gdData.GetCardByFileName(strCardName);
 					if (ciCard != null)
-						dcCard = new DeckCard(ciCard, 1, nBias, bPromo);
+						dcCard = new DeckCard(ciCard, 1, nBias, bPromo, nOrderId);
 					if (dcCard != null)
 						lstCards.Add(dcCard);
 					else
@@ -97,6 +100,14 @@ namespace RSN.DotP
 						Settings.ReportError(null, ErrorPriority.Low, "Can't find referenced card: " + strCardName + " for " + (m_bPromo ? "promo" : "regular") + " unlocks (" + m_nUid.ToString() + ") for deck with Id: " + m_nDeckUid.ToString());
 					}
 				}
+			}
+			if (lstCards.Count > 0)
+			{
+				PropertyDescriptorCollection pdcProps = System.ComponentModel.TypeDescriptor.GetProperties(lstCards[0]);
+				PropertyDescriptor pdOrder = pdcProps["OrderId"];
+				ListSortDescription lsdSort = new ListSortDescription(pdOrder, ListSortDirection.Ascending);
+				ListSortDescriptionCollection lsdcSort = new ListSortDescriptionCollection(new ListSortDescription[] { lsdSort });
+				lstCards.ApplySort(lsdcSort);
 			}
 
 			return lstCards;
@@ -195,6 +206,46 @@ namespace RSN.DotP
 
 			// Return our next available deckOrderId (used for unlocks)
 			return nDeckOrderId;
+		}
+
+		private bool HasOrderId(int nOrderId)
+		{
+			foreach (DeckCard dcCard in m_lstCards)
+			{
+				if (dcCard.OrderId == nOrderId)
+					return true;
+			}
+			return false;
+		}
+
+		public void MergeUnlocks(DeckUnlocks duUnlocks)
+		{
+			// We don't want to merge with something that has the same UID.
+			if (duUnlocks.Uid != Uid)
+			{
+				foreach (DeckCard dcCard in duUnlocks.Cards)
+				{
+					// Since we are merging we want to check for conflicting deckOrderIds.
+					if (!HasOrderId(dcCard.OrderId))
+					{
+						// Not already in list so go ahead and add it.
+						m_lstCards.Add(dcCard);
+					}
+					else
+					{
+						// This OrderId is already used by the Unlocks which is potentially a problem for the end-user.
+						//	However, I'm not quite sure how to report this yet as there could be other reasons which aren't really errors.
+					}
+				}
+				if (m_lstCards.Count > 0)
+				{
+					PropertyDescriptorCollection pdcProps = System.ComponentModel.TypeDescriptor.GetProperties(m_lstCards[0]);
+					PropertyDescriptor pdOrder = pdcProps["OrderId"];
+					ListSortDescription lsdSort = new ListSortDescription(pdOrder, ListSortDirection.Ascending);
+					ListSortDescriptionCollection lsdcSort = new ListSortDescriptionCollection(new ListSortDescription[] { lsdSort });
+					m_lstCards.ApplySort(lsdcSort);
+				}
+			}
 		}
 	}
 }

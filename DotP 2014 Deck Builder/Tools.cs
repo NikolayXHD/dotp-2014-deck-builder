@@ -780,9 +780,37 @@ namespace RSN.DotP
 			if (strSort.Length > 0)
 				bsList.Sort = strSort;
 
+			// Clear sorting glyphs
+			foreach (DataGridViewColumn dgvc in dgvList.Columns)
+				dgvc.HeaderCell.SortGlyphDirection = SortOrder.None;
 			// Set the sorting glyphs
 			foreach (ColumnSort csSort in lstSort)
 				dgvList.Columns[csSort.Key].HeaderCell.SortGlyphDirection = csSort.SortDirection;
+			
+			// Refresh the view.
+			dgvList.Refresh();
+		}
+
+		public static void CreateContentPackEnabler(string strGameDir, int nIdBlock)
+		{
+			// Create a WadHeaderInfo to fill for our header.
+			WadHeaderInfo whiInfo = new WadHeaderInfo();
+			whiInfo.ContentAppId = Settings.GetSetting("SteamDefaultUnlockId", 213850);
+			whiInfo.ContentFlags = WadHeaderContentFlags.Deck | WadHeaderContentFlags.Glossary | WadHeaderContentFlags.Unlock | WadHeaderContentFlags.Avatar;
+			whiInfo.ContentPackId = nIdBlock;
+			try
+			{
+				// Create a ContentPack Enabler Wad.
+				WadWrapper wwContentPack = new WadWrapper("Data_DLC_" + whiInfo.ContentPackId.ToString() + "_Content_Pack_Enabler");
+				wwContentPack.AddHeader(whiInfo);
+				wwContentPack.WriteWad(strGameDir);
+			}
+			catch (Exception e)
+			{
+				// This is probably due to a permissions problem (read-only directory).
+				Settings.ReportError(e, ErrorPriority.Medium, "Unable to Export Wad: Data_DLC_" + whiInfo.ContentPackId.ToString() + "_Content_Pack_Enabler");
+				MessageBox.Show(Settings.UIStrings["EXPORT_UNSUCCESSFUL"], Settings.UIStrings["EXPORT_UNSUCCESSFUL"], MessageBoxButtons.OK, MessageBoxIcon.Error);
+			}
 		}
 	}
 }

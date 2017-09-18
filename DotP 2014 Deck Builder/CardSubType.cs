@@ -85,11 +85,10 @@ namespace RSN.DotP
 
 		public int OrderForLangCode(string strLangCode)
 		{
-			int nOrder = 0;
+			// Order by default uses the English ordering.
+			int nOrder = OrderEnglish;
 
-			if (strLangCode.Equals("en-US", StringComparison.OrdinalIgnoreCase))
-				nOrder = OrderEnglish;
-			else if (strLangCode.Equals("fr-FR", StringComparison.OrdinalIgnoreCase))
+			if (strLangCode.Equals("fr-FR", StringComparison.OrdinalIgnoreCase))
 				nOrder = OrderFrench;
 			else if (strLangCode.Equals("es-ES", StringComparison.OrdinalIgnoreCase))
 				nOrder = OrderSpanish;
@@ -115,7 +114,10 @@ namespace RSN.DotP
 
 		public int LocalizedOrder()
 		{
-			return OrderForLangCode(Settings.LanguageCode);
+			if (Settings.Language.MasqueradeAsLangCode != null)
+				return OrderForLangCode(Settings.Language.MasqueradeAsLangCode);
+			else
+				return OrderForLangCode(Settings.Language.LanguageCode);
 		}
 	}
 }

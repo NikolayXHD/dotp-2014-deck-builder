@@ -13,13 +13,15 @@ namespace RSN.DotP
 		private int m_nQuantity;
 		private int m_nBias;		// A bias level of 1 is no bias.
 		private bool m_bPromo;
+		private int m_nDeckOrderId;
 
-		public DeckCard(CardInfo ciCard, int nQuantity = 1, int nBias = 1, bool bPromo = false)
+		public DeckCard(CardInfo ciCard, int nQuantity = 1, int nBias = 1, bool bPromo = false, int nDeckOrderId = -1)
 		{
 			m_ciCard = ciCard;
 			m_nQuantity = nQuantity;
 			m_nBias = nBias;
 			m_bPromo = bPromo;
+			m_nDeckOrderId = nDeckOrderId;
 		}
 
 		public CardInfo Card
@@ -52,6 +54,12 @@ namespace RSN.DotP
 		{
 			get { return m_bPromo; }
 			set { m_bPromo = value; }
+		}
+
+		public int OrderId
+		{
+			get { return m_nDeckOrderId; }
+			set { m_nDeckOrderId = value; }
 		}
 
 		public string CardDeckName()

@@ -131,7 +131,13 @@ namespace RSN.DotP
 
 		public string LocalizedName
 		{
-			get { return GetLocalizedName(Settings.LanguageCode); }
+			get
+			{
+				if (Settings.Language.MasqueradeAsLangCode != null)
+					return GetLocalizedName(Settings.Language.MasqueradeAsLangCode);
+				else
+					return GetLocalizedName(Settings.Language.LanguageCode);
+			}
 		}
 
 		public Dictionary<string, string> Name
@@ -162,8 +168,10 @@ namespace RSN.DotP
 			{
 				if (m_dicFlavourText != null)
 				{
-					if (m_dicFlavourText.ContainsKey(Settings.LanguageCode))
-						return m_dicFlavourText[Settings.LanguageCode];
+					if (m_dicFlavourText.ContainsKey(Settings.Language.LanguageCode))
+						return m_dicFlavourText[Settings.Language.LanguageCode];
+					else if ((Settings.Language.MasqueradeAsLangCode != null) && (m_dicFlavourText.ContainsKey(Settings.Language.MasqueradeAsLangCode)))
+						return m_dicFlavourText[Settings.Language.MasqueradeAsLangCode];
 					else
 					{
 						if (m_dicFlavourText.ContainsKey("en-US"))
@@ -319,7 +327,13 @@ namespace RSN.DotP
 
 		public string LocalizedTypeLine
 		{
-			get { return GetTypeLine(Settings.LanguageCode); }
+			get
+			{
+				if (Settings.Language.MasqueradeAsLangCode != null)
+					return GetTypeLine(Settings.Language.MasqueradeAsLangCode);
+				else
+					return GetTypeLine(Settings.Language.LanguageCode);
+			}
 		}
 
 		public string GetTypeLine(string strLangCode)
@@ -358,7 +372,13 @@ namespace RSN.DotP
 
 		public string LocalizedAbilitiesText
 		{
-			get { return GetAbilitiesText(Settings.LanguageCode); }
+			get
+			{
+				if (Settings.Language.MasqueradeAsLangCode != null)
+					return GetAbilitiesText(Settings.Language.MasqueradeAsLangCode);
+				else
+					return GetAbilitiesText(Settings.Language.LanguageCode);
+			}
 		}
 
 		public string GetAbilitiesText(string strLangCode)
@@ -596,7 +616,10 @@ namespace RSN.DotP
 
 		public Bitmap GetLocalizedPreviewImage()
 		{
-			return GetPreviewImage(Settings.LanguageCode);
+			if (Settings.Language.MasqueradeAsLangCode != null)
+				return GetPreviewImage(Settings.Language.MasqueradeAsLangCode);
+			else
+				return GetPreviewImage(Settings.Language.LanguageCode);
 		}
 
 		public Bitmap GetPreviewImage(string strLangCode)
@@ -1108,6 +1131,7 @@ namespace RSN.DotP
 							case "U": m_eRarity = CardRarity.Uncommon; break;
 							case "R": m_eRarity = CardRarity.Rare; break;
 							case "M": m_eRarity = CardRarity.Mythic; break;
+							case "S": m_eRarity = CardRarity.Special; break;
 						}
 					}
 				}
@@ -1236,7 +1260,12 @@ namespace RSN.DotP
 		private string GenerateAbilitiesText(string strLangCode = null)
 		{
 			if (strLangCode == null)
-				strLangCode = Settings.LanguageCode;
+			{
+				if (Settings.Language.MasqueradeAsLangCode != null)
+					strLangCode = Settings.Language.MasqueradeAsLangCode;
+				else
+					strLangCode = Settings.Language.LanguageCode;
+			}
 
 			string strCardAbilities = string.Empty;
 			foreach (Ability ability in m_lstAbilities)
@@ -1276,7 +1305,12 @@ namespace RSN.DotP
 				}
 			}
 			else
-				strLangCode = Settings.LanguageCode;
+			{
+				if (Settings.Language.MasqueradeAsLangCode != null)
+					strLangCode = Settings.Language.MasqueradeAsLangCode;
+				else
+					strLangCode = Settings.Language.LanguageCode;
+			}
 
 			// Start by throwing in any supertypes.
 			string strTypeLine = string.Empty;

@@ -699,7 +699,13 @@ namespace RSN.DotP
 
 		public string LocalizedName
 		{
-			get { return GetLocalizedName(Settings.LanguageCode); }
+			get
+			{
+				if (Settings.Language.MasqueradeAsLangCode != null)
+					return GetLocalizedName(Settings.Language.MasqueradeAsLangCode);
+				else
+					return GetLocalizedName(Settings.Language.LanguageCode);
+			}
 		}
 
 		public string GetLocalizedName(string strLangCode)
