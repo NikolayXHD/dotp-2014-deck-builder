@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Xml;
 using RSN.Tools;
@@ -151,7 +152,7 @@ namespace RSN.DotP
 
 			// Now that we have our fallback we start outputting.
 			//	For simplicity we will use our supported languages from the Settings object.
-			foreach (KeyValuePair<string, string> kvLang in Settings.Languages)
+			foreach (KeyValuePair<string, LanguageEntry> kvLang in Settings.Languages)
 			{
 				if (dicLocalized.ContainsKey(kvLang.Key))
 					SaveLocalizedString(kvLang.Key, dicLocalized[kvLang.Key], xdDoc, xnNodeToSaveIn);
@@ -270,15 +271,18 @@ namespace RSN.DotP
 
 			CreateCellWithData(xdDoc, xnRow, "Ident");
 			CreateCellWithData(xdDoc, xnRow, "Comment");
-			CreateCellWithData(xdDoc, xnRow, "Master Text");
-			CreateCellWithData(xdDoc, xnRow, "French");
-			CreateCellWithData(xdDoc, xnRow, "Spanish");
-			CreateCellWithData(xdDoc, xnRow, "German");
-			CreateCellWithData(xdDoc, xnRow, "Italian");
-			CreateCellWithData(xdDoc, xnRow, "Japanese", 9);
-			CreateCellWithData(xdDoc, xnRow, "Korean");
-			CreateCellWithData(xdDoc, xnRow, "Russian");
-			CreateCellWithData(xdDoc, xnRow, "Portuguese (Brazil)");
+			int nIndex = 3;
+			foreach (LanguageEntry lang in Settings.Languages.Values.OrderBy(t => t.TextIndex))
+			{
+				if (nIndex == lang.TextIndex)
+					CreateCellWithData(xdDoc, xnRow, lang.TextHeader);
+				else
+				{
+					nIndex = lang.TextIndex;
+					CreateCellWithData(xdDoc, xnRow, lang.TextHeader, nIndex);
+				}
+				nIndex++;
+			}
 		}
 
 		private static void CreateStringRow(XmlDocument xdDoc, XmlNode xnTable, string strId, Dictionary<string, string> dicLocalized)
@@ -289,15 +293,18 @@ namespace RSN.DotP
 				xnTable.AppendChild(xnRow);
 
 				CreateCellWithData(xdDoc, xnRow, strId);
-				CreateCellWithData(xdDoc, xnRow, GetLocalizedText(dicLocalized, "en-US"), 3);
-				CreateCellWithData(xdDoc, xnRow, GetLocalizedText(dicLocalized, "fr-FR"));
-				CreateCellWithData(xdDoc, xnRow, GetLocalizedText(dicLocalized, "es-ES"));
-				CreateCellWithData(xdDoc, xnRow, GetLocalizedText(dicLocalized, "de-DE"));
-				CreateCellWithData(xdDoc, xnRow, GetLocalizedText(dicLocalized, "it-IT"));
-				CreateCellWithData(xdDoc, xnRow, GetLocalizedText(dicLocalized, "jp-JA"), 9);
-				CreateCellWithData(xdDoc, xnRow, GetLocalizedText(dicLocalized, "ko-KR"));
-				CreateCellWithData(xdDoc, xnRow, GetLocalizedText(dicLocalized, "ru-RU"));
-				CreateCellWithData(xdDoc, xnRow, GetLocalizedText(dicLocalized, "pt-BR"));
+				int nIndex = 2;
+				foreach (LanguageEntry lang in Settings.Languages.Values.OrderBy(t => t.TextIndex))
+				{
+					if (nIndex == lang.TextIndex)
+						CreateCellWithData(xdDoc, xnRow, GetLocalizedText(dicLocalized, lang.LanguageCode));
+					else
+					{
+						nIndex = lang.TextIndex;
+						CreateCellWithData(xdDoc, xnRow, GetLocalizedText(dicLocalized, lang.LanguageCode), nIndex);
+					}
+					nIndex++;
+				}
 			}
 		}
 

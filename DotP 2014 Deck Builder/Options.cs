@@ -61,12 +61,12 @@ namespace RSN.DotP
 			txtGameDir.Text = Settings.GetSetting("DotP2014Directory", string.Empty);
 
 			// Fill the languages list.
-			foreach (KeyValuePair<string, string> lang in Settings.Languages)
-				cboLanguage.Items.Add(lang);
-			cboLanguage.DisplayMember = "Value";
-			cboLanguage.ValueMember = "Key";
+			foreach (KeyValuePair<string, LanguageEntry> lang in Settings.Languages)
+				cboLanguage.Items.Add(lang.Value);
+			cboLanguage.DisplayMember = "Text";
+			cboLanguage.ValueMember = "LanguageCode";
 			if (Settings.Languages.ContainsKey(Settings.LanguageCode))
-				cboLanguage.SelectedItem = new KeyValuePair<string, string>(Settings.LanguageCode, Settings.Languages[Settings.LanguageCode]);
+				cboLanguage.SelectedItem = Settings.Languages[Settings.LanguageCode];
 
 			chkBasicScreenChecks.Checked = Settings.GetSetting("PerformBasicScreenChecks", true);
 			chkPreShuffleOnExport.Checked = Settings.GetSetting("PreShuffleOnExport", false);

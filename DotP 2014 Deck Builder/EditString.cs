@@ -43,10 +43,10 @@ namespace RSN.DotP
 			m_alblLabels = new Label[Settings.Languages.Count];
 			m_atxtTextBoxes = new TextBox[Settings.Languages.Count];
 			int nIndex = 0;
-			foreach (KeyValuePair<string, string> kvLang in Settings.Languages)
+			foreach (KeyValuePair<string, LanguageEntry> kvLang in Settings.Languages)
 			{
 				m_alblLabels[nIndex] = new Label();
-				m_alblLabels[nIndex].Text = kvLang.Value + ":";
+				m_alblLabels[nIndex].Text = kvLang.Value.Text + ":";
 				m_alblLabels[nIndex].Location = new Point(12, 15 + ((m_alblLabels[nIndex].Size.Height + 3) * nIndex));
 				// I could set them to autosize, but in this case I think the screen looks better if I don't
 				//m_alblLabels[nIndex].AutoSize = true;

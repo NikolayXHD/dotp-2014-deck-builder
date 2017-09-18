@@ -31,22 +31,24 @@ namespace RSN.Tools
 		public static bool LogAllErrors = false;
 		public static bool IncludeBOM = true;
 		public static string LanguageCode = "en-US";
-		public static Dictionary<string, string> Languages;
+		public static Dictionary<string, LanguageEntry> Languages;
 		public static LanguageStrings UIStrings;
 
 		public static void InitDefaults()
 		{
-			Languages = new Dictionary<string, string>();
+			Languages = new Dictionary<string, LanguageEntry>();
 			// Fill Languages list.
-			Languages.Add("en-US", "English");
-			Languages.Add("fr-FR", "français");
-			Languages.Add("es-ES", "español");
-			Languages.Add("de-DE", "Deutsch");
-			Languages.Add("it-IT", "italiano");
-			Languages.Add("jp-JA", "日本語");
-			Languages.Add("ko-KR", "한국의");
-			Languages.Add("ru-RU", "русский");
-			Languages.Add("pt-BR", "português");
+			Languages.Add("en-US", new LanguageEntry("en-US", "EN", "English", "Master Text", 3));
+			Languages.Add("fr-FR", new LanguageEntry("fr-FR", "FR", "français", "French", 4));
+			Languages.Add("es-ES", new LanguageEntry("es-ES", "ES", "español", "Spanish", 5));
+			Languages.Add("de-DE", new LanguageEntry("de-DE", "DE", "Deutsch", "German", 6));
+			Languages.Add("it-IT", new LanguageEntry("it-IT", "IT", "italiano", "Italian", 7));
+			Languages.Add("jp-JA", new LanguageEntry("jp-JA", "JP", "日本語", "Japanese", 9));
+			Languages.Add("ko-KR", new LanguageEntry("ko-KR", "KO", "한국의", "Korean", 10));
+			Languages.Add("ru-RU", new LanguageEntry("ru-RU", "RU", "русский", "Russian", 11));
+			Languages.Add("pt-BR", new LanguageEntry("pt-BR", "PT", "português", "Portuguese (Brazil)", 12));
+			Languages.Add("zh-CN", new LanguageEntry("zh-CN", "CN", "中文（简体）", "Chinese Simplified", 15));
+			Languages.Add("zh-HK", new LanguageEntry("zh-HK", "HK", "中文（繁体）", "Chinese Traditional", 16));
 		}
 
 		public static void LoadSettings()
@@ -63,9 +65,13 @@ namespace RSN.Tools
 					IncludeBOM = GetSetting("IncludeBOM", IncludeBOM);
 					LogAllErrors = GetSetting("LogAllErrors", LogAllErrors);
 					LanguageCode = GetSetting("LanguageCode", LanguageCode);
-					Dictionary<string, string> dicLanguages = GetSetting("Languages", "Language", "LanguageCode", null, null);
-					if (dicLanguages.Count > 0)
-						Languages = dicLanguages;
+					List<LanguageEntry> lstLangs = GetSerializableSetting("LanguageEntries", new List<LanguageEntry>());
+					if (lstLangs.Count > 0)
+					{
+						Languages = new Dictionary<string,LanguageEntry>();
+						foreach (LanguageEntry lang in lstLangs)
+							Languages.Add(lang.LanguageCode, lang);
+					}
 				}
 				catch (Exception e)
 				{
@@ -91,7 +97,7 @@ namespace RSN.Tools
 				SaveSetting("IncludeBOM", IncludeBOM);
 				SaveSetting("LogAllErrors", LogAllErrors);
 				SaveSetting("LanguageCode", LanguageCode);
-				SaveSetting("Languages", "Language", "LanguageCode", Languages);
+				SaveSerializableSetting("LanguageEntries", new List<LanguageEntry>(Languages.Values));
 
 				// Save out the settings file.
 				m_xdSettings.Save(GetProgramDir() + "Settings.xml");

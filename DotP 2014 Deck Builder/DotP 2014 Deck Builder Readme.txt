@@ -1,5 +1,5 @@
 --------------------------------------------------------------------------------
----- Riiak Shi Nal's Duels of the Planeswalkers 2014 Deck Builder v1.3.0.0 -----
+---- Riiak Shi Nal's Duels of the Planeswalkers 2014 Deck Builder v1.3.1.0 -----
 --------------------------------------------------------------------------------
 
     This is the first Deck Builder for DotP 2014 and it will ask for the DotP
@@ -851,6 +851,17 @@ Everyone else on the forums - For keeping the community alive and fun.
 --------------------------------------------------------------------------------
 Change History:
 --------------------------------------------------------------------------------
+- v1.3.1.0
+    - Changed how languages are added to the builder and used slightly so that
+        full support for a language can be done more easily from now on.  To add
+        a language to the builder only two pieces are required now (no code
+        changes are necessary now, Languages block is now obsolete):
+            1 - An entry in the Settings.xml file in the LanguageEntries block
+            2 - A Localization properly named with the language code in the Lang
+                directory.
+    - Added support for Chinese (Simplified and Traditional).  Note that I can't
+        do the actual translation work as I don't know Chinese.
+
 - v1.3.0.0
     - Changed the Deck Availability back to Always Available now that we have
         confirmed that the problem only happens with content pack 0 and the Deck

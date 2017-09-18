@@ -4,6 +4,7 @@ using System.IO;
 using System.Text;
 using System.Xml;
 using Be.Timvw.Framework.ComponentModel;
+using RSN.Tools;
 
 namespace RSN.DotP
 {
@@ -193,24 +194,14 @@ namespace RSN.DotP
 											nIndex = Int32.Parse(xnCell.Attributes["ss:Index"].Value.Trim());
 										if (nIndex == 1)
 											strName = xnCell.InnerText.Trim().ToUpper();
-										else if (nIndex == 3)
-											dicTable.Add("en-US", xnCell.InnerText.Trim());
-										else if (nIndex == 4)
-											dicTable.Add("fr-FR", xnCell.InnerText.Trim());
-										else if (nIndex == 5)
-											dicTable.Add("es-ES", xnCell.InnerText.Trim());
-										else if (nIndex == 6)
-											dicTable.Add("de-DE", xnCell.InnerText.Trim());
-										else if (nIndex == 7)
-											dicTable.Add("it-IT", xnCell.InnerText.Trim());
-										else if (nIndex == 9)
-											dicTable.Add("jp-JA", xnCell.InnerText.Trim());
-										else if (nIndex == 10)
-											dicTable.Add("ko-KR", xnCell.InnerText.Trim());
-										else if (nIndex == 11)
-											dicTable.Add("ru-RU", xnCell.InnerText.Trim());
-										else if (nIndex == 12)
-											dicTable.Add("pt-BR", xnCell.InnerText.Trim());
+										else
+										{
+											foreach (LanguageEntry lang in Settings.Languages.Values)
+											{
+												if (nIndex == lang.TextIndex)
+													dicTable.Add(lang.LanguageCode, xnCell.InnerText.Trim());
+											}
+										}
 										nIndex++;
 									}
 								}

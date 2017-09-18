@@ -18,6 +18,7 @@ namespace RSN.DotP
 		public int OrderKorean;			// order_ko-KR
 		public int OrderRussian;		// order_ru-RU
 		public int OrderPortuguese;		// order_pt-BR
+		public int OrderChinese;
 
 		public CardSubType() { }
 
@@ -78,6 +79,8 @@ namespace RSN.DotP
 				OrderPortuguese = Int32.Parse(strValue);
 			else
 				OrderPortuguese = nOrderFound;
+
+			OrderChinese = nOrderFound;
 		}
 
 		public int OrderForLangCode(string strLangCode)
@@ -102,6 +105,10 @@ namespace RSN.DotP
 				nOrder = OrderRussian;
 			else if (strLangCode.Equals("pt-BR", StringComparison.OrdinalIgnoreCase))
 				nOrder = OrderPortuguese;
+			else if (strLangCode.Equals("zh-CN", StringComparison.OrdinalIgnoreCase))
+				nOrder = OrderChinese;
+			else if (strLangCode.Equals("zh-HK", StringComparison.OrdinalIgnoreCase))
+				nOrder = OrderChinese;
 
 			return nOrder;
 		}

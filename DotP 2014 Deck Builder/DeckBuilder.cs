@@ -1158,40 +1158,6 @@ namespace RSN.DotP
 				twDeckBox.Dispose();
 			}
 
-			// DotP 2014 does not use Card Preview Images anymore.
-			// Now add our card previews.
-			/*CardInfo ciCard = m_dkWorking.PreviewCardInstance;
-			if (ciCard != null)
-			{
-				TdxWrapper twPreview = GetTdxPreview(ciCard, "en-US");
-				wad.AddDeckImage("EN_" + ciCard.Filename + ".TDX", twPreview);
-				twPreview.Dispose();
-				twPreview = GetTdxPreview(ciCard, "fr-FR"); 
-				wad.AddDeckImage("FR_" + ciCard.Filename + ".TDX", twPreview);
-				twPreview.Dispose();
-				twPreview = GetTdxPreview(ciCard, "es-ES");
-				wad.AddDeckImage("ES_" + ciCard.Filename + ".TDX", twPreview);
-				twPreview.Dispose();
-				twPreview = GetTdxPreview(ciCard, "de-DE");
-				wad.AddDeckImage("DE_" + ciCard.Filename + ".TDX", twPreview);
-				twPreview.Dispose();
-				twPreview = GetTdxPreview(ciCard, "it-IT");
-				wad.AddDeckImage("IT_" + ciCard.Filename + ".TDX", twPreview);
-				twPreview.Dispose();
-				twPreview = GetTdxPreview(ciCard, "jp-JA");
-				wad.AddDeckImage("JP_" + ciCard.Filename + ".TDX", twPreview);
-				twPreview.Dispose();
-				twPreview = GetTdxPreview(ciCard, "ko-KR");
-				wad.AddDeckImage("KO_" + ciCard.Filename + ".TDX", twPreview);
-				twPreview.Dispose();
-				twPreview = GetTdxPreview(ciCard, "ru-RU");
-				wad.AddDeckImage("RU_" + ciCard.Filename + ".TDX", twPreview);
-				twPreview.Dispose();
-				twPreview = GetTdxPreview(ciCard, "pt-BR");
-				wad.AddDeckImage("PT_" + ciCard.Filename + ".TDX", twPreview);
-				twPreview.Dispose();
-			}//*/
-
 			// Now for personality images (if any)
 			if (!m_dkWorking.Personality.BuiltIn)
 			{
@@ -1292,13 +1258,13 @@ namespace RSN.DotP
 			}
 
 			// We should generate for each of the supported languages.
-			foreach (KeyValuePair<string, string> kvpLang in Settings.Languages)
+			foreach (KeyValuePair<string, LanguageEntry> kvpLang in Settings.Languages)
 			{
 				LanguageStrings lsStrings = new LanguageStrings(kvpLang.Key);
 
 				// Export language and preamble.
 				swOutput.WriteLine();
-				swOutput.WriteLine("---===" + kvpLang.Value + "===---");
+				swOutput.WriteLine("---===" + kvpLang.Value.Text + "===---");
 				swOutput.WriteLine(lsStrings["README_PREAMBLE"]);
 				swOutput.WriteLine();
 
@@ -1944,42 +1910,13 @@ namespace RSN.DotP
 					string strFileBase = Path.GetFileName(strFilename);
 					if (strFileBase.StartsWith("EN_", StringComparison.OrdinalIgnoreCase))
 						strFileBase = strFileBase.Substring(3);
-					// Save for English.
-					Bitmap bmpPreview = Tools.AddCardBorder(ciCard.GetPreviewImage("en-US"));
-					if (bmpPreview != null)
-						bmpPreview.Save(strDir + "EN_" + strFileBase, ImageFormat.Png);
-					// Save for French.
-					bmpPreview = Tools.AddCardBorder(ciCard.GetPreviewImage("fr-FR"));
-					if (bmpPreview != null)
-						bmpPreview.Save(strDir + "FR_" + strFileBase, ImageFormat.Png);
-					// Save for Spanish.
-					bmpPreview = Tools.AddCardBorder(ciCard.GetPreviewImage("es-ES"));
-					if (bmpPreview != null)
-						bmpPreview.Save(strDir + "ES_" + strFileBase, ImageFormat.Png);
-					// Save for German.
-					bmpPreview = Tools.AddCardBorder(ciCard.GetPreviewImage("de-DE"));
-					if (bmpPreview != null)
-						bmpPreview.Save(strDir + "DE_" + strFileBase, ImageFormat.Png);
-					// Save for Italian.
-					bmpPreview = Tools.AddCardBorder(ciCard.GetPreviewImage("it-IT"));
-					if (bmpPreview != null)
-						bmpPreview.Save(strDir + "IT_" + strFileBase, ImageFormat.Png);
-					// Save for Japanese.
-					bmpPreview = Tools.AddCardBorder(ciCard.GetPreviewImage("jp-JA"));
-					if (bmpPreview != null)
-						bmpPreview.Save(strDir + "JP_" + strFileBase, ImageFormat.Png);
-					// Save for Korean.
-					bmpPreview = Tools.AddCardBorder(ciCard.GetPreviewImage("ko-KR"));
-					if (bmpPreview != null)
-						bmpPreview.Save(strDir + "KO_" + strFileBase, ImageFormat.Png);
-					// Save for Russian.
-					bmpPreview = Tools.AddCardBorder(ciCard.GetPreviewImage("ru-RU"));
-					if (bmpPreview != null)
-						bmpPreview.Save(strDir + "RU_" + strFileBase, ImageFormat.Png);
-					// Save for Portuguese.
-					bmpPreview = Tools.AddCardBorder(ciCard.GetPreviewImage("pt-BR"));
-					if (bmpPreview != null)
-						bmpPreview.Save(strDir + "PT_" + strFileBase, ImageFormat.Png);
+					// Save for each language entry.
+					foreach (LanguageEntry lang in Settings.Languages.Values)
+					{
+						Bitmap bmpPreview = Tools.AddCardBorder(ciCard.GetPreviewImage(lang.LanguageCode));
+						if (bmpPreview != null)
+							bmpPreview.Save(strDir + lang.ShortCode + "_" + strFileBase, ImageFormat.Png);
+					}
 				}
 			}
 		}
@@ -1999,68 +1936,15 @@ namespace RSN.DotP
 					string strFileBase = Path.GetFileName(strFilename);
 					if (strFileBase.StartsWith("EN_", StringComparison.OrdinalIgnoreCase))
 						strFileBase = strFileBase.Substring(3);
-					// Save for English.
-					TdxWrapper twPreview = GetTdxPreview(ciCard, "en-US");
-					if (twPreview != null)
+					// Save for each language entry.
+					foreach (LanguageEntry lang in Settings.Languages.Values)
 					{
-						twPreview.Save(strDir + "EN_" + strFileBase);
-						twPreview.Dispose();
-					}
-					// Save for French.
-					twPreview = GetTdxPreview(ciCard, "fr-FR");
-					if (twPreview != null)
-					{
-						twPreview.Save(strDir + "FR_" + strFileBase);
-						twPreview.Dispose();
-					}
-					// Save for Spanish.
-					twPreview = GetTdxPreview(ciCard, "es-ES");
-					if (twPreview != null)
-					{
-						twPreview.Save(strDir + "ES_" + strFileBase);
-						twPreview.Dispose();
-					}
-					// Save for German.
-					twPreview = GetTdxPreview(ciCard, "de-DE");
-					if (twPreview != null)
-					{
-						twPreview.Save(strDir + "DE_" + strFileBase);
-						twPreview.Dispose();
-					}
-					// Save for Italian.
-					twPreview = GetTdxPreview(ciCard, "it-IT");
-					if (twPreview != null)
-					{
-						twPreview.Save(strDir + "IT_" + strFileBase);
-						twPreview.Dispose();
-					}
-					// Save for Japanese.
-					twPreview = GetTdxPreview(ciCard, "jp-JA");
-					if (twPreview != null)
-					{
-						twPreview.Save(strDir + "JP_" + strFileBase);
-						twPreview.Dispose();
-					}
-					// Save for Korean.
-					twPreview = GetTdxPreview(ciCard, "ko-KR");
-					if (twPreview != null)
-					{
-						twPreview.Save(strDir + "KO_" + strFileBase);
-						twPreview.Dispose();
-					}
-					// Save for Russian.
-					twPreview = GetTdxPreview(ciCard, "ru-RU");
-					if (twPreview != null)
-					{
-						twPreview.Save(strDir + "RU_" + strFileBase);
-						twPreview.Dispose();
-					}
-					// Save for Portuguese.
-					twPreview = GetTdxPreview(ciCard, "pt-BR");
-					if (twPreview != null)
-					{
-						twPreview.Save(strDir + "PT_" + strFileBase);
-						twPreview.Dispose();
+						TdxWrapper twPreview = GetTdxPreview(ciCard, lang.LanguageCode);
+						if (twPreview != null)
+						{
+							twPreview.Save(strDir + lang.ShortCode + "_" + strFileBase);
+							twPreview.Dispose();
+						}
 					}
 				}
 			}

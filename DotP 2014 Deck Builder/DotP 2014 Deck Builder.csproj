@@ -151,6 +151,7 @@
     <Compile Include="CardSubType.cs" />
     <Compile Include="IdScheme.cs" />
     <Compile Include="ImageBuilder.cs" />
+    <Compile Include="LanguageEntry.cs" />
     <Compile Include="LanguageStrings.cs" />
     <Compile Include="MessageLog.cs" />
     <Compile Include="Options.cs">
@@ -251,6 +252,12 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Images\D14_PersonalityCircularMask.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Lang\DeckBuilder2014_zh-CN.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Lang\DeckBuilder2014_zh-HK.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="squish_32.dll">
