@@ -260,7 +260,6 @@
 			this.tpFilterSet.Controls.Add(this.chkSetNegate);
 			this.tpFilterSet.Location = new System.Drawing.Point(4, 22);
 			this.tpFilterSet.Name = "tpFilterSet";
-			this.tpFilterSet.Padding = new System.Windows.Forms.Padding(3);
 			this.tpFilterSet.Size = new System.Drawing.Size(457, 87);
 			this.tpFilterSet.TabIndex = 0;
 			this.tpFilterSet.Tag = "CARD_FILTER_SET";
@@ -312,7 +311,7 @@
 			this.scSetButtons.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)
 						| System.Windows.Forms.AnchorStyles.Right)));
 			this.scSetButtons.IsSplitterFixed = true;
-			this.scSetButtons.Location = new System.Drawing.Point(6, 125);
+			this.scSetButtons.Location = new System.Drawing.Point(6, 60);
 			this.scSetButtons.Name = "scSetButtons";
 			// 
 			// scSetButtons.Panel1
@@ -368,7 +367,6 @@
 			this.tpFilterBoolean.Controls.Add(this.scBoolOperationDataProp);
 			this.tpFilterBoolean.Location = new System.Drawing.Point(4, 22);
 			this.tpFilterBoolean.Name = "tpFilterBoolean";
-			this.tpFilterBoolean.Padding = new System.Windows.Forms.Padding(3);
 			this.tpFilterBoolean.Size = new System.Drawing.Size(457, 87);
 			this.tpFilterBoolean.TabIndex = 1;
 			this.tpFilterBoolean.Tag = "CARD_FILTER_BOOLEAN";
@@ -380,7 +378,7 @@
 			this.scBoolButtons.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)
 						| System.Windows.Forms.AnchorStyles.Right)));
 			this.scBoolButtons.IsSplitterFixed = true;
-			this.scBoolButtons.Location = new System.Drawing.Point(6, 125);
+			this.scBoolButtons.Location = new System.Drawing.Point(6, 60);
 			this.scBoolButtons.Name = "scBoolButtons";
 			// 
 			// scBoolButtons.Panel1
@@ -515,7 +513,7 @@
 			this.scIntButtons.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)
 						| System.Windows.Forms.AnchorStyles.Right)));
 			this.scIntButtons.IsSplitterFixed = true;
-			this.scIntButtons.Location = new System.Drawing.Point(6, 125);
+			this.scIntButtons.Location = new System.Drawing.Point(6, 60);
 			this.scIntButtons.Name = "scIntButtons";
 			// 
 			// scIntButtons.Panel1
@@ -846,7 +844,7 @@
 			this.scEnumButtons.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)
 						| System.Windows.Forms.AnchorStyles.Right)));
 			this.scEnumButtons.IsSplitterFixed = true;
-			this.scEnumButtons.Location = new System.Drawing.Point(6, 125);
+			this.scEnumButtons.Location = new System.Drawing.Point(6, 60);
 			this.scEnumButtons.Name = "scEnumButtons";
 			// 
 			// scEnumButtons.Panel1
@@ -1009,7 +1007,7 @@
 			this.scStringIntButtons.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)
 						| System.Windows.Forms.AnchorStyles.Right)));
 			this.scStringIntButtons.IsSplitterFixed = true;
-			this.scStringIntButtons.Location = new System.Drawing.Point(6, 125);
+			this.scStringIntButtons.Location = new System.Drawing.Point(6, 60);
 			this.scStringIntButtons.Name = "scStringIntButtons";
 			// 
 			// scStringIntButtons.Panel1
@@ -1172,7 +1170,7 @@
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.CancelButton = this.cmdCancel;
-			this.ClientSize = new System.Drawing.Size(489, 358);
+			this.ClientSize = new System.Drawing.Size(489, 338);
 			this.ControlBox = false;
 			this.Controls.Add(this.cmdClearFilters);
 			this.Controls.Add(this.tcFilters);

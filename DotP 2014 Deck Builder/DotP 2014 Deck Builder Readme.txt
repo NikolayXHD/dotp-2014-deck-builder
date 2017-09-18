@@ -1,5 +1,5 @@
 --------------------------------------------------------------------------------
----- Riiak Shi Nal's Duels of the Planeswalkers 2014 Deck Builder v1.5.0.2 -----
+---- Riiak Shi Nal's Duels of the Planeswalkers 2014 Deck Builder v1.5.0.3 -----
 --------------------------------------------------------------------------------
 
     This is the first Deck Builder for DotP 2014 and it will ask for the DotP
@@ -868,6 +868,13 @@ Everyone else on the forums - For keeping the community alive and fun.
 --------------------------------------------------------------------------------
 Change History:
 --------------------------------------------------------------------------------
+- v1.5.0.3
+    - Fixed the issue with controls not appearing correctly on the Advanced
+        Filtering dialog.  Though the issue with the Designer file is still only
+        partially fixed (for some reason when opening the form in the designer
+        it oddly expands the form to a height of 394 instead of the 374 it was
+        intended for).
+
 - v1.5.0.2
     - Fixed issue with not honoring the BOM (Byte Order Mark) in Header XML
         files in packed Wads (Directory Wads seem to be unaffected).
