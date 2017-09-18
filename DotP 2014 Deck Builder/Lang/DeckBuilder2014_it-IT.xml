@@ -66,7 +66,7 @@
 	<STRING key="SET_FILTERS_ADVANCED"><![CDATA[Set Advanced Filter ...]]></STRING>
 	<STRING key="DECK_OPEN_TITLE"><![CDATA[Apri mazzo...]]></STRING>
 	<STRING key="DECK_SAVE_TITLE"><![CDATA[Salva mazzo con nome...]]></STRING>
-	<STRING key="DECK_FILTER"><![CDATA[XML mazzo (*.xml)|*.xml|Tutti i file|*]]></STRING>
+	<STRING key="DECK_FILTER"><![CDATA[XML mazzo (*.xml)|*.xml|Forge mazzo (*.dck)|*.dck|Tutti i file|*]]></STRING>
 	<STRING key="CARD_SAVE_TITLE"><![CDATA[Save Card As ...]]></STRING>
 	<STRING key="CARD_FILTER"><![CDATA[Card XML (*.xml)|*.xml|All Files|*]]></STRING>
 	<STRING key="UNABLE_TO_LOAD_DECK_CAPTION"><![CDATA[Impossibile caricare il mazzo.]]></STRING>

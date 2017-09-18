@@ -67,7 +67,7 @@
   <STRING key="SET_FILTERS_ADVANCED"><![CDATA[設置進階過濾器...]]></STRING>
   <STRING key="DECK_OPEN_TITLE"><![CDATA[開啟套牌...]]></STRING>
   <STRING key="DECK_SAVE_TITLE"><![CDATA[另存套牌為...]]></STRING>
-  <STRING key="DECK_FILTER"><![CDATA[套牌 XML (*.XML)|*.xml|所有文件|*]]><!--Tigertooth: The same comment as the string of MENU_EXPORT_CARD_XML.--></STRING>
+  <STRING key="DECK_FILTER"><![CDATA[套牌 XML (*.XML)|*.xml|Forge Deck (*.dck)|*.dck|所有文件|*]]><!--Tigertooth: The same comment as the string of MENU_EXPORT_CARD_XML.--></STRING>
   <STRING key="CARD_SAVE_TITLE"><![CDATA[另存卡牌為...]]></STRING>
   <STRING key="CARD_FILTER"><![CDATA[卡牌 XML (*.XML)|*.xml|所有文件|*]]><!--Tigertooth: The same comment as above.--></STRING>
   <STRING key="UNABLE_TO_LOAD_DECK_CAPTION"><![CDATA[無法載入套牌]]></STRING>
