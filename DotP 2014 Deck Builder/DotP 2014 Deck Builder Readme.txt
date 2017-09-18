@@ -1,5 +1,5 @@
 --------------------------------------------------------------------------------
----- Riiak Shi Nal's Duels of the Planeswalkers 2014 Deck Builder v1.3.1.0 -----
+---- Riiak Shi Nal's Duels of the Planeswalkers 2014 Deck Builder v1.3.2.0 -----
 --------------------------------------------------------------------------------
 
     This is the first Deck Builder for DotP 2014 and it will ask for the DotP
@@ -851,6 +851,13 @@ Everyone else on the forums - For keeping the community alive and fun.
 --------------------------------------------------------------------------------
 Change History:
 --------------------------------------------------------------------------------
+- v1.3.2.0
+    - Fixed language display in Options.  Apparently .Net ComboBoxes don't like
+        to reference public variables only public properties so I had to change
+        how the data in LanguageEntry was exposed.
+    - Fixed a couple of other spots where I forgot to change a couple of casts
+        related to the new LanguageEntry object.
+
 - v1.3.1.0
     - Changed how languages are added to the builder and used slightly so that
         full support for a language can be done more easily from now on.  To add

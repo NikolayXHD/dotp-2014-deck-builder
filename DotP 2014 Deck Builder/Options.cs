@@ -61,10 +61,10 @@ namespace RSN.DotP
 			txtGameDir.Text = Settings.GetSetting("DotP2014Directory", string.Empty);
 
 			// Fill the languages list.
-			foreach (KeyValuePair<string, LanguageEntry> lang in Settings.Languages)
-				cboLanguage.Items.Add(lang.Value);
 			cboLanguage.DisplayMember = "Text";
 			cboLanguage.ValueMember = "LanguageCode";
+			foreach (KeyValuePair<string, LanguageEntry> lang in Settings.Languages)
+				cboLanguage.Items.Add(lang.Value);
 			if (Settings.Languages.ContainsKey(Settings.LanguageCode))
 				cboLanguage.SelectedItem = Settings.Languages[Settings.LanguageCode];
 
@@ -160,7 +160,7 @@ namespace RSN.DotP
 			{
 				if (cboLanguage.SelectedIndex > -1)
 				{
-					LoadLocalizedStrings(((KeyValuePair<string, string>)cboLanguage.SelectedItem).Key);
+					LoadLocalizedStrings(((LanguageEntry)cboLanguage.SelectedItem).LanguageCode);
 				}
 			}
 		}
@@ -180,7 +180,7 @@ namespace RSN.DotP
 			}
 
 			Settings.SaveSetting("DotP2014Directory", txtGameDir.Text.Trim());
-			Settings.ChangeLanguage(((KeyValuePair<string, string>)cboLanguage.SelectedItem).Key);
+			Settings.ChangeLanguage(((LanguageEntry)cboLanguage.SelectedItem).LanguageCode);
 			m_frmMain.LoadLocalizedStrings();
 			Settings.SaveSetting("PerformBasicScreenChecks", chkBasicScreenChecks.Checked);
 			Settings.SaveSetting("PreShuffleOnExport", chkPreShuffleOnExport.Checked);
