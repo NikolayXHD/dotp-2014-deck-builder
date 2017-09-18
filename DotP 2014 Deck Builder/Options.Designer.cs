@@ -64,6 +64,7 @@
 			this.numRegularUnlockChange = new System.Windows.Forms.NumericUpDown();
 			this.lblRegularUnlockChange = new System.Windows.Forms.Label();
 			this.numLandPoolChange = new System.Windows.Forms.NumericUpDown();
+			this.chkAlwaysExportPersonalities = new System.Windows.Forms.CheckBox();
 			this.gbGeneral.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.numMinDigits)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.numMinId)).BeginInit();
@@ -79,6 +80,7 @@
 			// 
 			// gbGeneral
 			// 
+			this.gbGeneral.Controls.Add(this.chkAlwaysExportPersonalities);
 			this.gbGeneral.Controls.Add(this.chkIncludeMipMaps);
 			this.gbGeneral.Controls.Add(this.chkPreShuffleOnExport);
 			this.gbGeneral.Controls.Add(this.chkBasicScreenChecks);
@@ -89,7 +91,7 @@
 			this.gbGeneral.Controls.Add(this.lblGameDir);
 			this.gbGeneral.Location = new System.Drawing.Point(12, 12);
 			this.gbGeneral.Name = "gbGeneral";
-			this.gbGeneral.Size = new System.Drawing.Size(398, 160);
+			this.gbGeneral.Size = new System.Drawing.Size(398, 177);
 			this.gbGeneral.TabIndex = 0;
 			this.gbGeneral.TabStop = false;
 			this.gbGeneral.Tag = "GENERAL_OPTIONS";
@@ -184,7 +186,7 @@
 			// cmdApply
 			// 
 			this.cmdApply.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-			this.cmdApply.Location = new System.Drawing.Point(214, 500);
+			this.cmdApply.Location = new System.Drawing.Point(214, 517);
 			this.cmdApply.Name = "cmdApply";
 			this.cmdApply.Size = new System.Drawing.Size(95, 21);
 			this.cmdApply.TabIndex = 2;
@@ -196,7 +198,8 @@
 			// cmdCancel
 			// 
 			this.cmdCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-			this.cmdCancel.Location = new System.Drawing.Point(315, 500);
+			this.cmdCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
+			this.cmdCancel.Location = new System.Drawing.Point(315, 517);
 			this.cmdCancel.Name = "cmdCancel";
 			this.cmdCancel.Size = new System.Drawing.Size(95, 21);
 			this.cmdCancel.TabIndex = 3;
@@ -377,7 +380,7 @@
 			this.gbIdScheme.Controls.Add(this.lblMinDigits);
 			this.gbIdScheme.Controls.Add(this.cboSchemeType);
 			this.gbIdScheme.Controls.Add(this.lblSchemeType);
-			this.gbIdScheme.Location = new System.Drawing.Point(12, 178);
+			this.gbIdScheme.Location = new System.Drawing.Point(12, 195);
 			this.gbIdScheme.Name = "gbIdScheme";
 			this.gbIdScheme.Size = new System.Drawing.Size(398, 316);
 			this.gbIdScheme.TabIndex = 1;
@@ -561,11 +564,24 @@
             0});
 			this.numLandPoolChange.ValueChanged += new System.EventHandler(this.numLandPoolChange_ValueChanged);
 			// 
+			// chkAlwaysExportPersonalities
+			// 
+			this.chkAlwaysExportPersonalities.AutoSize = true;
+			this.chkAlwaysExportPersonalities.Location = new System.Drawing.Point(6, 154);
+			this.chkAlwaysExportPersonalities.Name = "chkAlwaysExportPersonalities";
+			this.chkAlwaysExportPersonalities.Size = new System.Drawing.Size(167, 17);
+			this.chkAlwaysExportPersonalities.TabIndex = 6;
+			this.chkAlwaysExportPersonalities.Tag = "ALWAYS_EXPORT_PERSONALITIES";
+			this.chkAlwaysExportPersonalities.Text = "Always Export AI Personalities";
+			this.chkAlwaysExportPersonalities.UseVisualStyleBackColor = true;
+			// 
 			// Options
 			// 
+			this.AcceptButton = this.cmdApply;
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			this.ClientSize = new System.Drawing.Size(422, 533);
+			this.CancelButton = this.cmdCancel;
+			this.ClientSize = new System.Drawing.Size(422, 550);
 			this.ControlBox = false;
 			this.Controls.Add(this.gbIdScheme);
 			this.Controls.Add(this.cmdCancel);
@@ -633,5 +649,6 @@
 		private System.Windows.Forms.CheckBox chkIdBlock;
 		private System.Windows.Forms.NumericUpDown numIdBlock;
 		private System.Windows.Forms.CheckBox chkIncludeMipMaps;
+		private System.Windows.Forms.CheckBox chkAlwaysExportPersonalities;
 	}
 }

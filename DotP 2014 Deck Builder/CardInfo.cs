@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Xml;
+using Be.Timvw.Framework.ComponentModel;
 using RSN.Tools;
 
 namespace RSN.DotP
@@ -20,8 +21,11 @@ namespace RSN.DotP
 		//	image, this will prevent us from building multiple images for the same casting cost.
 		private static Dictionary<string, Bitmap> m_dicCastingCostCache;
 
+		// These are the data fields for a "card" and generally represent the attributes of a
+		//	card in Magic as well as the tags in the DotP card XML definition.
 		private string m_strActualFilename;
 		private string m_strFilename;
+		private string m_strCardName;
 		private int m_nMultiverseId;
 		private Dictionary<string, string> m_dicName;
 		private Dictionary<string, string> m_dicFlavourText;
@@ -29,6 +33,7 @@ namespace RSN.DotP
 		private string m_strImageName;
 		private string m_strCardXML;
 		private string m_strCastingCost;
+		private string m_strColour;
 		private int m_nCMC;
 		private List<CardSubType> m_lstSubTypes;
 		private CardSuperType m_eSuperType;
@@ -42,15 +47,22 @@ namespace RSN.DotP
 		private string m_strExpansion;
 		private SortedSet<string> m_setRegisteredTokens;
 		private bool m_bToken;
+		private string m_strFrameType;
+
+		// These are values that are derived from the card attributes at one point or another.
+		//	These may also be additional convenience members so that expensive operations don't
+		//	have to keep being done multiple times.
 		private bool m_bIsHybrid;
 		private bool m_bIsPhyrexian;
-		private bool m_bMustBeIncludedInWad;
+		private bool m_bMustBeIncludedInWad;		// Currently unused.
 		private Bitmap m_imgCastingCost;
 		private GameDirectory m_gdData;
 		private Dictionary<string, string> m_dicTypeLine;
 		private Dictionary<string, string> m_dicAbilitiesText;
 		private Dictionary<string, Bitmap> m_dicCardPreview;
-		private string m_strFrameType;
+
+		// For supporting custom Card Tags
+		private Dictionary<string, SortableBindingList<string>> m_dicCustomTags;
 
 		// Private variables for drawing preview card
 		private Font m_ftCardArtistFont = new Font(FontFamily.GenericSerif, 8, FontStyle.Bold);
@@ -101,6 +113,7 @@ namespace RSN.DotP
 			m_dicAbilitiesText = new Dictionary<string, string>();
 			m_dicFlavourText = new Dictionary<string, string>();
 			m_setRegisteredTokens = new SortedSet<string>();
+			m_lstAbilities = new List<Ability>();
 			m_lstSubTypes = new List<CardSubType>();
 			m_gdData = gdData;
 			m_strCardXML = strXML;
@@ -115,7 +128,11 @@ namespace RSN.DotP
 			m_imgCastingCost = null;
 			m_strActualFilename = Path.GetFileNameWithoutExtension(strFilename);
 			m_strFilename = null;		// Will get set properly during ParseXML() if the Card is properly in a CARD_V2 tag.
+			m_strCardName = null;
 			m_strFrameType = string.Empty;
+			m_strColour = null;
+			m_dicCustomTags = new Dictionary<string, SortableBindingList<string>>();
+
 			ParseXML(m_strCardXML);
 		}
 
@@ -127,6 +144,11 @@ namespace RSN.DotP
 		public string Filename
 		{
 			get { return m_strFilename; }
+		}
+
+		public string CardName
+		{
+			get { return m_strCardName; }
 		}
 
 		public string LocalizedName
@@ -444,6 +466,31 @@ namespace RSN.DotP
 		public string ExtraFrameType
 		{
 			get { return m_strFrameType; }
+		}
+
+		public Dictionary<string, SortableBindingList<string>> CustomTags
+		{
+			get { return m_dicCustomTags; }
+		}
+
+		public SortableBindingList<string> GetCustomTag(string strKey)
+		{
+			if (m_dicCustomTags.ContainsKey(strKey))
+				return m_dicCustomTags[strKey];
+
+			return null;
+		}
+
+		public string GetFirstCustomTagValue(string strKey)
+		{
+			if (m_dicCustomTags.ContainsKey(strKey))
+			{
+				SortableBindingList<string> lstValues = m_dicCustomTags[strKey];
+				if (lstValues != null)
+					return lstValues[0];
+			}
+
+			return string.Empty;
 		}
 
 		public KeyValuePair<string, string> DetermineFrameAndBox()
@@ -1037,190 +1084,247 @@ namespace RSN.DotP
 			xdDoc.LoadXml(strXML);
 			foreach (XmlNode xnRoot in xdDoc.ChildNodes)
 			{
+				// Technically we should only have the CARD_V2 node and we should have only one, but check just to make sure.
 				if (xnRoot.Name.Equals("CARD_V2", StringComparison.OrdinalIgnoreCase))
 				{
-					// Simple value loads
-					m_strFilename = XmlTools.GetValueFromChildsAttribute(xnRoot, "FILENAME", "text");
-					m_dicName = XmlTools.GetLocalizedText(XmlTools.GetChild(xnRoot, "TITLE"));
-					XmlNode xnFlavour = XmlTools.GetChild(xnRoot, "FLAVOURTEXT");
-					if (xnFlavour != null)
-						m_dicFlavourText = XmlTools.GetLocalizedText(xnFlavour);
-					m_strImageName = XmlTools.GetValueFromChildsAttribute(xnRoot, "ARTID", "value");
-					m_eColours = DetermineColour(xnRoot);
-					m_nCMC = Tools.CastingCostToCMC(m_strCastingCost);
-					m_strFrameType = XmlTools.GetValueFromChildsAttribute(xnRoot, "FRAME_TYPE", "type").ToUpper();
+					// I'm doing this differently than before so I can support custom tags.
 					m_eSuperType = CardSuperType.None;
 					m_eType = CardType.None;
 					int nSubTypes = 0;
 					int nSubTypeCount = XmlTools.CountTags(xnRoot, "SUB_TYPE");
-					foreach (XmlNode xnItem in xnRoot.ChildNodes)
+					foreach (XmlNode xnNode in xnRoot.ChildNodes)
 					{
-						if (xnItem.Name.Equals("SUPERTYPE", StringComparison.OrdinalIgnoreCase))
+						if (xnNode.Name.Equals("FILENAME", StringComparison.OrdinalIgnoreCase))
+							m_strFilename = XmlTools.GetValueFromAttribute(xnNode, "text");
+						else if (xnNode.Name.Equals("CARDNAME", StringComparison.OrdinalIgnoreCase))
+							m_strCardName = XmlTools.GetValueFromAttribute(xnNode, "text");
+						else if (xnNode.Name.Equals("TITLE", StringComparison.OrdinalIgnoreCase))
+							m_dicName = XmlTools.GetLocalizedText(xnNode);
+						else if (xnNode.Name.Equals("FLAVOURTEXT", StringComparison.OrdinalIgnoreCase))
+							m_dicFlavourText = XmlTools.GetLocalizedText(xnNode);
+						else if (xnNode.Name.Equals("ARTID", StringComparison.OrdinalIgnoreCase))
+							m_strImageName = XmlTools.GetValueFromAttribute(xnNode, "value");
+						else if (xnNode.Name.Equals("CASTING_COST", StringComparison.OrdinalIgnoreCase))
 						{
-							XmlAttribute xaAttr = XmlTools.FindCaseInsensitiveAttribute(xnItem, "metaname");
-							if (xaAttr != null)
+							m_strCastingCost = XmlTools.GetValueFromAttribute(xnNode, "cost");
+							m_nCMC = Tools.CastingCostToCMC(m_strCastingCost);
+						}
+						else if (xnNode.Name.Equals("COLOUR", StringComparison.OrdinalIgnoreCase))
+							m_strColour = XmlTools.GetValueFromAttribute(xnNode, "value");
+						else if (xnNode.Name.Equals("FRAME_TYPE", StringComparison.OrdinalIgnoreCase))
+							m_strFrameType = XmlTools.GetValueFromAttribute(xnNode, "type").ToUpper();
+						else if (xnNode.Name.Equals("SUPERTYPE", StringComparison.OrdinalIgnoreCase))
+						{
+							string strType = XmlTools.GetValueFromAttribute(xnNode, "metaname");
+							foreach (CardSuperType cstType in Enum.GetValues(typeof(CardSuperType)))
 							{
-								foreach (CardSuperType cstType in Enum.GetValues(typeof(CardSuperType)))
+								if (cstType.ToString().Equals(strType, StringComparison.OrdinalIgnoreCase))
 								{
-									if (cstType.ToString().Equals(xaAttr.Value.Trim(), StringComparison.OrdinalIgnoreCase))
-									{
-										m_eSuperType |= cstType;
-										break;
-									}
+									m_eSuperType |= cstType;
+									break;
 								}
 							}
 						}
-						else if (xnItem.Name.Equals("TYPE", StringComparison.OrdinalIgnoreCase))
+						else if (xnNode.Name.Equals("TYPE", StringComparison.OrdinalIgnoreCase))
 						{
-							XmlAttribute xaAttr = XmlTools.FindCaseInsensitiveAttribute(xnItem, "metaname");
-							if (xaAttr != null)
+							string strType = XmlTools.GetValueFromAttribute(xnNode, "metaname");
+							foreach (CardType ctType in Enum.GetValues(typeof(CardType)))
 							{
-								foreach (CardType ctType in Enum.GetValues(typeof(CardType)))
+								if (ctType.ToString().Equals(strType, StringComparison.OrdinalIgnoreCase))
 								{
-									if (ctType.ToString().Equals(xaAttr.Value.Trim(), StringComparison.OrdinalIgnoreCase))
-									{
-										m_eType |= ctType;
-										break;
-									}
+									m_eType |= ctType;
+									break;
 								}
 							}
 						}
-						else if (xnItem.Name.Equals("SUB_TYPE", StringComparison.OrdinalIgnoreCase))
+						else if (xnNode.Name.Equals("SUB_TYPE", StringComparison.OrdinalIgnoreCase))
 						{
-							CardSubType cstType = new CardSubType(xnItem, nSubTypes, nSubTypeCount);
+							CardSubType cstType = new CardSubType(xnNode, nSubTypes, nSubTypeCount);
 							if (cstType.SubType.Length > 0)
 							{
 								m_lstSubTypes.Add(cstType);
 								nSubTypes++;
 							}
 						}
-						else if (xnItem.Name.Equals("TOKEN_REGISTRATION", StringComparison.OrdinalIgnoreCase))
+						else if (xnNode.Name.Equals("TOKEN_REGISTRATION", StringComparison.OrdinalIgnoreCase))
 						{
-							XmlAttribute xaAttr = XmlTools.FindCaseInsensitiveAttribute(xnItem, "type");
+							XmlAttribute xaAttr = XmlTools.FindCaseInsensitiveAttribute(xnNode, "type");
 							if (xaAttr != null)
 								m_setRegisteredTokens.Add(xaAttr.Value.Trim());
 						}
-					}
-					XmlNode xnPower = XmlTools.GetChild(xnRoot, "POWER");
-					if (xnPower != null)
-					{
-						m_strPower = XmlTools.GetValueFromChildsAttribute(xnRoot, "POWER", "value");
-						m_strToughness = XmlTools.GetValueFromChildsAttribute(xnRoot, "TOUGHNESS", "value");
-					}
-					m_lstAbilities = LoadAbilities(xnRoot);
-					m_bToken = (XmlTools.GetChild(xnRoot, "TOKEN") != null);
-					string strValue = XmlTools.GetValueFromChildsAttribute(xnRoot, "MULTIVERSEID", "value");
-					// Not all cards actually have to have the multiverse id defined (like tokens)
-					if (strValue.Length > 0)
-					{
-						if (!Int32.TryParse(strValue, out m_nMultiverseId))
-							Settings.ReportError(null, ErrorPriority.Low, "Card (" + m_strFilename + " in " + m_strWadName + ") has a multiverse id that is problematic: " + strValue);
-					}
-					// As far as I know the EXPANSION tag isn't used for anything so I'm going to assume it may not always exist.
-					m_strExpansion = XmlTools.GetValueFromChildsAttribute(xnRoot, "EXPANSION", "value");
-					m_strArtist = XmlTools.GetValueFromChildsAttribute(xnRoot, "ARTIST", "name");
-					string strRarity = XmlTools.GetValueFromChildsAttribute(xnRoot, "RARITY", "metaname");
-					if (strRarity.Length > 0)
-					{
-						m_eRarity = CardRarity.None;
-						switch (strRarity)
+						else if (xnNode.Name.Equals("POWER", StringComparison.OrdinalIgnoreCase))
+							m_strPower = XmlTools.GetValueFromAttribute(xnNode, "value");
+						else if (xnNode.Name.Equals("TOUGHNESS", StringComparison.OrdinalIgnoreCase))
+							m_strToughness = XmlTools.GetValueFromAttribute(xnNode, "value");
+						else if (xnNode.Name.Equals("TOKEN", StringComparison.OrdinalIgnoreCase))
+							m_bToken = true;
+						else if (xnNode.Name.Equals("MULTIVERSEID", StringComparison.OrdinalIgnoreCase))
 						{
-							case "T": m_eRarity = CardRarity.Token; break;
-							case "L": m_eRarity = CardRarity.Land; break;
-							case "C": m_eRarity = CardRarity.Common; break;
-							case "U": m_eRarity = CardRarity.Uncommon; break;
-							case "R": m_eRarity = CardRarity.Rare; break;
-							case "M": m_eRarity = CardRarity.Mythic; break;
-							case "S": m_eRarity = CardRarity.Special; break;
+							string strValue = XmlTools.GetValueFromAttribute(xnNode, "value");
+							if (!Int32.TryParse(strValue, out m_nMultiverseId))
+								Settings.ReportError(null, ErrorPriority.Low, "Card (" + m_strFilename + " in " + m_strWadName + ") has a multiverse id that is problematic: " + strValue);
+						}
+						else if (xnNode.Name.Equals("EXPANSION", StringComparison.OrdinalIgnoreCase))
+							m_strExpansion = XmlTools.GetValueFromAttribute(xnNode, "value");
+						else if (xnNode.Name.Equals("ARTIST", StringComparison.OrdinalIgnoreCase))
+							m_strArtist = XmlTools.GetValueFromAttribute(xnNode, "name");
+						else if (xnNode.Name.Equals("RARITY", StringComparison.OrdinalIgnoreCase))
+						{
+							string strRarity = XmlTools.GetValueFromAttribute(xnNode, "metaname");
+							if (strRarity.Length > 0)
+							{
+								m_eRarity = CardRarity.None;
+								switch (strRarity)
+								{
+									case "T": m_eRarity = CardRarity.Token; break;
+									case "L": m_eRarity = CardRarity.Land; break;
+									case "C": m_eRarity = CardRarity.Common; break;
+									case "U": m_eRarity = CardRarity.Uncommon; break;
+									case "R": m_eRarity = CardRarity.Rare; break;
+									case "M": m_eRarity = CardRarity.Mythic; break;
+									case "S": m_eRarity = CardRarity.Special; break;
+								}
+							}
+						}
+						else if (xnNode.Name.IndexOf("_ABILITY", StringComparison.OrdinalIgnoreCase) > -1)
+						{
+							try
+							{
+								Ability ability = new Ability(xnNode.OuterXml.Trim());
+								m_lstAbilities.Add(ability);
+							}
+							catch (Exception e)
+							{
+								Settings.ReportError(e, ErrorPriority.Low, "Unable to load ability: " + xnNode.Name + " in " + m_strFilename);
+							}
+						}
+						else if ((xnNode.Name.Equals("#comment", StringComparison.OrdinalIgnoreCase)) ||
+							(xnNode.Name.Equals("#text", StringComparison.OrdinalIgnoreCase)) ||
+							(xnNode.Name.Equals("HELP", StringComparison.OrdinalIgnoreCase)) ||
+							(xnNode.Name.Equals("SFX", StringComparison.OrdinalIgnoreCase)) ||
+							(xnNode.Name.Equals("AI_AVAILABILITY", StringComparison.OrdinalIgnoreCase)) ||
+							(xnNode.Name.Equals("AI_BASE_SCORE", StringComparison.OrdinalIgnoreCase)) ||
+							(xnNode.Name.Equals("AI_COUNTER_SCORE", StringComparison.OrdinalIgnoreCase)) ||
+							(xnNode.Name.Equals("AI_CUSTOM_SCORE", StringComparison.OrdinalIgnoreCase)) ||
+							(xnNode.Name.Equals("AI_DONT_DUPLICATE", StringComparison.OrdinalIgnoreCase)) ||
+							(xnNode.Name.Equals("AI_MODIFIERS", StringComparison.OrdinalIgnoreCase)) ||
+							(xnNode.Name.Equals("ANIMATEDARTFILENAME", StringComparison.OrdinalIgnoreCase)) ||
+							(xnNode.Name.Equals("SEALED_HEURISTICS", StringComparison.OrdinalIgnoreCase)) ||
+							(xnNode.Name.Equals("SEALED_SYNERGY_BONUS", StringComparison.OrdinalIgnoreCase)) ||
+							(xnNode.Name.Equals("SEALED_SYNERGY_TAG", StringComparison.OrdinalIgnoreCase))
+							)
+						{
+						}
+						else if ((xnNode.Name.Equals("AI_SIMPLIFIED_TARGETING", StringComparison.OrdinalIgnoreCase)) ||
+							(xnNode.Name.Equals("AUTO_SKIP", StringComparison.OrdinalIgnoreCase)) ||
+							(xnNode.Name.Equals("AVAILABILITY", StringComparison.OrdinalIgnoreCase)) ||
+							(xnNode.Name.Equals("MAY", StringComparison.OrdinalIgnoreCase)))
+						{
+							// These tags are being used wrong.
+							Settings.ReportError(null, ErrorPriority.Low, "Card (" + m_strActualFilename + ") in Wad " + m_strWadName + " is using the " + xnNode.Name + " tag incorrectly (will likely result in this piece not working properly in game).");
+						}
+						else
+						{
+							// These are tags that I haven't accounted for and as such are loaded as custom tags.
+							string strTagName = xnNode.Name.ToUpper();
+							string strValue = xnNode.InnerText;
+							if ((strValue != null) && (strValue.Length > 0))
+							{
+								SortableBindingList<string> lstValues = null;
+								// We actually have a value for the custom tag so we should now look at saving it off.
+								//	First check to see if we already have one.
+								if (m_dicCustomTags.ContainsKey(strTagName))
+								{
+									// Repeat of a custom tag, though may have a different value.
+									lstValues = m_dicCustomTags[strTagName];
+									lstValues.Add(strValue);
+								}
+								else
+								{
+									// New custom tag
+									lstValues = new SortableBindingList<string>();
+									lstValues.Add(strValue);
+									m_dicCustomTags.Add(strTagName, lstValues);
+								}
+							}
 						}
 					}
+
+					// Now to check that we have a bare minimum of information to establish this as a card.
+					if ((m_strFilename != null) && (m_dicName.Count > 0))
+					{
+						m_eColours = DetermineColour(m_strCastingCost, m_strColour);
+					}
+					else
+					{
+						// No, we don't have the minimum required information.
+						throw new Exception("Failed to find required minimum information in Card:\n" +
+							"\tFilename: " + (m_strFilename != null ? "Present (" + m_strFilename + ")" : "Missing") + 
+							"\tName: " + (m_dicName.Count > 0 ? "Present (Languages: " + m_dicName.Count.ToString() + ")" : "Missing")
+						);
+					}
 				}
 			}
 		}
 
-		private List<Ability> LoadAbilities(XmlNode xnRoot)
-		{
-			List<Ability> lstAbilities = new List<Ability>();
-			foreach (XmlNode xnTag in xnRoot.ChildNodes)
-			{
-				if (xnTag.Name.IndexOf("_ABILITY", StringComparison.OrdinalIgnoreCase) > -1)
-				{
-					try
-					{
-						Ability ability = new Ability(xnTag.OuterXml.Trim());
-						lstAbilities.Add(ability);
-					}
-					catch (Exception e)
-					{
-						Settings.ReportError(e, ErrorPriority.Low, "Unable to load ability: " + xnTag.Name + " in " + m_strFilename);
-					}
-				}
-			}
-			return lstAbilities;
-		}
-
-		private ColourFlags DetermineColour(XmlNode xml)
+		private ColourFlags DetermineColour(string strCastingCost, string strColour)
 		{
 			ColourFlags eColour = 0;
 
-			if (xml["CASTING_COST"] != null)
+			// Do we have a Casting Cost?
+			if ((strCastingCost != null) && (strCastingCost.Length > 0))
 			{
-				m_strCastingCost = XmlTools.GetValueFromChildsAttribute(xml, "CASTING_COST", "cost");
-				if (m_strCastingCost != string.Empty)
-				{
-					// We have a casting cost to process.
-					if (m_strCastingCost.IndexOf("B") > -1)
-						eColour |= ColourFlags.Black;
-					if (m_strCastingCost.IndexOf("U") > -1)
-						eColour |= ColourFlags.Blue;
-					if (m_strCastingCost.IndexOf("G") > -1)
-						eColour |= ColourFlags.Green;
-					if (m_strCastingCost.IndexOf("R") > -1)
-						eColour |= ColourFlags.Red;
-					if (m_strCastingCost.IndexOf("W") > -1)
-						eColour |= ColourFlags.White;
+				// We have a casting cost to process.
+				if (strCastingCost.IndexOf("B") > -1)
+					eColour |= ColourFlags.Black;
+				if (strCastingCost.IndexOf("U") > -1)
+					eColour |= ColourFlags.Blue;
+				if (strCastingCost.IndexOf("G") > -1)
+					eColour |= ColourFlags.Green;
+				if (strCastingCost.IndexOf("R") > -1)
+					eColour |= ColourFlags.Red;
+				if (strCastingCost.IndexOf("W") > -1)
+					eColour |= ColourFlags.White;
 
-					// Determine if this uses hybrid mana
-					if ((m_strCastingCost.IndexOf("{B/G}", StringComparison.OrdinalIgnoreCase) > -1) ||
-						(m_strCastingCost.IndexOf("{B/R}", StringComparison.OrdinalIgnoreCase) > -1) ||
-						(m_strCastingCost.IndexOf("{B/U}", StringComparison.OrdinalIgnoreCase) > -1) ||
-						(m_strCastingCost.IndexOf("{B/W}", StringComparison.OrdinalIgnoreCase) > -1) ||
-						(m_strCastingCost.IndexOf("{G/B}", StringComparison.OrdinalIgnoreCase) > -1) ||
-						(m_strCastingCost.IndexOf("{G/R}", StringComparison.OrdinalIgnoreCase) > -1) ||
-						(m_strCastingCost.IndexOf("{G/U}", StringComparison.OrdinalIgnoreCase) > -1) ||
-						(m_strCastingCost.IndexOf("{G/W}", StringComparison.OrdinalIgnoreCase) > -1) ||
-						(m_strCastingCost.IndexOf("{R/B}", StringComparison.OrdinalIgnoreCase) > -1) ||
-						(m_strCastingCost.IndexOf("{R/G}", StringComparison.OrdinalIgnoreCase) > -1) ||
-						(m_strCastingCost.IndexOf("{R/U}", StringComparison.OrdinalIgnoreCase) > -1) ||
-						(m_strCastingCost.IndexOf("{R/W}", StringComparison.OrdinalIgnoreCase) > -1) ||
-						(m_strCastingCost.IndexOf("{U/B}", StringComparison.OrdinalIgnoreCase) > -1) ||
-						(m_strCastingCost.IndexOf("{U/G}", StringComparison.OrdinalIgnoreCase) > -1) ||
-						(m_strCastingCost.IndexOf("{U/R}", StringComparison.OrdinalIgnoreCase) > -1) ||
-						(m_strCastingCost.IndexOf("{U/W}", StringComparison.OrdinalIgnoreCase) > -1) ||
-						(m_strCastingCost.IndexOf("{W/G}", StringComparison.OrdinalIgnoreCase) > -1) ||
-						(m_strCastingCost.IndexOf("{W/R}", StringComparison.OrdinalIgnoreCase) > -1) ||
-						(m_strCastingCost.IndexOf("{W/B}", StringComparison.OrdinalIgnoreCase) > -1) ||
-						(m_strCastingCost.IndexOf("{W/U}", StringComparison.OrdinalIgnoreCase) > -1))
-						m_bIsHybrid = true;
-					else
-						m_bIsHybrid = false;
+				// Determine if this uses hybrid mana
+				if ((strCastingCost.IndexOf("{B/G}", StringComparison.OrdinalIgnoreCase) > -1) ||
+					(strCastingCost.IndexOf("{B/R}", StringComparison.OrdinalIgnoreCase) > -1) ||
+					(strCastingCost.IndexOf("{B/U}", StringComparison.OrdinalIgnoreCase) > -1) ||
+					(strCastingCost.IndexOf("{B/W}", StringComparison.OrdinalIgnoreCase) > -1) ||
+					(strCastingCost.IndexOf("{G/B}", StringComparison.OrdinalIgnoreCase) > -1) ||
+					(strCastingCost.IndexOf("{G/R}", StringComparison.OrdinalIgnoreCase) > -1) ||
+					(strCastingCost.IndexOf("{G/U}", StringComparison.OrdinalIgnoreCase) > -1) ||
+					(strCastingCost.IndexOf("{G/W}", StringComparison.OrdinalIgnoreCase) > -1) ||
+					(strCastingCost.IndexOf("{R/B}", StringComparison.OrdinalIgnoreCase) > -1) ||
+					(strCastingCost.IndexOf("{R/G}", StringComparison.OrdinalIgnoreCase) > -1) ||
+					(strCastingCost.IndexOf("{R/U}", StringComparison.OrdinalIgnoreCase) > -1) ||
+					(strCastingCost.IndexOf("{R/W}", StringComparison.OrdinalIgnoreCase) > -1) ||
+					(strCastingCost.IndexOf("{U/B}", StringComparison.OrdinalIgnoreCase) > -1) ||
+					(strCastingCost.IndexOf("{U/G}", StringComparison.OrdinalIgnoreCase) > -1) ||
+					(strCastingCost.IndexOf("{U/R}", StringComparison.OrdinalIgnoreCase) > -1) ||
+					(strCastingCost.IndexOf("{U/W}", StringComparison.OrdinalIgnoreCase) > -1) ||
+					(strCastingCost.IndexOf("{W/G}", StringComparison.OrdinalIgnoreCase) > -1) ||
+					(strCastingCost.IndexOf("{W/R}", StringComparison.OrdinalIgnoreCase) > -1) ||
+					(strCastingCost.IndexOf("{W/B}", StringComparison.OrdinalIgnoreCase) > -1) ||
+					(strCastingCost.IndexOf("{W/U}", StringComparison.OrdinalIgnoreCase) > -1))
+					m_bIsHybrid = true;
+				else
+					m_bIsHybrid = false;
 
-					// Determine whether this has phyrexian mana or not.
-					if ((m_strCastingCost.IndexOf("{B/P}", StringComparison.OrdinalIgnoreCase) > -1) ||
-						(m_strCastingCost.IndexOf("{G/P}", StringComparison.OrdinalIgnoreCase) > -1) ||
-						(m_strCastingCost.IndexOf("{R/P}", StringComparison.OrdinalIgnoreCase) > -1) ||
-						(m_strCastingCost.IndexOf("{U/P}", StringComparison.OrdinalIgnoreCase) > -1) ||
-						(m_strCastingCost.IndexOf("{W/P}", StringComparison.OrdinalIgnoreCase) > -1))
-						m_bIsPhyrexian = true;
-					else
-						m_bIsPhyrexian = false;
-				}
+				// Determine whether this has phyrexian mana or not.
+				if ((strCastingCost.IndexOf("{B/P}", StringComparison.OrdinalIgnoreCase) > -1) ||
+					(strCastingCost.IndexOf("{G/P}", StringComparison.OrdinalIgnoreCase) > -1) ||
+					(strCastingCost.IndexOf("{R/P}", StringComparison.OrdinalIgnoreCase) > -1) ||
+					(strCastingCost.IndexOf("{U/P}", StringComparison.OrdinalIgnoreCase) > -1) ||
+					(strCastingCost.IndexOf("{W/P}", StringComparison.OrdinalIgnoreCase) > -1))
+					m_bIsPhyrexian = true;
+				else
+					m_bIsPhyrexian = false;
 			}
 
-			if (xml["COLOUR"] != null)
+			// Were we given a colour string to process?
+			if (strColour != null)
 			{
-				string strColour = XmlTools.GetValueFromChildsAttribute(xml, "COLOUR", "value");
-
 				if (strColour.IndexOf("B") > -1)
 					eColour |= ColourFlags.Black;
 				if (strColour.IndexOf("U") > -1)

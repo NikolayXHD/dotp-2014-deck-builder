@@ -651,4 +651,8 @@ http://www.slightlymagic.net/forum/viewforum.php?f=62]]><!--Tigertooth: The same
 	<STRING key="MENU_MOVE_CARD_TO_MAIN_DECK"><![CDATA[M&ain Deck]]></STRING>
 	<STRING key="MENU_MOVE_CARD_TO_REGULAR_UNLOCKS"><![CDATA[Re&gular Unlocks]]></STRING>
 	<STRING key="MENU_MOVE_CARD_TO_PROMO_UNLOCKS"><![CDATA[Pr&omo Unlocks]]></STRING>
+	<!-- Strings added for v1.5.0.0 -->
+	<STRING key="RESET"><![CDATA[Reset]]></STRING>
+	<STRING key="OVERRIDE_DECK_COLOUR"><![CDATA[Override Deck Colour]]></STRING>
+	<STRING key="ALWAYS_EXPORT_PERSONALITIES"><![CDATA[Always Export AI Personalities]]></STRING>
 </LOCALIZATION>

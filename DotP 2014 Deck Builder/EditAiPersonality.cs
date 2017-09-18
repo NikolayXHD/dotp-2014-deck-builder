@@ -25,8 +25,10 @@ namespace RSN.DotP
 		// For building Personality images.
 		private ImageBuilder m_ibSmallAvatar;
 		private ImageBuilder m_ibLargeAvatar;
+		private ImageBuilder m_ibFullAvatar;
 		private bool m_bBuildSmallAvatar;
 		private bool m_bBuildLargeAvatar;
+		private bool m_bBuildFullAvatar;
 		private RadioButton m_rbSmallAvatarLastChecked;
 		private RadioButton m_rbLargeAvatarLastChecked;
 		private RadioButton m_rbFullAvatarLastChecked;
@@ -78,7 +80,13 @@ namespace RSN.DotP
 			}
 			RefreshPersonality();
 
+			// Set up for building full avatar images.
+			m_rbFullAvatarLastChecked = rbUseThisImageFull;
+			m_ibFullAvatar = new ImageBuilder(null, null, null, new Rectangle(0, 0, 512, 512));
+			rbBuildImageFull_CheckedChanged(null, null);
+
 			// Make sure we can build large avatars for personality.
+			m_rbLargeAvatarLastChecked = rbUseThisImageLarge;
 			if (!File.Exists(Settings.GetProgramDir() + "Images\\D14_PersonalityBackplateAlpha.png"))
 				rbBuildImageLarge.Enabled = false;
 			else
@@ -91,7 +99,7 @@ namespace RSN.DotP
 					{
 						m_ibLargeAvatar = new ImageBuilder(null, null, bmpLoadedAlpha, new Rectangle(0, 0, bmpLoadedAlpha.Width, bmpLoadedAlpha.Height));
 						// Since we are showing the image at half width, half height we should adjust our mouse change by a factor of 2.
-						m_ibLargeAvatar.MouseChangeModifier = 2f;
+						//m_ibLargeAvatar.MouseChangeModifier = 2f;
 					}
 					else
 						rbBuildImageLarge.Enabled = false;
@@ -106,6 +114,7 @@ namespace RSN.DotP
 			rbBuildImageLarge_CheckedChanged(null, null);
 
 			// Make sure we can build small avatars for personality.
+			m_rbSmallAvatarLastChecked = rbUseThisImageSmall;
 			if ((!File.Exists(Settings.GetProgramDir() + "Images\\D14_PersonalityCircularMask.png")) ||
 				(!File.Exists(Settings.GetProgramDir() + "Images\\D14_PersonalityCircularAlpha.png")))
 				rbBuildImageSmall.Enabled = false;
@@ -144,24 +153,25 @@ namespace RSN.DotP
 			lblPersonalityName.Text = m_apPersonality.LocalizedName.Replace("&", "&&");
 			if ((m_apPersonality.MusicMix != null) && (m_apPersonality.MusicMix.Length > 0))
 				cboMusic.SelectedItem = m_apPersonality.MusicMix;
-			if (picPersonalitySmall.Image != null)
-				picPersonalitySmall.Image.Dispose();
+
 			if (m_apPersonality.SmallAvatarImage != null)
-				picPersonalitySmall.Image = new Bitmap(m_apPersonality.SmallAvatarImage);
+				picPersonalitySmall.Image = m_apPersonality.SmallAvatarImage;
 			else
 				picPersonalitySmall.Image = null;
-			if (picPersonalityLarge.Image != null)
-				picPersonalityLarge.Image.Dispose();
+
 			if (m_apPersonality.LobbyImage != null)
-				picPersonalityLarge.Image = new Bitmap(m_apPersonality.LobbyImage);
+				picPersonalityLarge.Image = m_apPersonality.LobbyImage;
 			else
 				picPersonalityLarge.Image = null;
+
 			if (m_apPersonality.LargeAvatarImage != null)
-				picPersonalityFull.Image = new Bitmap(m_apPersonality.LargeAvatarImage);
+				picPersonalityFull.Image = m_apPersonality.LargeAvatarImage;
 			else
 				picPersonalityFull.Image = null;
+
 			rbUseThisImageSmall.Checked = true;
 			rbUseThisImageLarge.Checked = true;
+			rbUseThisImageFull.Checked = true;
 			m_bLoadingPersonality = false;
 		}
 
@@ -190,16 +200,24 @@ namespace RSN.DotP
 			lblMusic.Text = Settings.UIStrings[(string)lblMusic.Tag];
 			// Adjust the Music Select combobox to match with new label length.
 			Tools.ResizeRelatedControl(cboMusic, lblMusic);
+
 			rbUseThisImageSmall.Text = Settings.UIStrings[(string)rbUseThisImageSmall.Tag];
 			rbLoadImageSmall.Text = Settings.UIStrings[(string)rbLoadImageSmall.Tag];
 			rbBuildImageSmall.Text = Settings.UIStrings[(string)rbBuildImageSmall.Tag];
 			gbSmallLocation.Text = Settings.UIStrings[(string)gbSmallLocation.Tag];
 			gbSmallSize.Text = Settings.UIStrings[(string)gbSmallSize.Tag];
+
 			rbUseThisImageLarge.Text = Settings.UIStrings[(string)rbUseThisImageLarge.Tag];
 			rbLoadImageLarge.Text = Settings.UIStrings[(string)rbLoadImageLarge.Tag];
 			rbBuildImageLarge.Text = Settings.UIStrings[(string)rbBuildImageLarge.Tag];
 			gbLargeLocation.Text = Settings.UIStrings[(string)gbLargeLocation.Tag];
 			gbLargeSize.Text = Settings.UIStrings[(string)gbLargeSize.Tag];
+
+			rbUseThisImageFull.Text = Settings.UIStrings[(string)rbUseThisImageFull.Tag];
+			rbLoadImageFull.Text = Settings.UIStrings[(string)rbLoadImageFull.Tag];
+			rbBuildImageFull.Text = Settings.UIStrings[(string)rbBuildImageFull.Tag];
+			gbFullLocation.Text = Settings.UIStrings[(string)gbFullLocation.Tag];
+			gbFullSize.Text = Settings.UIStrings[(string)gbFullSize.Tag];
 
 			// Apply & Cancel
 			cmdApply.Text = Settings.UIStrings[(string)cmdApply.Tag];
@@ -313,10 +331,8 @@ namespace RSN.DotP
 		{
 			if ((rbUseThisImageSmall.Checked) && (!m_bChangingToLast))
 			{
-				if (picPersonalitySmall.Image != null)
-					picPersonalitySmall.Image.Dispose();
 				if (m_apPersonality.SmallAvatarImage != null)
-					picPersonalitySmall.Image = new Bitmap(m_apPersonality.SmallAvatarImage);
+					picPersonalitySmall.Image = m_apPersonality.SmallAvatarImage;
 				else
 					picPersonalitySmall.Image = null;
 				m_bBuildSmallAvatar = false;
@@ -333,8 +349,6 @@ namespace RSN.DotP
 				{
 					PrepPersonalityForEditing();
 					m_apPersonality.SmallAvatarImage = bmpChosen;
-					if (picPersonalitySmall.Image != null)
-						picPersonalitySmall.Image.Dispose();
 					picPersonalitySmall.Image = m_apPersonality.SmallAvatarImage;
 					m_rbSmallAvatarLastChecked = rbLoadImageSmall;
 				}
@@ -359,8 +373,6 @@ namespace RSN.DotP
 					m_ibSmallAvatar.LoadedImage = bmpChosen;
 					InitialSmallAvatarAdjust();
 					m_apPersonality.SmallAvatarImage = m_ibSmallAvatar.BuildImage();
-					if (picPersonalitySmall.Image != null)
-						picPersonalitySmall.Image.Dispose();
 					picPersonalitySmall.Image = m_apPersonality.SmallAvatarImage;
 
 					// We've successfully built an initial image so go ahead and enable our controls.
@@ -518,10 +530,8 @@ namespace RSN.DotP
 		{
 			if ((rbUseThisImageLarge.Checked) && (!m_bChangingToLast))
 			{
-				if (picPersonalityLarge.Image != null)
-					picPersonalityLarge.Image.Dispose();
 				if (m_apPersonality.LobbyImage != null)
-					picPersonalityLarge.Image = new Bitmap(m_apPersonality.LobbyImage);
+					picPersonalityLarge.Image = m_apPersonality.LobbyImage;
 				else
 					picPersonalityLarge.Image = null;
 				m_bBuildLargeAvatar = false;
@@ -537,8 +547,6 @@ namespace RSN.DotP
 				if (bmpChosen != null)
 				{
 					PrepPersonalityForEditing();
-					if (picPersonalityLarge.Image != null)
-						picPersonalityLarge.Image.Dispose();
 					m_apPersonality.LobbyImage = bmpChosen;
 					picPersonalityLarge.Image = m_apPersonality.LobbyImage;
 					m_rbLargeAvatarLastChecked = rbLoadImageLarge;
@@ -564,8 +572,6 @@ namespace RSN.DotP
 					m_ibLargeAvatar.LoadedImage = bmpChosen;
 					InitialLargeAvatarAdjust();
 					m_apPersonality.LobbyImage = m_ibLargeAvatar.BuildImage();
-					if (picPersonalityLarge.Image != null)
-						picPersonalityLarge.Image.Dispose();
 					picPersonalityLarge.Image = m_apPersonality.LobbyImage;
 
 					// We've successfully built an initial image so go ahead and enable our controls.
@@ -751,12 +757,15 @@ namespace RSN.DotP
 		{
 			if ((rbUseThisImageFull.Checked) && (!m_bChangingToLast))
 			{
-				if (picPersonalityFull.Image != null)
-					picPersonalityFull.Image.Dispose();
+				// Due to putting the controls in a split container I need to manually toggle off the other controls.
+				rbLoadImageFull.Checked = false;
+				rbBuildImageFull.Checked = false;
+
 				if (m_apPersonality.LargeAvatarImage != null)
 					picPersonalityFull.Image = new Bitmap(m_apPersonality.LargeAvatarImage);
 				else
 					picPersonalityFull.Image = null;
+				m_bBuildFullAvatar = false;
 				m_rbFullAvatarLastChecked = rbUseThisImageFull;
 			}
 		}
@@ -765,12 +774,14 @@ namespace RSN.DotP
 		{
 			if ((rbLoadImageFull.Checked) && (!m_bChangingToLast))
 			{
+				// Due to putting the controls in a split container I need to manually toggle off the other controls.
+				rbUseThisImageFull.Checked = false;
+				rbBuildImageFull.Checked = false;
+
 				Bitmap bmpChosen = ChooseImage();
 				if (bmpChosen != null)
 				{
 					PrepPersonalityForEditing();
-					if (picPersonalityFull.Image != null)
-						picPersonalityFull.Image.Dispose();
 					m_apPersonality.LargeAvatarImage = bmpChosen;
 					picPersonalityFull.Image = m_apPersonality.LargeAvatarImage;
 					m_rbFullAvatarLastChecked = rbLoadImageFull;
@@ -785,8 +796,144 @@ namespace RSN.DotP
 			}
 		}
 
+		private void rbBuildImageFull_CheckedChanged(object sender, EventArgs e)
+		{
+			if ((rbBuildImageFull.Checked) && (!m_bChangingToLast))
+			{
+				// Due to putting the controls in a split container I need to manually toggle off the other controls.
+				rbUseThisImageFull.Checked = false;
+				rbLoadImageFull.Checked = false;
+
+				Bitmap bmpChosen = ChooseImage();
+				if (bmpChosen != null)
+				{
+					PrepPersonalityForEditing();
+					m_ibFullAvatar.LoadedImage = bmpChosen;
+					InitialFullAvatarAdjust();
+					m_apPersonality.LargeAvatarImage = m_ibFullAvatar.BuildImage();
+					picPersonalityFull.Image = m_apPersonality.LargeAvatarImage;
+
+					// We've successfully built an initial image so go ahead and enable our controls.
+					m_rbFullAvatarLastChecked = rbBuildImageFull;
+					m_bBuildFullAvatar = true;
+					Tools.ChangeControlEnabled(scFullLocationSize, true);
+				}
+				else
+				{
+					// They either canceled or picked a bad file, either way we go back to where we were last.
+					m_bChangingToLast = true;
+					m_rbFullAvatarLastChecked.Checked = true;
+					m_bChangingToLast = false;
+				}
+			}
+			else if ((m_bChangingToLast) && (m_rbFullAvatarLastChecked == rbBuildImageFull))
+			{
+				// We were the last checked so we go back to here and re-enable build mode.
+				m_bBuildFullAvatar = true;
+				Tools.ChangeControlEnabled(scFullLocationSize, true);
+			}
+			else
+			{
+				// Disable our controls.
+				m_bBuildFullAvatar = false;
+				Tools.ChangeControlEnabled(scFullLocationSize, false);
+			}
+		}
+
+		private void InitialFullAvatarAdjust()
+		{
+			m_ibFullAvatar.InitialImageAdjust();
+
+			// Update our controls (without screwing this up)
+			m_bProgramaticAdjust = true;
+			numFullX.Value = m_ibFullAvatar.AdjustedRect.X;
+			numFullY.Value = m_ibFullAvatar.AdjustedRect.Y;
+			numFullWidth.Value = m_ibFullAvatar.AdjustedRect.Width;
+			numFullHeight.Value = m_ibFullAvatar.AdjustedRect.Height;
+			m_bProgramaticAdjust = false;
+		}
+
+		private void numFullX_ValueChanged(object sender, EventArgs e)
+		{
+			// We're not going to bother if we aren't building an image or we got here through programatic adjustment.
+			if ((m_bBuildFullAvatar) && (!m_bProgramaticAdjust))
+			{
+				m_ibFullAvatar.AdjustedRect.X = (int)numFullX.Value;
+				m_apPersonality.LargeAvatarImage = m_ibFullAvatar.BuildImage();
+				picPersonalityFull.Image = m_apPersonality.LargeAvatarImage;
+			}
+		}
+
+		private void numFullY_ValueChanged(object sender, EventArgs e)
+		{
+			// We're not going to bother if we aren't building an image or we got here through programatic adjustment.
+			if ((m_bBuildFullAvatar) && (!m_bProgramaticAdjust))
+			{
+				m_ibFullAvatar.AdjustedRect.Y = (int)numFullY.Value;
+				m_apPersonality.LargeAvatarImage = m_ibFullAvatar.BuildImage();
+				picPersonalityFull.Image = m_apPersonality.LargeAvatarImage;
+			}
+		}
+
+		private void numFullWidth_ValueChanged(object sender, EventArgs e)
+		{
+			// We're not going to bother if we aren't building an image or we got here through programatic adjustment.
+			if ((m_bBuildFullAvatar) && (!m_bProgramaticAdjust))
+			{
+				m_ibFullAvatar.AdjustedRect.Width = (int)numFullWidth.Value;
+				m_apPersonality.LargeAvatarImage = m_ibFullAvatar.BuildImage();
+				picPersonalityFull.Image = m_apPersonality.LargeAvatarImage;
+			}
+		}
+
+		private void numFullHeight_ValueChanged(object sender, EventArgs e)
+		{
+			// We're not going to bother if we aren't building an image or we got here through programatic adjustment.
+			if ((m_bBuildFullAvatar) && (!m_bProgramaticAdjust))
+			{
+				m_ibFullAvatar.AdjustedRect.Height = (int)numFullHeight.Value;
+				m_apPersonality.LargeAvatarImage = m_ibFullAvatar.BuildImage();
+				picPersonalityFull.Image = m_apPersonality.LargeAvatarImage;
+			}
+		}
+
+		private void picPersonalityFull_MouseDown(object sender, MouseEventArgs e)
+		{
+			if (m_bBuildFullAvatar)
+				m_ibFullAvatar.MouseDownHandler(e);
+		}
+
+		private void picPersonalityFull_MouseEnter(object sender, EventArgs e)
+		{
+			if (m_bBuildFullAvatar)
+			{
+				// Take focus so that we can get the mouse wheel events.
+				picPersonalityFull.Focus();
+			}
+		}
+
+		private void picPersonalityFull_MouseMove(object sender, MouseEventArgs e)
+		{
+			if (m_bBuildFullAvatar)
+			{
+				m_apPersonality.LargeAvatarImage = m_ibFullAvatar.MouseMoveHandler(e);
+				picPersonalityFull.Image = m_apPersonality.LargeAvatarImage;
+				// And update the location numeric up downs.
+				lock (numFullX)
+				{
+					m_bProgramaticAdjust = true;
+					numFullX.Value = m_ibFullAvatar.AdjustedRect.X;
+					numFullY.Value = m_ibFullAvatar.AdjustedRect.Y;
+					m_bProgramaticAdjust = false;
+				}
+			}
+		}
+
 		private void picFull_MouseUp(object sender, MouseEventArgs e)
 		{
+			if (m_bBuildFullAvatar)
+				m_ibFullAvatar.MouseUpHandler(e);
+
 			// Check for if we need to display the context menu
 			if (e.Button == MouseButtons.Right)
 			{
@@ -796,6 +943,24 @@ namespace RSN.DotP
 				else
 					cmnuiExport.Enabled = false;
 				cmnuPictures.Show(Cursor.Position);
+			}
+		}
+
+		private void picPersonalityFull_MouseWheel(object sender, MouseEventArgs e)
+		{
+			if (m_bBuildFullAvatar)
+			{
+				m_apPersonality.LargeAvatarImage = m_ibFullAvatar.MouseWheelHandler(e);
+				picPersonalityFull.Image = m_apPersonality.LargeAvatarImage;
+				lock (numFullX)
+				{
+					m_bProgramaticAdjust = true;
+					numFullX.Value = m_ibFullAvatar.AdjustedRect.X;
+					numFullY.Value = m_ibFullAvatar.AdjustedRect.Y;
+					numFullWidth.Value = m_ibFullAvatar.AdjustedRect.Width;
+					numFullHeight.Value = m_ibFullAvatar.AdjustedRect.Height;
+					m_bProgramaticAdjust = false;
+				}
 			}
 		}
 	}

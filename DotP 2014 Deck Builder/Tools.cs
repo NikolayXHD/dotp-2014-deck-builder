@@ -46,6 +46,7 @@ namespace RSN.DotP
 
 			return value;
 		}
+
 		public static string ReadEncodedString(this Stream stream,
 														long size,
 														bool trailingNull = false)
@@ -550,40 +551,69 @@ namespace RSN.DotP
 			return bmpApplied;
 		}
 
-		public static Size FindClosestMultipleOf4Size(Size szInput)
+		public static Size FindClosestMultipleOf4Size(Size szInput, bool bRestrictToMaxSize = true)
 		{
 			double dRatio = ((double)szInput.Height) / ((double)szInput.Width);
 			int nDistance = 0;
 
-			// Try going to the closest larger Multiple of Four and see if that works
-			int nWidthMof = szInput.Width + (4 - (szInput.Width % 4));
-			Size szReturn = new Size(nWidthMof, (int)Math.Round(nWidthMof * dRatio));
-
-			// While we have a non-multiple of 4 size keep looking for one.
-			while ((((szReturn.Width % 4) != 0) || ((szReturn.Height % 4) != 0)) && (nDistance < MOF_MAX_DISTANCE))
+			// This is to restrict sizes returned to the Max Size that Gibbed Tools will accept.
+			//	2000 for width and/or height is the limit to we will stay under that.
+			Size szRestricted = szInput;
+			if (bRestrictToMaxSize)
 			{
-				nDistance++;
-				// Try enlarging by our distance to see if we can get a Mof size.
-				szReturn.Width = nWidthMof + (4 * nDistance);
-				szReturn.Height = (int)Math.Round(szReturn.Width * dRatio);
-				if (((szReturn.Width % 4) == 0) && ((szReturn.Height % 4) == 0))
-					break;
-				// No luck enlarging so lets try reducing (as long as it would remain above 0.
-				if ((nWidthMof - (4 * nDistance)) > 0)
+				// This will half the width and height each time essentially quartering the image
+				//	until we reach an acceptable size.
+				while ((szRestricted.Width >= 2000) || (szRestricted.Height >= 2000))
 				{
-					szReturn.Width = nWidthMof - (4 * nDistance);
-					szReturn.Height = (int)Math.Round(szReturn.Width * dRatio);
+					szRestricted.Width /= 2;
+					szRestricted.Height /= 2;
 				}
-				// loop will do our checking for us so no need for an extra if.
 			}
 
-			if (((szReturn.Width % 4) != 0) || ((szReturn.Height % 4) != 0))
+			Size szReturn = szRestricted;
+
+			// First check to see if we have a Multiple of Four size (since we only need to do this if we don't have one).
+			if (((szRestricted.Width % 4) != 0) || ((szRestricted.Height % 4) != 0))
 			{
-				// We must have hit our maximum distance without finding a Mof match now we need to go to our fallback.
-				szReturn = MOF_FALLBACK_SIZE;
+				// Try going to the closest larger Multiple of Four and see if that works
+				int nWidthMof = szRestricted.Width + (4 - (szRestricted.Width % 4));
+				szReturn = new Size(nWidthMof, (int)Math.Round(nWidthMof * dRatio));
+
+				// While we have a non-multiple of 4 size keep looking for one.
+				while ((((szReturn.Width % 4) != 0) || ((szReturn.Height % 4) != 0)) && (nDistance < MOF_MAX_DISTANCE))
+				{
+					nDistance++;
+					// Try enlarging by our distance to see if we can get a Mof size.
+					szReturn.Width = nWidthMof + (4 * nDistance);
+					szReturn.Height = (int)Math.Round(szReturn.Width * dRatio);
+					if (((szReturn.Width % 4) == 0) && ((szReturn.Height % 4) == 0))
+						break;
+					// No luck enlarging so lets try reducing (as long as it would remain above 0.
+					if ((nWidthMof - (4 * nDistance)) > 0)
+					{
+						szReturn.Width = nWidthMof - (4 * nDistance);
+						szReturn.Height = (int)Math.Round(szReturn.Width * dRatio);
+					}
+					// loop will do our checking for us so no need for an extra if.
+				}
+
+				if (((szReturn.Width % 4) != 0) || ((szReturn.Height % 4) != 0))
+				{
+					// We must have hit our maximum distance without finding a Mof match now we need to go to our fallback.
+					szReturn = MOF_FALLBACK_SIZE;
+				}
 			}
 
-			return szReturn;
+			// Final check to see if we are within the max size allowed.
+			if ((!bRestrictToMaxSize) || ((szReturn.Width < 2000) && (szReturn.Height < 2000)))
+				return szReturn;
+			else
+			{
+				// Still too big so half our dimensions and try again.
+				szReturn.Width /= 2;
+				szReturn.Height /= 2;
+				return FindClosestMultipleOf4Size(szReturn, bRestrictToMaxSize);
+			}
 		}
 
 		public static Bitmap AddCardBorder(Bitmap bmpPreview)
@@ -697,7 +727,14 @@ namespace RSN.DotP
 			dgvcNewColumn.DataPropertyName = strDataProp;
 			dgvcNewColumn.Name = strName;
 			dgvcNewColumn.Tag = strHeader;
-			dgvcNewColumn.HeaderText = Settings.UIStrings[strHeader];
+			if (strHeader.StartsWith("CustomTag:"))
+			{
+				// Custom Tag title processing.
+				string strTitle = strHeader.Substring(10);
+				dgvcNewColumn.HeaderText = strTitle;
+			}
+			else
+				dgvcNewColumn.HeaderText = Settings.UIStrings[strHeader];
 			dgvcNewColumn.SortMode = dgvcsmSort;
 			if (nDefWidth > -1)
 				dgvcNewColumn.Width = nDefWidth;

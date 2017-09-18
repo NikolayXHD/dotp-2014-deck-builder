@@ -247,5 +247,50 @@ namespace RSN.DotP
 				}
 			}
 		}
+
+		// Remove a quantity of card from the list (from the end first).  Since unlocks are always single card instances we need to loop through
+		//	until we have reached the proper quantity.  If Quantity is -1 then we remove all instances.
+		public bool RemoveCard(CardInfo ciCard, int nQuantity = 1)
+		{
+			// Quick returns.
+			if ((ciCard == null) || (nQuantity == 0))
+				return false;
+
+			bool bFound = false;
+
+			for (int i = (m_lstCards.Count - 1); i >= 0; i--)
+			{
+				DeckCard dcCard = m_lstCards[i];
+				if (dcCard.Card == ciCard)
+				{
+					bFound = true;
+
+					// We found a matching instance.
+					if (nQuantity == -1)
+					{
+						// Removing all instances.
+						m_lstCards.RemoveAt(i);
+					}
+					else
+					{
+						// Removing a set quantity.
+						m_lstCards.RemoveAt(i);
+						nQuantity--;
+
+						// Check to see if we need to remove any more.
+						if (nQuantity <= 0)
+							break;
+					}
+				}
+			}
+
+			return bFound;
+		}
+
+		// Convenience function.
+		public bool RemoveCard(DeckCard dcCard, int nQuantity = 1)
+		{
+			return RemoveCard(dcCard.Card, nQuantity);
+		}
 	}
 }

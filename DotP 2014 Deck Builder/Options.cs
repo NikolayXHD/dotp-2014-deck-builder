@@ -70,6 +70,7 @@ namespace RSN.DotP
 			chkBasicScreenChecks.Checked = Settings.GetSetting("PerformBasicScreenChecks", true);
 			chkPreShuffleOnExport.Checked = Settings.GetSetting("PreShuffleOnExport", false);
 			chkIncludeMipMaps.Checked = Settings.GetSetting("IncludeMipMaps", true);
+			chkAlwaysExportPersonalities.Checked = Settings.GetSetting("AlwaysExportPersonalities", false);
 
 			if (txtGameDir.Text.Length == 0)
 				cmdCancel.Enabled = false;
@@ -112,6 +113,7 @@ namespace RSN.DotP
 			chkBasicScreenChecks.Text = lsStrings[(string)chkBasicScreenChecks.Tag];
 			chkPreShuffleOnExport.Text = lsStrings[(string)chkPreShuffleOnExport.Tag];
 			chkIncludeMipMaps.Text = lsStrings[(string)chkIncludeMipMaps.Tag];
+			chkAlwaysExportPersonalities.Text = lsStrings[(string)chkAlwaysExportPersonalities.Tag];
 			cmdApply.Text = lsStrings[(string)cmdApply.Tag];
 			cmdCancel.Text = lsStrings[(string)cmdCancel.Tag];
 
@@ -184,6 +186,7 @@ namespace RSN.DotP
 			Settings.SaveSetting("PerformBasicScreenChecks", chkBasicScreenChecks.Checked);
 			Settings.SaveSetting("PreShuffleOnExport", chkPreShuffleOnExport.Checked);
 			Settings.SaveSetting("IncludeMipMaps", chkIncludeMipMaps.Checked);
+			Settings.SaveSetting("AlwaysExportPersonalities", chkAlwaysExportPersonalities.Checked);
 
 			// Id Scheme Options
 			Settings.SaveSerializableSetting("CurrentIdScheme", m_isScheme);

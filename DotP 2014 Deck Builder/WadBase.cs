@@ -17,6 +17,7 @@ namespace RSN.DotP
 		Mana,
 		Frame,
 		Texture,
+		FrontEnd,
 	}
 
 	public abstract class WadBase
@@ -28,6 +29,7 @@ namespace RSN.DotP
 		public const string CARD_IMAGES_LOCATION = @"DATA_ALL_PLATFORMS\ART_ASSETS\ILLUSTRATIONS\";
 		public const string DECK_IMAGES_LOCATION = @"DATA_ALL_PLATFORMS\ART_ASSETS\TEXTURES\DECKS\";
 		public const string DECK_LOCATION = @"DATA_ALL_PLATFORMS\DECKS\";
+		public const string FRONT_END_IMAGES_LOCATION = @"DATA_ALL_PLATFORMS\ART_ASSETS\FRONTEND\";
 		public const string FUNCTIONS_LOCATION = @"DATA_ALL_PLATFORMS\FUNCTIONS\";
 		public const string MANA_IMAGES_LOCATION = @"DATA_ALL_PLATFORMS\ART_ASSETS\TEXTURES\MANA\";
 		public const string SPECS_LOCATION = @"DATA_ALL_PLATFORMS\SPECS\";
@@ -50,10 +52,16 @@ namespace RSN.DotP
 		// For building Wads
 		protected SortedDictionary<string, MemoryStream> m_sdicOutputFiles;
 
+		// For Managing and Manipulating custom headers.
+		protected XmlDocument m_xdHeader;
+		protected int m_nPrimaryOrder;
+
 		public WadBase()
 		{
 			m_sdicOutputFiles = new SortedDictionary<string, MemoryStream>();
 			m_dicCachedImages = new Dictionary<string, TdxWrapper>();
+			m_xdHeader = null;
+			m_nPrimaryOrder = 0;
 		}
 
 		public string Name
@@ -100,6 +108,17 @@ namespace RSN.DotP
 			get { return m_dicSubTypes; }
 		}
 
+		public XmlDocument Header
+		{
+			get { return m_xdHeader; }
+			protected set { m_xdHeader = value; }
+		}
+
+		public int PrimaryOrder
+		{
+			get { return m_nPrimaryOrder; }
+		}
+
 		public List<string> GetSubTypes(CardSubTypeArchetypes eType)
 		{
 			if (m_dicSubTypes != null)
@@ -110,6 +129,11 @@ namespace RSN.DotP
 		public void AddHeader(WadHeaderInfo whiInfo = null)
 		{
 			AddFile("HEADER.XML", CreateHeader(whiInfo));
+		}
+
+		public void AddCustomHeader(XmlDocument xdOrigHeader, WadHeaderInfo whiInfo = null)
+		{
+			AddFile("HEADER.XML", CreateModifiedHeader(xdOrigHeader, whiInfo));
 		}
 
 		public void AddAiPersonality(string strFilename, XmlDocument xdPersonality)
@@ -316,9 +340,144 @@ namespace RSN.DotP
 				}
 			}
 
-			MemoryStream msReturn = new MemoryStream();
-			xdHeader.Save(msReturn);
-			return msReturn;
+			return XmlToMemoryStream(xdHeader);
+		}
+
+		protected void ReadHeaderXml(XmlDocument xdHeader)
+		{
+			if (xdHeader == null)
+				return;
+
+			// About all we really care about here is the primary order attribute.
+			foreach (XmlNode xnRoot in xdHeader.ChildNodes)
+			{
+				// Should only have one root node.
+				if (xnRoot.Name.Equals("WAD_HEADER", StringComparison.OrdinalIgnoreCase))
+				{
+					// We found our root node.
+					foreach (XmlNode xnNode in xnRoot.ChildNodes)
+					{
+						// We want the primary ENTRY (that is the entry with platform "ALL")
+						if (xnNode.Name.Equals("ENTRY", StringComparison.OrdinalIgnoreCase))
+						{
+							// Check to see if this is our primary entry.
+							string strPlatform = XmlTools.GetValueFromAttribute(xnNode, "platform", string.Empty);
+							if ((strPlatform != null) && (strPlatform.Equals("ALL", StringComparison.OrdinalIgnoreCase)))
+							{
+								// Now we need to get our primary order value.
+								string strOrder = XmlTools.GetValueFromAttribute(xnNode, "order", "0");
+								if ((strOrder != null) && (strOrder.Length > 0))
+								{
+									int nOrder = 0;
+									if (Int32.TryParse(strOrder, out nOrder))
+										m_nPrimaryOrder = nOrder;
+								}
+
+								// This was our primary entry so now we break out of this loop.
+								break;
+							}
+						}
+					}
+
+					// Since we've finished with our root we can now exit our loop.
+					break;
+				}
+			}
+		}
+
+		protected MemoryStream CreateModifiedHeader(XmlDocument xdOrigHeader, WadHeaderInfo whiInfo = null)
+		{
+			if (xdOrigHeader == null)
+				return CreateHeader(whiInfo);
+
+			// First we clone the XML document since we don't want to modify the original.
+			XmlDocument xdNewHeader = (XmlDocument)xdOrigHeader.CloneNode(true);
+			bool bFoundRoot = false;
+
+			// Now we need to dig into our file.
+			foreach (XmlNode xnRoot in xdNewHeader.ChildNodes)
+			{
+				// Should only have one root node.
+				if (xnRoot.Name.Equals("WAD_HEADER", StringComparison.OrdinalIgnoreCase))
+				{
+					bFoundRoot = true;
+
+					bool bFoundPrimary = false;
+
+					// We found our root node.
+					foreach (XmlNode xnNode in xnRoot.ChildNodes)
+					{
+						// We want the primary ENTRY (that is the entry with platform "ALL")
+						if (xnNode.Name.Equals("ENTRY", StringComparison.OrdinalIgnoreCase))
+						{
+							// Check to see if this is our primary entry.
+							string strPlatform = XmlTools.GetValueFromAttribute(xnNode, "platform", string.Empty);
+							if ((strPlatform != null) && (strPlatform.Equals("ALL", StringComparison.OrdinalIgnoreCase)))
+							{
+								// Good we found our primary Entry so now we need to change the source and possibly the order.
+								bFoundPrimary = true;
+								XmlAttribute xaSource = XmlTools.FindCaseInsensitiveAttribute(xnNode, "source");
+								if (xaSource == null)
+								{
+									// We have a problem we should have a source attribute, since we don't have one we need to create one.
+									xaSource = xdNewHeader.CreateAttribute("source");
+									xnNode.Attributes.Append(xaSource);
+								}
+
+								// We now have our source attribute so update it.
+								xaSource.Value = m_strName.ToUpper() + "/DATA_ALL_PLATFORMS/";
+
+								XmlAttribute xaOrder = XmlTools.FindCaseInsensitiveAttribute(xnNode, "order");
+								if ((xaOrder != null) && ((whiInfo != null) && (whiInfo.OrderPriority > 0)))
+									xaOrder.Value = whiInfo.OrderPriority.ToString();
+								else if (xaOrder == null)
+								{
+									// We have a problem we should have a source attribute, since we don't have one we need to create one.
+									xaOrder = xdNewHeader.CreateAttribute("order");
+									if ((whiInfo != null) && (whiInfo.OrderPriority > 0))
+										xaOrder.Value = whiInfo.OrderPriority.ToString();
+									else
+										xaOrder.Value = "3";
+									xnNode.Attributes.Append(xaOrder);
+								}
+
+								// We really should have only needed to worry about the primary entry since for our modding nothing else is really used so we can break now.
+								break;
+							}
+						}
+					}
+
+					if (!bFoundPrimary)
+					{
+						// We need to create our primary Entry since we couldn't find one.
+						XmlNode xnEntry = XmlTools.AddElementToNode(xdNewHeader, xnRoot, "ENTRY");
+						XmlTools.AddAttributeToNode(xdNewHeader, xnEntry, "platform", "ALL");
+						XmlTools.AddAttributeToNode(xdNewHeader, xnEntry, "source", m_strName.ToUpper() + "/DATA_ALL_PLATFORMS/");
+						if ((whiInfo != null) && (whiInfo.OrderPriority > 0))
+						{
+							XmlTools.AddAttributeToNode(xdNewHeader, xnEntry, "order", whiInfo.OrderPriority.ToString());
+						}
+						else
+						{
+							XmlTools.AddAttributeToNode(xdNewHeader, xnEntry, "order", "3");
+						}
+					}
+
+					// Since we've finished with our root we can now exit our loop.
+					break;
+				}
+			}
+
+			if (bFoundRoot)
+			{
+				// We should have a nice custom header at this point properly formatted for a core wad so we need to return it properly.
+				return XmlToMemoryStream(xdNewHeader);
+			}
+			else
+			{
+				// We have a problem in that we couldn't find a root node so we should create a Header from scratch.
+				return CreateHeader(whiInfo);
+			}
 		}
 	}
 }

@@ -41,78 +41,83 @@ namespace RSN.DotP
 			m_fltSettings = Settings.GetSerializableSetting("CardFilters", new Filters());
 
 			// Now that we have restored our filter settings we need to populate the controls with those settings.
+			LoadSettingsFromFilters(m_fltSettings);
+		}
+
+		private void LoadSettingsFromFilters(Filters filters)
+		{
 			//	Name
-			chkName.Checked = m_fltSettings.DoTitleCheck;
-			txtName.Text = m_fltSettings.Title;
-			cboNameFilter.SelectedItem = new KeyValuePair<FilterStringComparisonType, string>(m_fltSettings.TitleFilter, Settings.UIStrings[m_fltSettings.TitleFilter.ToString().ToUpper()]);
+			chkName.Checked = filters.DoTitleCheck;
+			txtName.Text = filters.Title;
+			cboNameFilter.SelectedItem = new KeyValuePair<FilterStringComparisonType, string>(filters.TitleFilter, Settings.UIStrings[filters.TitleFilter.ToString().ToUpper()]);
 
 			// Colour
-			chkBlack.Checked = ((m_fltSettings.Colour & ColourFlags.Black) == ColourFlags.Black);
-			chkBlue.Checked = ((m_fltSettings.Colour & ColourFlags.Blue) == ColourFlags.Blue);
-			chkGreen.Checked = ((m_fltSettings.Colour & ColourFlags.Green) == ColourFlags.Green);
-			chkRed.Checked = ((m_fltSettings.Colour & ColourFlags.Red) == ColourFlags.Red);
-			chkWhite.Checked = ((m_fltSettings.Colour & ColourFlags.White) == ColourFlags.White);
-			chkColourless.Checked = ((m_fltSettings.Colour & ColourFlags.Colourless) == ColourFlags.Colourless);
-			chkMultiColoured.Checked = ((m_fltSettings.Colour & ColourFlags.MultiColour) == ColourFlags.MultiColour);
-			cboColourFilter.SelectedItem = new KeyValuePair<FilterType, string>(m_fltSettings.ColourFilter, Settings.UIStrings[m_fltSettings.ColourFilter.ToString().ToUpper()]);
+			chkBlack.Checked = ((filters.Colour & ColourFlags.Black) == ColourFlags.Black);
+			chkBlue.Checked = ((filters.Colour & ColourFlags.Blue) == ColourFlags.Blue);
+			chkGreen.Checked = ((filters.Colour & ColourFlags.Green) == ColourFlags.Green);
+			chkRed.Checked = ((filters.Colour & ColourFlags.Red) == ColourFlags.Red);
+			chkWhite.Checked = ((filters.Colour & ColourFlags.White) == ColourFlags.White);
+			chkColourless.Checked = ((filters.Colour & ColourFlags.Colourless) == ColourFlags.Colourless);
+			chkMultiColoured.Checked = ((filters.Colour & ColourFlags.MultiColour) == ColourFlags.MultiColour);
+			cboColourFilter.SelectedItem = new KeyValuePair<FilterType, string>(filters.ColourFilter, Settings.UIStrings[filters.ColourFilter.ToString().ToUpper()]);
 
 			// Card Types
-			chkArtifact.Checked = ((m_fltSettings.Type & CardType.Artifact) == CardType.Artifact);
-			chkCreature.Checked = ((m_fltSettings.Type & CardType.Creature) == CardType.Creature);
-			chkEnchantment.Checked = ((m_fltSettings.Type & CardType.Enchantment) == CardType.Enchantment);
-			chkInstant.Checked = ((m_fltSettings.Type & CardType.Instant) == CardType.Instant);
-			chkLand.Checked = ((m_fltSettings.Type & CardType.Land) == CardType.Land);
-			chkPhenomenon.Checked = ((m_fltSettings.Type & CardType.Phenomenon) == CardType.Phenomenon);
-			chkPlane.Checked = ((m_fltSettings.Type & CardType.Plane) == CardType.Plane);
-			chkPlaneswalker.Checked = ((m_fltSettings.Type & CardType.Planeswalker) == CardType.Planeswalker);
-			chkScheme.Checked = ((m_fltSettings.Type & CardType.Scheme) == CardType.Scheme);
-			chkSorcery.Checked = ((m_fltSettings.Type & CardType.Sorcery) == CardType.Sorcery);
-			chkTribal.Checked = ((m_fltSettings.Type & CardType.Tribal) == CardType.Tribal);
-			cboTypeFilter.SelectedItem = new KeyValuePair<FilterType, string>(m_fltSettings.TypeFilter, Settings.UIStrings[m_fltSettings.TypeFilter.ToString().ToUpper()]);
+			chkArtifact.Checked = ((filters.Type & CardType.Artifact) == CardType.Artifact);
+			chkCreature.Checked = ((filters.Type & CardType.Creature) == CardType.Creature);
+			chkEnchantment.Checked = ((filters.Type & CardType.Enchantment) == CardType.Enchantment);
+			chkInstant.Checked = ((filters.Type & CardType.Instant) == CardType.Instant);
+			chkLand.Checked = ((filters.Type & CardType.Land) == CardType.Land);
+			chkPhenomenon.Checked = ((filters.Type & CardType.Phenomenon) == CardType.Phenomenon);
+			chkPlane.Checked = ((filters.Type & CardType.Plane) == CardType.Plane);
+			chkPlaneswalker.Checked = ((filters.Type & CardType.Planeswalker) == CardType.Planeswalker);
+			chkScheme.Checked = ((filters.Type & CardType.Scheme) == CardType.Scheme);
+			chkSorcery.Checked = ((filters.Type & CardType.Sorcery) == CardType.Sorcery);
+			chkTribal.Checked = ((filters.Type & CardType.Tribal) == CardType.Tribal);
+			cboTypeFilter.SelectedItem = new KeyValuePair<FilterType, string>(filters.TypeFilter, Settings.UIStrings[filters.TypeFilter.ToString().ToUpper()]);
 
 			// Super Types
-			chkBasic.Checked = m_fltSettings.AllowBasic;
-			chkLegendary.Checked = m_fltSettings.AllowLegendary;
-			chkSnow.Checked = m_fltSettings.AllowSnow;
-			chkWorld.Checked = m_fltSettings.AllowWorld;
+			chkBasic.Checked = filters.AllowBasic;
+			chkLegendary.Checked = filters.AllowLegendary;
+			chkSnow.Checked = filters.AllowSnow;
+			chkWorld.Checked = filters.AllowWorld;
 
 			// Sub Types
-			chkCheckSubTypes.Checked = m_fltSettings.DoSubTypeCheck;
-			txtSubType.Text = m_fltSettings.SubType;
-			cboSubTypeFilter.SelectedItem = new KeyValuePair<FilterStringComparisonType, string>(m_fltSettings.SubTypeFilter, Settings.UIStrings[m_fltSettings.SubTypeFilter.ToString().ToUpper()]);
+			chkCheckSubTypes.Checked = filters.DoSubTypeCheck;
+			txtSubType.Text = filters.SubType;
+			cboSubTypeFilter.SelectedItem = new KeyValuePair<FilterStringComparisonType, string>(filters.SubTypeFilter, Settings.UIStrings[filters.SubTypeFilter.ToString().ToUpper()]);
 
 			// Converted Mana Cost
-			numCmc.Value = m_fltSettings.Cmc;
-			cboCmcFilter.SelectedItem = new KeyValuePair<FilterIntComparisonType, string>(m_fltSettings.CmcFilter, Settings.UIStrings[m_fltSettings.CmcFilter.ToString().ToUpper()]);
+			numCmc.Value = filters.Cmc;
+			cboCmcFilter.SelectedItem = new KeyValuePair<FilterIntComparisonType, string>(filters.CmcFilter, Settings.UIStrings[filters.CmcFilter.ToString().ToUpper()]);
 
 			// Power/Toughness
-			chkCheckPowerToughness.Checked = m_fltSettings.DoPowerToughnessCheck;
-			txtPower.Text = m_fltSettings.Power;
-			cboPowerFilter.SelectedItem = new KeyValuePair<FilterIntComparisonType, string>(m_fltSettings.PowerFilter, Settings.UIStrings[m_fltSettings.PowerFilter.ToString().ToUpper()]);
-			txtToughness.Text = m_fltSettings.Toughness;
-			cboToughnessFilter.SelectedItem = new KeyValuePair<FilterIntComparisonType, string>(m_fltSettings.ToughnessFilter, Settings.UIStrings[m_fltSettings.ToughnessFilter.ToString().ToUpper()]);
+			chkCheckPowerToughness.Checked = filters.DoPowerToughnessCheck;
+			txtPower.Text = filters.Power;
+			cboPowerFilter.SelectedItem = new KeyValuePair<FilterIntComparisonType, string>(filters.PowerFilter, Settings.UIStrings[filters.PowerFilter.ToString().ToUpper()]);
+			txtToughness.Text = filters.Toughness;
+			cboToughnessFilter.SelectedItem = new KeyValuePair<FilterIntComparisonType, string>(filters.ToughnessFilter, Settings.UIStrings[filters.ToughnessFilter.ToString().ToUpper()]);
 
 			// Rarity
-			chkRarityToken.Checked = ((m_fltSettings.Rarity & CardRarity.Token) == CardRarity.Token);
-			chkRarityLand.Checked = ((m_fltSettings.Rarity & CardRarity.Land) == CardRarity.Land);
-			chkRarityCommon.Checked = ((m_fltSettings.Rarity & CardRarity.Common) == CardRarity.Common);
-			chkRarityUncommon.Checked = ((m_fltSettings.Rarity & CardRarity.Uncommon) == CardRarity.Uncommon);
-			chkRarityRare.Checked = ((m_fltSettings.Rarity & CardRarity.Rare) == CardRarity.Rare);
-			chkRarityMythic.Checked = ((m_fltSettings.Rarity & CardRarity.Mythic) == CardRarity.Mythic);
-			chkRaritySpecial.Checked = ((m_fltSettings.Rarity & CardRarity.Special) == CardRarity.Special);
+			chkRarityToken.Checked = ((filters.Rarity & CardRarity.Token) == CardRarity.Token);
+			chkRarityLand.Checked = ((filters.Rarity & CardRarity.Land) == CardRarity.Land);
+			chkRarityCommon.Checked = ((filters.Rarity & CardRarity.Common) == CardRarity.Common);
+			chkRarityUncommon.Checked = ((filters.Rarity & CardRarity.Uncommon) == CardRarity.Uncommon);
+			chkRarityRare.Checked = ((filters.Rarity & CardRarity.Rare) == CardRarity.Rare);
+			chkRarityMythic.Checked = ((filters.Rarity & CardRarity.Mythic) == CardRarity.Mythic);
+			chkRaritySpecial.Checked = ((filters.Rarity & CardRarity.Special) == CardRarity.Special);
 
 			// Abilities
-			chkCheckAbilities.Checked = m_fltSettings.DoAbilityCheck;
-			txtAbilities.Text = m_fltSettings.Ability;
-			cboAbilitiesFilter.SelectedItem = new KeyValuePair<FilterStringComparisonType, string>(m_fltSettings.AbilityFilter, Settings.UIStrings[m_fltSettings.AbilityFilter.ToString().ToUpper()]);
-			chkCheckGrantedAbilities.Checked = m_fltSettings.CheckGrantedAbilities;
+			chkCheckAbilities.Checked = filters.DoAbilityCheck;
+			txtAbilities.Text = filters.Ability;
+			cboAbilitiesFilter.SelectedItem = new KeyValuePair<FilterStringComparisonType, string>(filters.AbilityFilter, Settings.UIStrings[filters.AbilityFilter.ToString().ToUpper()]);
+			chkCheckGrantedAbilities.Checked = filters.CheckGrantedAbilities;
 
 			// Extras
-			chkTokens.Checked = m_fltSettings.AllowToken;
-			chkCardsThatCreateTokens.Checked = m_fltSettings.AllowCreateTokens;
-			chkRegularMana.Checked = m_fltSettings.AllowManaRegular;
-			chkHybridMana.Checked = m_fltSettings.AllowManaHybrid;
-			chkPhyrexianMana.Checked = m_fltSettings.AllowManaPhyrexian;
+			chkTokens.Checked = filters.AllowToken;
+			chkCardsThatCreateTokens.Checked = filters.AllowCreateTokens;
+			chkRegularMana.Checked = filters.AllowManaRegular;
+			chkHybridMana.Checked = filters.AllowManaHybrid;
+			chkPhyrexianMana.Checked = filters.AllowManaPhyrexian;
 
 			chkName_CheckedChanged(null, null);
 			chkCheckSubTypes_CheckedChanged(null, null);
@@ -204,6 +209,7 @@ namespace RSN.DotP
 			chkPhyrexianMana.Text = Settings.UIStrings[(string)chkPhyrexianMana.Tag];
 
 			// Apply & Cancel
+			cmdReset.Text = Settings.UIStrings[(string)cmdReset.Tag];
 			cmdApply.Text = Settings.UIStrings[(string)cmdApply.Tag];
 			cmdCancel.Text = Settings.UIStrings[(string)cmdCancel.Tag];
 		}
@@ -404,6 +410,13 @@ namespace RSN.DotP
 			}
 			else
 				txtToughness.Text = "0";
+		}
+
+		private void cmdReset_Click(object sender, EventArgs e)
+		{
+			// Reset our settings in case the user has made multiple changes they want to undo simultaneously.
+			m_fltSettings = new Filters();
+			LoadSettingsFromFilters(m_fltSettings);
 		}
 	}
 }

@@ -128,6 +128,13 @@
 			this.cmnuiExport = new System.Windows.Forms.ToolStripMenuItem();
 			this.cmnuiExportPng = new System.Windows.Forms.ToolStripMenuItem();
 			this.cmnuiExportTdx = new System.Windows.Forms.ToolStripMenuItem();
+			this.gbColourOverride = new System.Windows.Forms.GroupBox();
+			this.chkColourOverride = new System.Windows.Forms.CheckBox();
+			this.chkOverrideWhite = new System.Windows.Forms.CheckBox();
+			this.chkOverrideBlue = new System.Windows.Forms.CheckBox();
+			this.chkOverrideBlack = new System.Windows.Forms.CheckBox();
+			this.chkOverrideRed = new System.Windows.Forms.CheckBox();
+			this.chkOverrideGreen = new System.Windows.Forms.CheckBox();
 			this.gbBasicInfo.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.scAiPersonality)).BeginInit();
 			this.scAiPersonality.Panel1.SuspendLayout();
@@ -168,6 +175,7 @@
 			((System.ComponentModel.ISupportInitialize)(this.numDeckHeight)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.picDeckBox)).BeginInit();
 			this.cmnuPictures.SuspendLayout();
+			this.gbColourOverride.SuspendLayout();
 			this.SuspendLayout();
 			// 
 			// gbBasicInfo
@@ -307,7 +315,8 @@
 			// cmdCancel
 			// 
 			this.cmdCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-			this.cmdCancel.Location = new System.Drawing.Point(568, 477);
+			this.cmdCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
+			this.cmdCancel.Location = new System.Drawing.Point(568, 521);
 			this.cmdCancel.Name = "cmdCancel";
 			this.cmdCancel.Size = new System.Drawing.Size(95, 21);
 			this.cmdCancel.TabIndex = 5;
@@ -319,7 +328,7 @@
 			// cmdApply
 			// 
 			this.cmdApply.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-			this.cmdApply.Location = new System.Drawing.Point(467, 477);
+			this.cmdApply.Location = new System.Drawing.Point(467, 521);
 			this.cmdApply.Name = "cmdApply";
 			this.cmdApply.Size = new System.Drawing.Size(95, 21);
 			this.cmdApply.TabIndex = 4;
@@ -1420,12 +1429,88 @@
 			this.cmnuiExportTdx.Text = "&TDX ...";
 			this.cmnuiExportTdx.Click += new System.EventHandler(this.cmnuiExportTdx_Click);
 			// 
+			// gbColourOverride
+			// 
+			this.gbColourOverride.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+						| System.Windows.Forms.AnchorStyles.Left)));
+			this.gbColourOverride.Controls.Add(this.chkOverrideGreen);
+			this.gbColourOverride.Controls.Add(this.chkOverrideRed);
+			this.gbColourOverride.Controls.Add(this.chkOverrideBlack);
+			this.gbColourOverride.Controls.Add(this.chkOverrideBlue);
+			this.gbColourOverride.Controls.Add(this.chkOverrideWhite);
+			this.gbColourOverride.Controls.Add(this.chkColourOverride);
+			this.gbColourOverride.Location = new System.Drawing.Point(12, 477);
+			this.gbColourOverride.Name = "gbColourOverride";
+			this.gbColourOverride.Size = new System.Drawing.Size(313, 65);
+			this.gbColourOverride.TabIndex = 6;
+			this.gbColourOverride.TabStop = false;
+			// 
+			// chkColourOverride
+			// 
+			this.chkColourOverride.AutoSize = true;
+			this.chkColourOverride.Location = new System.Drawing.Point(6, 0);
+			this.chkColourOverride.Name = "chkColourOverride";
+			this.chkColourOverride.Size = new System.Drawing.Size(128, 17);
+			this.chkColourOverride.TabIndex = 0;
+			this.chkColourOverride.Tag = "OVERRIDE_DECK_COLOUR";
+			this.chkColourOverride.Text = "Override Deck Colour";
+			this.chkColourOverride.UseVisualStyleBackColor = true;
+			this.chkColourOverride.CheckedChanged += new System.EventHandler(this.chkColourOverride_CheckedChanged);
+			// 
+			// chkOverrideWhite
+			// 
+			this.chkOverrideWhite.Appearance = System.Windows.Forms.Appearance.Button;
+			this.chkOverrideWhite.Location = new System.Drawing.Point(6, 23);
+			this.chkOverrideWhite.Name = "chkOverrideWhite";
+			this.chkOverrideWhite.Size = new System.Drawing.Size(36, 36);
+			this.chkOverrideWhite.TabIndex = 1;
+			this.chkOverrideWhite.UseVisualStyleBackColor = true;
+			// 
+			// chkOverrideBlue
+			// 
+			this.chkOverrideBlue.Appearance = System.Windows.Forms.Appearance.Button;
+			this.chkOverrideBlue.Location = new System.Drawing.Point(48, 23);
+			this.chkOverrideBlue.Name = "chkOverrideBlue";
+			this.chkOverrideBlue.Size = new System.Drawing.Size(36, 36);
+			this.chkOverrideBlue.TabIndex = 2;
+			this.chkOverrideBlue.UseVisualStyleBackColor = true;
+			// 
+			// chkOverrideBlack
+			// 
+			this.chkOverrideBlack.Appearance = System.Windows.Forms.Appearance.Button;
+			this.chkOverrideBlack.Location = new System.Drawing.Point(90, 23);
+			this.chkOverrideBlack.Name = "chkOverrideBlack";
+			this.chkOverrideBlack.Size = new System.Drawing.Size(36, 36);
+			this.chkOverrideBlack.TabIndex = 3;
+			this.chkOverrideBlack.UseVisualStyleBackColor = true;
+			// 
+			// chkOverrideRed
+			// 
+			this.chkOverrideRed.Appearance = System.Windows.Forms.Appearance.Button;
+			this.chkOverrideRed.Location = new System.Drawing.Point(132, 23);
+			this.chkOverrideRed.Name = "chkOverrideRed";
+			this.chkOverrideRed.Size = new System.Drawing.Size(36, 36);
+			this.chkOverrideRed.TabIndex = 4;
+			this.chkOverrideRed.UseVisualStyleBackColor = true;
+			// 
+			// chkOverrideGreen
+			// 
+			this.chkOverrideGreen.Appearance = System.Windows.Forms.Appearance.Button;
+			this.chkOverrideGreen.Location = new System.Drawing.Point(174, 23);
+			this.chkOverrideGreen.Name = "chkOverrideGreen";
+			this.chkOverrideGreen.Size = new System.Drawing.Size(36, 36);
+			this.chkOverrideGreen.TabIndex = 5;
+			this.chkOverrideGreen.UseVisualStyleBackColor = true;
+			// 
 			// DeckInformation
 			// 
+			this.AcceptButton = this.cmdApply;
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			this.ClientSize = new System.Drawing.Size(675, 510);
+			this.CancelButton = this.cmdCancel;
+			this.ClientSize = new System.Drawing.Size(675, 554);
 			this.ControlBox = false;
+			this.Controls.Add(this.gbColourOverride);
 			this.Controls.Add(this.cmdCancel);
 			this.Controls.Add(this.gbBasicInfo);
 			this.Controls.Add(this.gbLandConfig);
@@ -1487,6 +1572,8 @@
 			((System.ComponentModel.ISupportInitialize)(this.numDeckHeight)).EndInit();
 			((System.ComponentModel.ISupportInitialize)(this.picDeckBox)).EndInit();
 			this.cmnuPictures.ResumeLayout(false);
+			this.gbColourOverride.ResumeLayout(false);
+			this.gbColourOverride.PerformLayout();
 			this.ResumeLayout(false);
 
 		}
@@ -1592,5 +1679,12 @@
 		private System.Windows.Forms.SplitContainer scAiPersonality;
 		private System.Windows.Forms.Label lblAiPersonality;
 		private System.Windows.Forms.Button cmdEditPersonality;
+		private System.Windows.Forms.GroupBox gbColourOverride;
+		private System.Windows.Forms.CheckBox chkColourOverride;
+		private System.Windows.Forms.CheckBox chkOverrideGreen;
+		private System.Windows.Forms.CheckBox chkOverrideRed;
+		private System.Windows.Forms.CheckBox chkOverrideBlack;
+		private System.Windows.Forms.CheckBox chkOverrideBlue;
+		private System.Windows.Forms.CheckBox chkOverrideWhite;
 	}
 }

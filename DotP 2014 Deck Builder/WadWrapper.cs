@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Xml;
 using Be.Timvw.Framework.ComponentModel;
 using RSN.Tools;
 
@@ -49,6 +50,10 @@ namespace RSN.DotP
 			// Load Cards
 			using (FileStream fsInput = OpenWadStream())
 			{
+				// Now that we have opened the Wad stream we should now be able to read the header XML that we got from opening.
+				ReadHeaderXml(m_xdHeader);
+
+				// Load our cards if any.
 				m_lstCards = LoadCards(fsInput, gdData);
 
 				// Load up all the strings present in TEXT_PERMANENT
@@ -60,6 +65,28 @@ namespace RSN.DotP
 
 			// Now we no longer need the wad open as for loading image names all we need is the directory which we already have.
 			m_hsetImages = LoadImageList();
+		}
+
+		private XmlDocument LoadHeader(byte[] abytHeader)
+		{
+			XmlDocument xdHeader = null;
+
+			if (abytHeader.Length > 0)
+			{
+				string strHeader = Encoding.UTF8.GetString(abytHeader);
+				try
+				{
+					xdHeader = new XmlDocument();
+					xdHeader.LoadXml(strHeader);
+				}
+				catch (Exception e)
+				{
+					xdHeader = null;
+					Settings.ReportError(e, ErrorPriority.Low, "Wad " + m_strName + " has a header that could not be loaded, header text follows.\r\n" + strHeader);
+				}
+			}
+
+			return xdHeader;
 		}
 
 		private Dictionary<string, Dictionary<string, string>> LoadStringTable(FileStream fsInput)
@@ -113,6 +140,7 @@ namespace RSN.DotP
 				m_wadArchive = new WadFile();
 				m_wadArchive.Deserialize(fsInput);
 				m_bHasCompressedFiles = ((m_wadArchive.Flags & Wad.ArchiveFlags.HasCompressedFiles) == Wad.ArchiveFlags.HasCompressedFiles);
+				m_xdHeader = LoadHeader(m_wadArchive.HeaderXml);
 				return fsInput;
 			}
 			else
@@ -184,6 +212,7 @@ namespace RSN.DotP
 			LoadImageListFrom(set, FindDir(m_wadArchive.Directories, CARD_FRAME_IMAGES_LOCATION), LoadImageType.Frame);
 			LoadImageListFrom(set, FindDir(m_wadArchive.Directories, TEXTURE_IMAGES_LOCATION), LoadImageType.Texture);
 			LoadImageListFrom(set, FindDir(m_wadArchive.Directories, MANA_IMAGES_LOCATION), LoadImageType.Mana);
+			LoadImageListFrom(set, FindDir(m_wadArchive.Directories, FRONT_END_IMAGES_LOCATION), LoadImageType.FrontEnd);
 
 			return set;
 		}
@@ -337,6 +366,9 @@ namespace RSN.DotP
 						case LoadImageType.Frame:
 							dir = FindDir(m_wadArchive.Directories, CARD_FRAME_IMAGES_LOCATION);
 							break;
+						case LoadImageType.FrontEnd:
+							dir = FindDir(m_wadArchive.Directories, FRONT_END_IMAGES_LOCATION);
+							break;
 						case LoadImageType.Mana:
 							dir = FindDir(m_wadArchive.Directories, MANA_IMAGES_LOCATION);
 							break;
@@ -430,6 +462,12 @@ namespace RSN.DotP
 										dir = FindDir(m_wadArchive.Directories, MANA_IMAGES_LOCATION);
 										if ((dir != null) && (dir.Files.Count > 0))
 											feFile = GetFileEntryIfExists(dir.Files, strId + ".TDX");
+										if (feFile == null)
+										{
+											dir = FindDir(m_wadArchive.Directories, FRONT_END_IMAGES_LOCATION);
+											if ((dir != null) && (dir.Files.Count > 0))
+												feFile = GetFileEntryIfExists(dir.Files, strId + ".TDX");
+										}
 									}
 								}
 							}

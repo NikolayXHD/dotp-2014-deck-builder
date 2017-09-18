@@ -64,13 +64,24 @@
 			this.picPersonalityFull = new System.Windows.Forms.PictureBox();
 			this.cmdCancel = new System.Windows.Forms.Button();
 			this.cmdApply = new System.Windows.Forms.Button();
-			this.scFullImage = new System.Windows.Forms.SplitContainer();
-			this.rbUseThisImageFull = new System.Windows.Forms.RadioButton();
-			this.rbLoadImageFull = new System.Windows.Forms.RadioButton();
 			this.cmnuPictures = new System.Windows.Forms.ContextMenuStrip(this.components);
 			this.cmnuiExport = new System.Windows.Forms.ToolStripMenuItem();
 			this.cmnuiExportPng = new System.Windows.Forms.ToolStripMenuItem();
 			this.cmnuiExportTdx = new System.Windows.Forms.ToolStripMenuItem();
+			this.scFullImage = new System.Windows.Forms.SplitContainer();
+			this.scFullImageUseLoad = new System.Windows.Forms.SplitContainer();
+			this.rbUseThisImageFull = new System.Windows.Forms.RadioButton();
+			this.rbLoadImageFull = new System.Windows.Forms.RadioButton();
+			this.rbBuildImageFull = new System.Windows.Forms.RadioButton();
+			this.scFullLocationSize = new System.Windows.Forms.SplitContainer();
+			this.gbFullLocation = new System.Windows.Forms.GroupBox();
+			this.scFullLocation = new System.Windows.Forms.SplitContainer();
+			this.numFullX = new System.Windows.Forms.NumericUpDown();
+			this.numFullY = new System.Windows.Forms.NumericUpDown();
+			this.gbFullSize = new System.Windows.Forms.GroupBox();
+			this.scFullSize = new System.Windows.Forms.SplitContainer();
+			this.numFullWidth = new System.Windows.Forms.NumericUpDown();
+			this.numFullHeight = new System.Windows.Forms.NumericUpDown();
 			((System.ComponentModel.ISupportInitialize)(this.picPersonalitySmall)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.picPersonalityLarge)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.scSmallLarge)).BeginInit();
@@ -114,11 +125,33 @@
 			((System.ComponentModel.ISupportInitialize)(this.numLargeWidth)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.numLargeHeight)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.picPersonalityFull)).BeginInit();
+			this.cmnuPictures.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.scFullImage)).BeginInit();
 			this.scFullImage.Panel1.SuspendLayout();
 			this.scFullImage.Panel2.SuspendLayout();
 			this.scFullImage.SuspendLayout();
-			this.cmnuPictures.SuspendLayout();
+			((System.ComponentModel.ISupportInitialize)(this.scFullImageUseLoad)).BeginInit();
+			this.scFullImageUseLoad.Panel1.SuspendLayout();
+			this.scFullImageUseLoad.Panel2.SuspendLayout();
+			this.scFullImageUseLoad.SuspendLayout();
+			((System.ComponentModel.ISupportInitialize)(this.scFullLocationSize)).BeginInit();
+			this.scFullLocationSize.Panel1.SuspendLayout();
+			this.scFullLocationSize.Panel2.SuspendLayout();
+			this.scFullLocationSize.SuspendLayout();
+			this.gbFullLocation.SuspendLayout();
+			((System.ComponentModel.ISupportInitialize)(this.scFullLocation)).BeginInit();
+			this.scFullLocation.Panel1.SuspendLayout();
+			this.scFullLocation.Panel2.SuspendLayout();
+			this.scFullLocation.SuspendLayout();
+			((System.ComponentModel.ISupportInitialize)(this.numFullX)).BeginInit();
+			((System.ComponentModel.ISupportInitialize)(this.numFullY)).BeginInit();
+			this.gbFullSize.SuspendLayout();
+			((System.ComponentModel.ISupportInitialize)(this.scFullSize)).BeginInit();
+			this.scFullSize.Panel1.SuspendLayout();
+			this.scFullSize.Panel2.SuspendLayout();
+			this.scFullSize.SuspendLayout();
+			((System.ComponentModel.ISupportInitialize)(this.numFullWidth)).BeginInit();
+			((System.ComponentModel.ISupportInitialize)(this.numFullHeight)).BeginInit();
 			this.SuspendLayout();
 			// 
 			// picPersonalitySmall
@@ -648,12 +681,17 @@
 			this.picPersonalityFull.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
 			this.picPersonalityFull.TabIndex = 6;
 			this.picPersonalityFull.TabStop = false;
+			this.picPersonalityFull.MouseDown += new System.Windows.Forms.MouseEventHandler(this.picPersonalityFull_MouseDown);
+			this.picPersonalityFull.MouseEnter += new System.EventHandler(this.picPersonalityFull_MouseEnter);
+			this.picPersonalityFull.MouseMove += new System.Windows.Forms.MouseEventHandler(this.picPersonalityFull_MouseMove);
 			this.picPersonalityFull.MouseUp += new System.Windows.Forms.MouseEventHandler(this.picFull_MouseUp);
+			this.picPersonalityFull.MouseWheel += new System.Windows.Forms.MouseEventHandler(this.picPersonalityFull_MouseWheel);
 			// 
 			// cmdCancel
 			// 
 			this.cmdCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-			this.cmdCancel.Location = new System.Drawing.Point(953, 530);
+			this.cmdCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
+			this.cmdCancel.Location = new System.Drawing.Point(953, 575);
 			this.cmdCancel.Name = "cmdCancel";
 			this.cmdCancel.Size = new System.Drawing.Size(95, 21);
 			this.cmdCancel.TabIndex = 8;
@@ -665,7 +703,7 @@
 			// cmdApply
 			// 
 			this.cmdApply.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-			this.cmdApply.Location = new System.Drawing.Point(852, 530);
+			this.cmdApply.Location = new System.Drawing.Point(852, 575);
 			this.cmdApply.Name = "cmdApply";
 			this.cmdApply.Size = new System.Drawing.Size(95, 21);
 			this.cmdApply.TabIndex = 7;
@@ -673,49 +711,6 @@
 			this.cmdApply.Text = "Apply";
 			this.cmdApply.UseVisualStyleBackColor = true;
 			this.cmdApply.Click += new System.EventHandler(this.cmdApply_Click);
-			// 
-			// scFullImage
-			// 
-			this.scFullImage.IsSplitterFixed = true;
-			this.scFullImage.Location = new System.Drawing.Point(536, 530);
-			this.scFullImage.Name = "scFullImage";
-			// 
-			// scFullImage.Panel1
-			// 
-			this.scFullImage.Panel1.Controls.Add(this.rbUseThisImageFull);
-			// 
-			// scFullImage.Panel2
-			// 
-			this.scFullImage.Panel2.Controls.Add(this.rbLoadImageFull);
-			this.scFullImage.Size = new System.Drawing.Size(310, 21);
-			this.scFullImage.SplitterDistance = 153;
-			this.scFullImage.TabIndex = 9;
-			// 
-			// rbUseThisImageFull
-			// 
-			this.rbUseThisImageFull.Checked = true;
-			this.rbUseThisImageFull.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.rbUseThisImageFull.Location = new System.Drawing.Point(0, 0);
-			this.rbUseThisImageFull.Name = "rbUseThisImageFull";
-			this.rbUseThisImageFull.Size = new System.Drawing.Size(153, 21);
-			this.rbUseThisImageFull.TabIndex = 1;
-			this.rbUseThisImageFull.TabStop = true;
-			this.rbUseThisImageFull.Tag = "USE_THIS_IMAGE";
-			this.rbUseThisImageFull.Text = "Use this image";
-			this.rbUseThisImageFull.UseVisualStyleBackColor = true;
-			this.rbUseThisImageFull.CheckedChanged += new System.EventHandler(this.rbUseThisImageFull_CheckedChanged);
-			// 
-			// rbLoadImageFull
-			// 
-			this.rbLoadImageFull.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.rbLoadImageFull.Location = new System.Drawing.Point(0, 0);
-			this.rbLoadImageFull.Name = "rbLoadImageFull";
-			this.rbLoadImageFull.Size = new System.Drawing.Size(153, 21);
-			this.rbLoadImageFull.TabIndex = 2;
-			this.rbLoadImageFull.Tag = "LOAD_IMAGE";
-			this.rbLoadImageFull.Text = "Load an image";
-			this.rbLoadImageFull.UseVisualStyleBackColor = true;
-			this.rbLoadImageFull.CheckedChanged += new System.EventHandler(this.rbLoadImageFull_CheckedChanged);
 			// 
 			// cmnuPictures
 			// 
@@ -748,12 +743,256 @@
 			this.cmnuiExportTdx.Text = "&TDX ...";
 			this.cmnuiExportTdx.Click += new System.EventHandler(this.cmnuiExportTdx_Click);
 			// 
+			// scFullImage
+			// 
+			this.scFullImage.IsSplitterFixed = true;
+			this.scFullImage.Location = new System.Drawing.Point(536, 530);
+			this.scFullImage.Name = "scFullImage";
+			// 
+			// scFullImage.Panel1
+			// 
+			this.scFullImage.Panel1.Controls.Add(this.scFullImageUseLoad);
+			// 
+			// scFullImage.Panel2
+			// 
+			this.scFullImage.Panel2.Controls.Add(this.rbBuildImageFull);
+			this.scFullImage.Size = new System.Drawing.Size(512, 21);
+			this.scFullImage.SplitterDistance = 336;
+			this.scFullImage.TabIndex = 10;
+			// 
+			// scFullImageUseLoad
+			// 
+			this.scFullImageUseLoad.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.scFullImageUseLoad.IsSplitterFixed = true;
+			this.scFullImageUseLoad.Location = new System.Drawing.Point(0, 0);
+			this.scFullImageUseLoad.Name = "scFullImageUseLoad";
+			// 
+			// scFullImageUseLoad.Panel1
+			// 
+			this.scFullImageUseLoad.Panel1.Controls.Add(this.rbUseThisImageFull);
+			// 
+			// scFullImageUseLoad.Panel2
+			// 
+			this.scFullImageUseLoad.Panel2.Controls.Add(this.rbLoadImageFull);
+			this.scFullImageUseLoad.Size = new System.Drawing.Size(336, 21);
+			this.scFullImageUseLoad.SplitterDistance = 165;
+			this.scFullImageUseLoad.TabIndex = 10;
+			// 
+			// rbUseThisImageFull
+			// 
+			this.rbUseThisImageFull.Checked = true;
+			this.rbUseThisImageFull.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.rbUseThisImageFull.Location = new System.Drawing.Point(0, 0);
+			this.rbUseThisImageFull.Name = "rbUseThisImageFull";
+			this.rbUseThisImageFull.Size = new System.Drawing.Size(165, 21);
+			this.rbUseThisImageFull.TabIndex = 1;
+			this.rbUseThisImageFull.TabStop = true;
+			this.rbUseThisImageFull.Tag = "USE_THIS_IMAGE";
+			this.rbUseThisImageFull.Text = "Use this image";
+			this.rbUseThisImageFull.UseVisualStyleBackColor = true;
+			this.rbUseThisImageFull.CheckedChanged += new System.EventHandler(this.rbUseThisImageFull_CheckedChanged);
+			// 
+			// rbLoadImageFull
+			// 
+			this.rbLoadImageFull.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.rbLoadImageFull.Location = new System.Drawing.Point(0, 0);
+			this.rbLoadImageFull.Name = "rbLoadImageFull";
+			this.rbLoadImageFull.Size = new System.Drawing.Size(167, 21);
+			this.rbLoadImageFull.TabIndex = 2;
+			this.rbLoadImageFull.Tag = "LOAD_IMAGE";
+			this.rbLoadImageFull.Text = "Load an image";
+			this.rbLoadImageFull.UseVisualStyleBackColor = true;
+			this.rbLoadImageFull.CheckedChanged += new System.EventHandler(this.rbLoadImageFull_CheckedChanged);
+			// 
+			// rbBuildImageFull
+			// 
+			this.rbBuildImageFull.AutoSize = true;
+			this.rbBuildImageFull.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.rbBuildImageFull.Location = new System.Drawing.Point(0, 0);
+			this.rbBuildImageFull.Name = "rbBuildImageFull";
+			this.rbBuildImageFull.Size = new System.Drawing.Size(172, 21);
+			this.rbBuildImageFull.TabIndex = 3;
+			this.rbBuildImageFull.Tag = "BUILD_IMAGE";
+			this.rbBuildImageFull.Text = "Build an image";
+			this.rbBuildImageFull.UseVisualStyleBackColor = true;
+			this.rbBuildImageFull.CheckedChanged += new System.EventHandler(this.rbBuildImageFull_CheckedChanged);
+			// 
+			// scFullLocationSize
+			// 
+			this.scFullLocationSize.IsSplitterFixed = true;
+			this.scFullLocationSize.Location = new System.Drawing.Point(536, 557);
+			this.scFullLocationSize.Name = "scFullLocationSize";
+			// 
+			// scFullLocationSize.Panel1
+			// 
+			this.scFullLocationSize.Panel1.Controls.Add(this.gbFullLocation);
+			// 
+			// scFullLocationSize.Panel2
+			// 
+			this.scFullLocationSize.Panel2.Controls.Add(this.gbFullSize);
+			this.scFullLocationSize.Size = new System.Drawing.Size(310, 39);
+			this.scFullLocationSize.SplitterDistance = 153;
+			this.scFullLocationSize.TabIndex = 11;
+			// 
+			// gbFullLocation
+			// 
+			this.gbFullLocation.Controls.Add(this.scFullLocation);
+			this.gbFullLocation.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.gbFullLocation.Location = new System.Drawing.Point(0, 0);
+			this.gbFullLocation.Name = "gbFullLocation";
+			this.gbFullLocation.Size = new System.Drawing.Size(153, 39);
+			this.gbFullLocation.TabIndex = 1;
+			this.gbFullLocation.TabStop = false;
+			this.gbFullLocation.Tag = "LOCATION";
+			this.gbFullLocation.Text = "Location";
+			// 
+			// scFullLocation
+			// 
+			this.scFullLocation.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.scFullLocation.IsSplitterFixed = true;
+			this.scFullLocation.Location = new System.Drawing.Point(3, 16);
+			this.scFullLocation.Name = "scFullLocation";
+			// 
+			// scFullLocation.Panel1
+			// 
+			this.scFullLocation.Panel1.Controls.Add(this.numFullX);
+			// 
+			// scFullLocation.Panel2
+			// 
+			this.scFullLocation.Panel2.Controls.Add(this.numFullY);
+			this.scFullLocation.Size = new System.Drawing.Size(147, 20);
+			this.scFullLocation.SplitterDistance = 69;
+			this.scFullLocation.TabIndex = 0;
+			// 
+			// numFullX
+			// 
+			this.numFullX.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.numFullX.Location = new System.Drawing.Point(0, 0);
+			this.numFullX.Maximum = new decimal(new int[] {
+            1000,
+            0,
+            0,
+            0});
+			this.numFullX.Minimum = new decimal(new int[] {
+            500,
+            0,
+            0,
+            -2147483648});
+			this.numFullX.Name = "numFullX";
+			this.numFullX.Size = new System.Drawing.Size(69, 20);
+			this.numFullX.TabIndex = 0;
+			this.numFullX.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+			this.numFullX.ValueChanged += new System.EventHandler(this.numFullX_ValueChanged);
+			// 
+			// numFullY
+			// 
+			this.numFullY.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.numFullY.Location = new System.Drawing.Point(0, 0);
+			this.numFullY.Maximum = new decimal(new int[] {
+            1000,
+            0,
+            0,
+            0});
+			this.numFullY.Minimum = new decimal(new int[] {
+            500,
+            0,
+            0,
+            -2147483648});
+			this.numFullY.Name = "numFullY";
+			this.numFullY.Size = new System.Drawing.Size(74, 20);
+			this.numFullY.TabIndex = 0;
+			this.numFullY.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+			this.numFullY.ValueChanged += new System.EventHandler(this.numFullY_ValueChanged);
+			// 
+			// gbFullSize
+			// 
+			this.gbFullSize.Controls.Add(this.scFullSize);
+			this.gbFullSize.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.gbFullSize.Location = new System.Drawing.Point(0, 0);
+			this.gbFullSize.Name = "gbFullSize";
+			this.gbFullSize.Size = new System.Drawing.Size(153, 39);
+			this.gbFullSize.TabIndex = 2;
+			this.gbFullSize.TabStop = false;
+			this.gbFullSize.Tag = "SIZE";
+			this.gbFullSize.Text = "Size";
+			// 
+			// scFullSize
+			// 
+			this.scFullSize.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.scFullSize.IsSplitterFixed = true;
+			this.scFullSize.Location = new System.Drawing.Point(3, 16);
+			this.scFullSize.Name = "scFullSize";
+			// 
+			// scFullSize.Panel1
+			// 
+			this.scFullSize.Panel1.Controls.Add(this.numFullWidth);
+			// 
+			// scFullSize.Panel2
+			// 
+			this.scFullSize.Panel2.Controls.Add(this.numFullHeight);
+			this.scFullSize.Size = new System.Drawing.Size(147, 20);
+			this.scFullSize.SplitterDistance = 69;
+			this.scFullSize.TabIndex = 0;
+			// 
+			// numFullWidth
+			// 
+			this.numFullWidth.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.numFullWidth.Location = new System.Drawing.Point(0, 0);
+			this.numFullWidth.Maximum = new decimal(new int[] {
+            5000,
+            0,
+            0,
+            0});
+			this.numFullWidth.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+			this.numFullWidth.Name = "numFullWidth";
+			this.numFullWidth.Size = new System.Drawing.Size(69, 20);
+			this.numFullWidth.TabIndex = 0;
+			this.numFullWidth.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+			this.numFullWidth.Value = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+			this.numFullWidth.ValueChanged += new System.EventHandler(this.numFullWidth_ValueChanged);
+			// 
+			// numFullHeight
+			// 
+			this.numFullHeight.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.numFullHeight.Location = new System.Drawing.Point(0, 0);
+			this.numFullHeight.Maximum = new decimal(new int[] {
+            5000,
+            0,
+            0,
+            0});
+			this.numFullHeight.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+			this.numFullHeight.Name = "numFullHeight";
+			this.numFullHeight.Size = new System.Drawing.Size(74, 20);
+			this.numFullHeight.TabIndex = 0;
+			this.numFullHeight.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+			this.numFullHeight.Value = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+			this.numFullHeight.ValueChanged += new System.EventHandler(this.numFullHeight_ValueChanged);
+			// 
 			// EditAiPersonality
 			// 
+			this.AcceptButton = this.cmdApply;
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			this.ClientSize = new System.Drawing.Size(1060, 563);
+			this.CancelButton = this.cmdCancel;
+			this.ClientSize = new System.Drawing.Size(1060, 608);
 			this.ControlBox = false;
+			this.Controls.Add(this.scFullLocationSize);
 			this.Controls.Add(this.scFullImage);
 			this.Controls.Add(this.cmdCancel);
 			this.Controls.Add(this.cmdApply);
@@ -818,11 +1057,34 @@
 			((System.ComponentModel.ISupportInitialize)(this.numLargeWidth)).EndInit();
 			((System.ComponentModel.ISupportInitialize)(this.numLargeHeight)).EndInit();
 			((System.ComponentModel.ISupportInitialize)(this.picPersonalityFull)).EndInit();
+			this.cmnuPictures.ResumeLayout(false);
 			this.scFullImage.Panel1.ResumeLayout(false);
 			this.scFullImage.Panel2.ResumeLayout(false);
+			this.scFullImage.Panel2.PerformLayout();
 			((System.ComponentModel.ISupportInitialize)(this.scFullImage)).EndInit();
 			this.scFullImage.ResumeLayout(false);
-			this.cmnuPictures.ResumeLayout(false);
+			this.scFullImageUseLoad.Panel1.ResumeLayout(false);
+			this.scFullImageUseLoad.Panel2.ResumeLayout(false);
+			((System.ComponentModel.ISupportInitialize)(this.scFullImageUseLoad)).EndInit();
+			this.scFullImageUseLoad.ResumeLayout(false);
+			this.scFullLocationSize.Panel1.ResumeLayout(false);
+			this.scFullLocationSize.Panel2.ResumeLayout(false);
+			((System.ComponentModel.ISupportInitialize)(this.scFullLocationSize)).EndInit();
+			this.scFullLocationSize.ResumeLayout(false);
+			this.gbFullLocation.ResumeLayout(false);
+			this.scFullLocation.Panel1.ResumeLayout(false);
+			this.scFullLocation.Panel2.ResumeLayout(false);
+			((System.ComponentModel.ISupportInitialize)(this.scFullLocation)).EndInit();
+			this.scFullLocation.ResumeLayout(false);
+			((System.ComponentModel.ISupportInitialize)(this.numFullX)).EndInit();
+			((System.ComponentModel.ISupportInitialize)(this.numFullY)).EndInit();
+			this.gbFullSize.ResumeLayout(false);
+			this.scFullSize.Panel1.ResumeLayout(false);
+			this.scFullSize.Panel2.ResumeLayout(false);
+			((System.ComponentModel.ISupportInitialize)(this.scFullSize)).EndInit();
+			this.scFullSize.ResumeLayout(false);
+			((System.ComponentModel.ISupportInitialize)(this.numFullWidth)).EndInit();
+			((System.ComponentModel.ISupportInitialize)(this.numFullHeight)).EndInit();
 			this.ResumeLayout(false);
 			this.PerformLayout();
 
@@ -865,13 +1127,24 @@
 		private System.Windows.Forms.PictureBox picPersonalityFull;
 		private System.Windows.Forms.Button cmdCancel;
 		private System.Windows.Forms.Button cmdApply;
-		private System.Windows.Forms.SplitContainer scFullImage;
-		private System.Windows.Forms.RadioButton rbUseThisImageFull;
 		private System.Windows.Forms.ContextMenuStrip cmnuPictures;
 		private System.Windows.Forms.ToolStripMenuItem cmnuiExport;
 		private System.Windows.Forms.ToolStripMenuItem cmnuiExportPng;
 		private System.Windows.Forms.ToolStripMenuItem cmnuiExportTdx;
+		private System.Windows.Forms.SplitContainer scFullImage;
+		private System.Windows.Forms.SplitContainer scFullImageUseLoad;
+		private System.Windows.Forms.RadioButton rbUseThisImageFull;
 		private System.Windows.Forms.RadioButton rbLoadImageFull;
+		private System.Windows.Forms.RadioButton rbBuildImageFull;
+		private System.Windows.Forms.SplitContainer scFullLocationSize;
+		private System.Windows.Forms.GroupBox gbFullLocation;
+		private System.Windows.Forms.SplitContainer scFullLocation;
+		private System.Windows.Forms.NumericUpDown numFullX;
+		private System.Windows.Forms.NumericUpDown numFullY;
+		private System.Windows.Forms.GroupBox gbFullSize;
+		private System.Windows.Forms.SplitContainer scFullSize;
+		private System.Windows.Forms.NumericUpDown numFullWidth;
+		private System.Windows.Forms.NumericUpDown numFullHeight;
 
 	}
 }

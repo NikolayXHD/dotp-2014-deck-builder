@@ -72,7 +72,8 @@ namespace RSN.DotP
 										(strError.IndexOf("Unable to load card", StringComparison.OrdinalIgnoreCase) > -1) ||
 										(strError.IndexOf("Unable to read card", StringComparison.OrdinalIgnoreCase) > -1) ||
 										(strError.IndexOf("could not be loaded due to missing CARD_V2 block", StringComparison.OrdinalIgnoreCase) > -1) ||
-										(strError.IndexOf("could not be properly loaded due to missing or malformed FILENAME tag", StringComparison.OrdinalIgnoreCase) > -1));
+										(strError.IndexOf("could not be properly loaded due to missing or malformed FILENAME tag", StringComparison.OrdinalIgnoreCase) > -1) ||
+										(strError.IndexOf("tag incorrectly", StringComparison.OrdinalIgnoreCase) > -1));
 
 						bDeckProblem = ((strError.IndexOf("File is missing DECK tag:", StringComparison.OrdinalIgnoreCase) > -1) ||
 										(strError.IndexOf("Unable to load deck:", StringComparison.OrdinalIgnoreCase) > -1) ||

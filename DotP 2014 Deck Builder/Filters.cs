@@ -478,12 +478,12 @@ namespace RSN.DotP
 		private bool CheckStringInt(string strValue, string strCheck, FilterIntComparisonType eType)
 		{
 			// Double check to make sure we have either a * or a number
-			strValue = strValue.Trim();
-			strCheck = strCheck.Trim();
+			strValue = CardFilterStringIntProp.CleanValue(strValue.Trim());
+			strCheck = CardFilterStringIntProp.CleanValue(strCheck.Trim());
 			int nValue = -1;
 			int nCheck = -1;
 			// If we aren't going to use a string check then we need to make sure we can get an integer from the strings.
-			if ((!strValue.Equals("*")) && (!strCheck.Equals("*")))
+			if ((!strValue.Contains("*")) && (!strCheck.Contains("*")))
 			{
 				try
 				{
@@ -500,7 +500,7 @@ namespace RSN.DotP
 			bool bAllow = false;
 
 			// Check for the special case first.
-			if ((strValue.Equals("*")) || (strCheck.Equals("*")))
+			if ((strValue.Contains("*")) || (strCheck.Contains("*")))
 			{
 				// We have our special case they are only true for Equal or Not Equal.
 				if ((eType == FilterIntComparisonType.Equal) ||

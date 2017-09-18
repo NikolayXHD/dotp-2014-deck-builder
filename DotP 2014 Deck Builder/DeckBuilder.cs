@@ -49,6 +49,7 @@ namespace RSN.DotP
 
 		// To minimize reflection calls (columns aren't created/destroyed after start-up).
 		private Dictionary<DataGridViewColumn, PropertyInfo> m_dicColumnMap;
+		private MethodInfo m_miCustomTagValue;
 
 		private enum DeckLocation
 		{
@@ -74,6 +75,7 @@ namespace RSN.DotP
 
 			// Initialize necessary internal variables.
 			m_ciCurrentViewingCard = null;
+			m_miCustomTagValue = null;
 
 			// Initialize the column map.
 			m_dicColumnMap = new Dictionary<DataGridViewColumn, PropertyInfo>();
@@ -151,14 +153,17 @@ namespace RSN.DotP
 			if (m_dkWorking != null)
 				lblDeckName.Text = m_dkWorking.LocalizedName;
 			lblBasicLand.Text = Settings.UIStrings[(string)lblBasicLand.Tag];
+			lblTotalCount.Text = Settings.UIStrings[(string)lblTotalCount.Tag];
 			cmdEditName.Text = Settings.UIStrings[(string)cmdEditName.Tag];
 			cmdDeckInformation.Text = Settings.UIStrings[(string)cmdDeckInformation.Tag];
 
 			// Regular Unlock Group
 			gbRegularUnlocks.Text = Settings.UIStrings[(string)gbRegularUnlocks.Tag];
+			lblRegUnlockCount.Text = Settings.UIStrings[(string)lblRegUnlockCount.Tag];
 
 			// Promo Unlock Group
 			gbPromoUnlocks.Text = Settings.UIStrings[(string)gbPromoUnlocks.Tag];
+			lblPromoUnlockCount.Text = Settings.UIStrings[(string)lblPromoUnlockCount.Tag];
 
 			// Context Menu
 			cmnuiColumns.Text = Settings.UIStrings[(string)cmnuiColumns.Tag];
@@ -374,6 +379,7 @@ namespace RSN.DotP
 		{
 			lblDeckName.Text = m_dkWorking.LocalizedName;
 			lblBasicLandCount.Text = m_dkWorking.BasicLandAmount.ToString();
+			lblTotalCardCount.Text = m_dkWorking.CardCount.ToString();
 			SetupDeckCardList();
 			m_bsDeckCards = new BindingSource();
 			m_bsDeckCards.DataSource = m_dkWorking.Cards;
@@ -383,10 +389,12 @@ namespace RSN.DotP
 			SetupUnlockCardList(dgvUnlocksRegular, "RegularUnlocksViewColumns");
 			dgvUnlocksRegular.DataSource = m_dkWorking.RegularUnlocks.Cards;
 			dgvUnlocksRegular.Refresh();
+			lblRegUnlockCardCount.Text = m_dkWorking.RegularUnlockCardCount.ToString();
 			CheckRegularButtons();
 			SetupUnlockCardList(dgvUnlocksPromo, "PromoUnlocksViewColumns");
 			dgvUnlocksPromo.DataSource = m_dkWorking.PromoUnlocks.Cards;
 			dgvUnlocksPromo.Refresh();
+			lblPromoUnlockCardCount.Text = m_dkWorking.PromoUnlockCardCount.ToString();
 			CheckPromoButtons();
 		}
 
@@ -418,6 +426,11 @@ namespace RSN.DotP
 				Tools.AddViewColumn(dgvCards, new DataGridViewTextBoxColumn(), "Artist", "Artist", "COLUMN_TEXT_ARTIST", DataGridViewColumnSortMode.Programmatic, -1, false);
 				Tools.AddViewColumn(dgvCards, new DataGridViewTextBoxColumn(), "Expansion", "Expansion", "COLUMN_TEXT_EXPANSION", DataGridViewColumnSortMode.Programmatic, -1, false);
 				Tools.AddViewColumn(dgvCards, new DataGridViewTextBoxColumn(), "Wad", "PresentInWad", "COLUMN_TEXT_WAD", DataGridViewColumnSortMode.Programmatic);
+
+				// Let's add some custom tag columns related to the Community Wad (custom tags are not sortable unfortunately):
+				Tools.AddViewColumn(dgvCards, new DataGridViewTextBoxColumn(), "CustomTag:AUTHOR", "CustomTag:AUTHOR", "CustomTag:Author", DataGridViewColumnSortMode.NotSortable, -1, false);
+				Tools.AddViewColumn(dgvCards, new DataGridViewTextBoxColumn(), "CustomTag:EDITORS", "CustomTag:EDITORS", "CustomTag:Editors", DataGridViewColumnSortMode.NotSortable, -1, false);
+				Tools.AddViewColumn(dgvCards, new DataGridViewTextBoxColumn(), "CustomTag:DATE", "CustomTag:DATE", "CustomTag:Date", DataGridViewColumnSortMode.NotSortable, -1, false);
 
 				bSetup = !Settings.GetSetting("CardViewColumns", dgvCards.Columns);
 			}
@@ -493,12 +506,21 @@ namespace RSN.DotP
 		private void RefreshColumnNames(DataGridView dgvList)
 		{
 			foreach (DataGridViewColumn dgvcColumn in dgvList.Columns)
-				dgvcColumn.HeaderText = Settings.UIStrings[(string)dgvcColumn.Tag];
+			{
+				if (((string)dgvcColumn.Tag).StartsWith("CustomTag:", StringComparison.OrdinalIgnoreCase))
+				{
+					// Custom Tag title processing.
+					string strTitle = ((string)dgvcColumn.Tag).Substring(10);
+					dgvcColumn.HeaderText = strTitle;
+				}
+				else
+					dgvcColumn.HeaderText = Settings.UIStrings[(string)dgvcColumn.Tag];
+			}
 		}
 
 		private void dgvCards_ColumnHeaderMouseClick(object sender, DataGridViewCellMouseEventArgs e)
 		{
-			if ((e.ColumnIndex >= 0) && (e.ColumnIndex < dgvCards.Columns.Count))
+			if ((e.ColumnIndex >= 0) && (e.ColumnIndex < dgvCards.Columns.Count) && ((e.Button & System.Windows.Forms.MouseButtons.Right) == 0))
 			{
 				DataGridViewColumn dgvcColumn = dgvCards.Columns[e.ColumnIndex];
 				if (dgvcColumn.SortMode == DataGridViewColumnSortMode.Programmatic)
@@ -549,19 +571,26 @@ namespace RSN.DotP
 				m_dkWorking.Edited = true;
 				if (rbDoubleClickDeck.Checked)
 				{
-					m_dkWorking.AddCard(ciCard);
+					DeckCard dcCard = m_dkWorking.AddCard(ciCard);
+					int nIndex = m_dkWorking.Cards.IndexOf(dcCard);
 					lblBasicLandCount.Text = m_dkWorking.BasicLandAmount.ToString();
+					lblTotalCardCount.Text = m_dkWorking.CardCount.ToString();
+					dgvDeckCards.CurrentCell = dgvDeckCards.Rows[nIndex].Cells[0];
 					dgvDeckCards.Refresh();
 				}
 				else if (rbDoubleClickRegularUnlock.Checked)
 				{
 					m_dkWorking.RegularUnlocks.Cards.Add(new DeckCard(ciCard));
+					lblRegUnlockCardCount.Text = m_dkWorking.RegularUnlockCardCount.ToString();
+					dgvUnlocksRegular.CurrentCell = dgvUnlocksRegular.Rows[dgvUnlocksRegular.RowCount - 1].Cells[0];
 					CheckRegularButtons();
 				}
 				else
 				{
 					// Only thing left is the Promo Unlocks.
 					m_dkWorking.PromoUnlocks.Cards.Add(new DeckCard(ciCard));
+					lblPromoUnlockCardCount.Text = m_dkWorking.PromoUnlockCardCount.ToString();
+					dgvUnlocksPromo.CurrentCell = dgvUnlocksPromo.Rows[dgvUnlocksPromo.RowCount - 1].Cells[0];
 					CheckPromoButtons();
 				}
 			}
@@ -599,6 +628,26 @@ namespace RSN.DotP
 
 		private void DeckBuilder_FormClosing(object sender, FormClosingEventArgs e)
 		{
+			if ((m_dkWorking != null) && (m_dkWorking.Edited))
+			{
+				// They have unsaved work so we should probably ask if they want to save first.
+				DialogResult drChoice = MessageBox.Show(Settings.UIStrings["UNSAVED_WORK_MESSAGE"], Settings.UIStrings["UNSAVED_WORK_CAPTION"], MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question);
+				if (drChoice == DialogResult.Cancel)
+				{
+					e.Cancel = true;
+					return;
+				}
+				else if (drChoice == DialogResult.Yes)
+				{
+					// We only continue if saving completes successfully.
+					if (!SaveDeck())
+					{
+						e.Cancel = true;
+						return;
+					}
+				}
+			}
+
 			// We know we are about to close this form and exit the program so we should take this time to save any unsaved settings (like form position and size).
 			if (this.WindowState == FormWindowState.Normal)
 				Settings.SaveSetting("MainPosition", new Rectangle(this.Location, this.Size));
@@ -789,6 +838,20 @@ namespace RSN.DotP
 
 		private void mnuiFileNew_Click(object sender, EventArgs e)
 		{
+			if ((m_dkWorking != null) && (m_dkWorking.Edited))
+			{
+				// They have unsaved work so we should probably ask if they want to save first.
+				DialogResult drChoice = MessageBox.Show(Settings.UIStrings["UNSAVED_WORK_MESSAGE"], Settings.UIStrings["UNSAVED_WORK_CAPTION"], MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question);
+				if (drChoice == DialogResult.Cancel)
+					return;
+				else if (drChoice == DialogResult.Yes)
+				{
+					// We only continue if saving completes successfully.
+					if (!SaveDeck())
+						return;
+				}
+			}
+
 			if (m_dkWorking != null)
 				m_dkWorking.Cards.ListChanged -= m_lcehListHandler;
 			m_dkWorking = new Deck(m_gdWads);
@@ -799,6 +862,7 @@ namespace RSN.DotP
 				m_dkWorking.Uid = nUid;
 			m_lcehListHandler = new ListChangedEventHandler(DeckCards_ListChanged);
 			m_dkWorking.Cards.ListChanged += m_lcehListHandler;
+			m_dkWorking.Edited = false;
 			RefreshDeck();
 		}
 
@@ -847,6 +911,7 @@ namespace RSN.DotP
 			if (m_dkWorking != null)
 			{
 				m_dkWorking.Edited = true;
+				lblPromoUnlockCardCount.Text = m_dkWorking.PromoUnlockCardCount.ToString();
 				CheckPromoButtons();
 			}
 		}
@@ -856,6 +921,7 @@ namespace RSN.DotP
 			if (m_dkWorking != null)
 			{
 				m_dkWorking.Edited = true;
+				lblRegUnlockCardCount.Text = m_dkWorking.RegularUnlockCardCount.ToString();
 				CheckRegularButtons();
 			}
 		}
@@ -882,10 +948,23 @@ namespace RSN.DotP
 
 		private void mnuiFileSave_Click(object sender, EventArgs e)
 		{
+			SaveDeck();
+		}
+
+		private void mnuiFileSaveAs_Click(object sender, EventArgs e)
+		{
+			SaveDeckAs();
+		}
+
+		private bool SaveDeck()
+		{
 			if ((m_dkWorking.FileName != null) && (m_dkWorking.FileName.Length > 0))
 			{
+				// Determine whether we are forcing to always export AI Personalities.
+				bool bForceExport = Settings.GetSetting("AlwaysExportPersonalities", false);
+
 				// Since we are saving as "unfinished" we should only get back one file.
-				Dictionary<string, XmlDocument> dicDeckFiles = m_dkWorking.Export();
+				Dictionary<string, XmlDocument> dicDeckFiles = m_dkWorking.Export(null, bForceExport);
 				if (dicDeckFiles.Count != 1)
 					Settings.ReportError(null, ErrorPriority.High, "We have a different number of files than we should have given the code.");
 				// Also since the filename for the deck should be a full path for any created/loaded decks
@@ -896,15 +975,16 @@ namespace RSN.DotP
 					break;
 				}
 				m_dkWorking.Edited = false;
+				return true;
 			}
 			else
 			{
 				// We don't already have a filename so we need to essentially do a "Save As ..."
-				mnuiFileSaveAs_Click(null, null);
+				return SaveDeckAs();
 			}
 		}
-
-		private void mnuiFileSaveAs_Click(object sender, EventArgs e)
+	
+		private bool SaveDeckAs()
 		{
 			SaveFileDialog sfdSave = new SaveFileDialog();
 			sfdSave.AddExtension = true;
@@ -922,21 +1002,27 @@ namespace RSN.DotP
 			{
 				// Now that we have a valid filename it should be exactly the same as "saving"
 				m_dkWorking.FileName = sfdSave.FileName;
-				mnuiFileSave_Click(null, null);
+				return SaveDeck();
 			}
+			return false;
 		}
 
 		private void mnuiFileOpen_Click(object sender, EventArgs e)
 		{
-			if (m_dkWorking.Edited)
+			if ((m_dkWorking != null) && (m_dkWorking.Edited))
 			{
 				// They have unsaved work so we should probably ask if they want to save first.
 				DialogResult drChoice = MessageBox.Show(Settings.UIStrings["UNSAVED_WORK_MESSAGE"], Settings.UIStrings["UNSAVED_WORK_CAPTION"], MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question);
 				if (drChoice == DialogResult.Cancel)
 					return;
 				else if (drChoice == DialogResult.Yes)
-					mnuiFileSave_Click(null, null);
+				{
+					// We only continue if saving completes successfully.
+					if (!SaveDeck())
+						return;
+				}
 			}
+
 			OpenFileDialog ofdLoad = new OpenFileDialog();
 			ofdLoad.AutoUpgradeEnabled = true;
 			ofdLoad.CheckFileExists = true;
@@ -980,6 +1066,7 @@ namespace RSN.DotP
 		{
 			// Since the list changed I should update the current basic land count and mark the deck as edited.
 			lblBasicLandCount.Text = m_dkWorking.BasicLandAmount.ToString();
+			lblTotalCardCount.Text = m_dkWorking.CardCount.ToString();
 			m_dkWorking.Edited = true;
 		}
 
@@ -1055,6 +1142,20 @@ namespace RSN.DotP
 
 		private void mnuiFileCreateFromExisting_Click(object sender, EventArgs e)
 		{
+			if ((m_dkWorking != null) && (m_dkWorking.Edited))
+			{
+				// They have unsaved work so we should probably ask if they want to save first.
+				DialogResult drChoice = MessageBox.Show(Settings.UIStrings["UNSAVED_WORK_MESSAGE"], Settings.UIStrings["UNSAVED_WORK_CAPTION"], MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question);
+				if (drChoice == DialogResult.Cancel)
+					return;
+				else if (drChoice == DialogResult.Yes)
+				{
+					// We only continue if saving completes successfully.
+					if (!SaveDeck())
+						return;
+				}
+			}
+
 			CreateFromExistingDeck frmCreate = new CreateFromExistingDeck(m_gdWads.Decks);
 			DialogResult drResult = frmCreate.ShowDialog(this);
 			if (drResult == DialogResult.OK)
@@ -1130,10 +1231,14 @@ namespace RSN.DotP
 			//	basic lands for the colours used for the deck.  This is new in DotP 2014.
 			m_dkWorking.CreateLandPool(m_gdWads);
 
+			// Determine whether we are forcing to always export AI Personalities.
+			bool bForceExport = Settings.GetSetting("AlwaysExportPersonalities", false);
+
 			// Collect our files.
 			m_dkWorking.ContentPack = whiInfo.ContentPackId;
-			Dictionary<string, XmlDocument> dicFiles = m_dkWorking.Export(isScheme);
+			Dictionary<string, XmlDocument> dicFiles = m_dkWorking.Export(isScheme, bForceExport);
 
+			// We cut off the D14_ from the export filename here since we want a different prefix.
 			wad.Name = "Data_Decks_" + m_dkWorking.ExportFileName.Substring(4);
 
 			wad.AddHeader();
@@ -1173,7 +1278,7 @@ namespace RSN.DotP
 			}
 
 			// Now for personality images (if any)
-			if (!m_dkWorking.Personality.BuiltIn)
+			if ((!m_dkWorking.Personality.BuiltIn) || (bForceExport))
 			{
 				if (m_dkWorking.Personality.LargeAvatarImageName.Length > 0)
 				{
@@ -1234,6 +1339,9 @@ namespace RSN.DotP
 
 				// Report to user that export completed successfully.
 				MessageBox.Show(Settings.UIStrings["EXPORT_COMPLETE_MESSAGE"], Settings.UIStrings["EXPORT_COMPLETE_CAPTION"], MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+				// We can mark as not edited so that we don't thoroughly annoy the user.
+				m_dkWorking.Edited = false;
 			}
 			catch (Exception e)
 			{
@@ -2053,7 +2161,7 @@ namespace RSN.DotP
 				{
 					string strDir = Path.GetDirectoryName(strFilename);
 					WadWrapper wwCore = new WadWrapper(strFilename);
-					wwCore.AddHeader();
+					wwCore.AddCustomHeader(wbCustom.Header);
 					// Copy all our data from the custom data directory to the new core wad.
 					//	Note: This will automatically remove any empty directories from the new core so no need to worry about that before hand.
 					wbCustom.WriteToWad(wwCore);
@@ -2080,29 +2188,89 @@ namespace RSN.DotP
 			{
 				if ((dgvCards.SelectedRows != null) && (dgvCards.SelectedRows.Count > 0))
 				{
-					//CardInfo ciCard = (CardInfo)dgvCards.SelectedRows[0].DataBoundItem;
 					CardInfo ciCard = ((SortableBindingList<CardInfo>)m_bsCards.DataSource)[dgvCards.SelectedRows[0].Index];
 					m_dkWorking.Edited = true;
 					if (rbDoubleClickDeck.Checked)
 					{
-						m_dkWorking.AddCard(ciCard);
+						DeckCard dcCard = m_dkWorking.AddCard(ciCard);
+						int nIndex = m_dkWorking.Cards.IndexOf(dcCard);
 						lblBasicLandCount.Text = m_dkWorking.BasicLandAmount.ToString();
+						lblTotalCardCount.Text = m_dkWorking.CardCount.ToString();
+						dgvDeckCards.CurrentCell = dgvDeckCards.Rows[nIndex].Cells[0];
 						dgvDeckCards.Refresh();
 					}
 					else if (rbDoubleClickRegularUnlock.Checked)
 					{
 						m_dkWorking.RegularUnlocks.Cards.Add(new DeckCard(ciCard));
+						lblRegUnlockCardCount.Text = m_dkWorking.RegularUnlockCardCount.ToString();
+						dgvUnlocksRegular.CurrentCell = dgvUnlocksRegular.Rows[dgvUnlocksRegular.RowCount - 1].Cells[0];
 						CheckRegularButtons();
 					}
 					else
 					{
 						// Only thing left is the Promo Unlocks.
 						m_dkWorking.PromoUnlocks.Cards.Add(new DeckCard(ciCard));
+						lblPromoUnlockCardCount.Text = m_dkWorking.PromoUnlockCardCount.ToString();
+						dgvUnlocksPromo.CurrentCell = dgvUnlocksPromo.Rows[dgvUnlocksPromo.RowCount - 1].Cells[0];
 						CheckPromoButtons();
 					}
 				}
 				e.Handled = true;
 				e.SuppressKeyPress = true;
+			}
+			else if (e.KeyCode == Keys.Back)
+			{
+				if ((dgvCards.SelectedRows != null) && (dgvCards.SelectedRows.Count > 0))
+				{
+					CardInfo ciCard = ((SortableBindingList<CardInfo>)m_bsCards.DataSource)[dgvCards.SelectedRows[0].Index];
+					if (rbDoubleClickDeck.Checked)
+					{
+						DeckCard dcCard = m_dkWorking.RemoveCard(ciCard);
+						if (dcCard != null)
+						{
+							m_dkWorking.Edited = true;
+							if (m_dkWorking.Cards.Contains(dcCard))
+							{
+								// Still in list so lets move to it.
+								int nIndex = m_dkWorking.Cards.IndexOf(dcCard);
+								dgvDeckCards.CurrentCell = dgvDeckCards.Rows[nIndex].Cells[0];
+							}
+						}
+					}
+					else if (rbDoubleClickRegularUnlock.Checked)
+					{
+						if (m_dkWorking.RegularUnlocks.RemoveCard(ciCard))
+							m_dkWorking.Edited = true;
+					}
+					else
+					{
+						if (m_dkWorking.PromoUnlocks.RemoveCard(ciCard))
+							m_dkWorking.Edited = true;
+					}
+				}
+			}
+			else if (e.KeyCode == Keys.Delete)
+			{
+				if ((dgvCards.SelectedRows != null) && (dgvCards.SelectedRows.Count > 0))
+				{
+					CardInfo ciCard = ((SortableBindingList<CardInfo>)m_bsCards.DataSource)[dgvCards.SelectedRows[0].Index];
+					if (rbDoubleClickDeck.Checked)
+					{
+						DeckCard dcCard = m_dkWorking.RemoveCard(ciCard, -1);
+						if (dcCard != null)
+							m_dkWorking.Edited = true;
+					}
+					else if (rbDoubleClickRegularUnlock.Checked)
+					{
+						if (m_dkWorking.RegularUnlocks.RemoveCard(ciCard, -1))
+							m_dkWorking.Edited = true;
+					}
+					else
+					{
+						if (m_dkWorking.PromoUnlocks.RemoveCard(ciCard, -1))
+							m_dkWorking.Edited = true;
+					}
+				}
 			}
 		}
 
@@ -2196,26 +2364,53 @@ namespace RSN.DotP
 
 			if (e.RowIndex < lstCards.Count)
 			{
-				// Look up this column and get the property without a reflection look up.
-				if (m_dicColumnMap.ContainsKey(dgvcColumn))
-					piProp = m_dicColumnMap[dgvcColumn];
-				else
+				// First see if this is a Custom Tag column
+				if (dgvcColumn.DataPropertyName.StartsWith("CustomTag:", StringComparison.OrdinalIgnoreCase))
 				{
-					try
+					string[] astrTagName = new string[1];
+					astrTagName[0] = dgvcColumn.DataPropertyName.Substring(10);
+					if (m_miCustomTagValue == null)
 					{
-						piProp = lstCards[e.RowIndex].GetType().GetProperty(dgvcColumn.DataPropertyName, BindingFlags.GetProperty | BindingFlags.Instance | BindingFlags.Public);
-						// Make sure we don't need to do any more expensive reflection look ups.
-						m_dicColumnMap.Add(dgvcColumn, piProp);
+						// We need to initialize the MethodInfo before we can use it.
+						try
+						{
+							m_miCustomTagValue = lstCards[e.RowIndex].GetType().GetMethod("GetFirstCustomTagValue");
+						}
+						catch (Exception ex)
+						{
+							Settings.ReportError(ex, ErrorPriority.Zero, "Problem reflecting custom tag method.");
+							e.Value = null;
+							return;
+						}
 					}
-					catch (Exception ex)
+					if (m_miCustomTagValue != null)
 					{
-						Settings.ReportError(ex, ErrorPriority.Zero, "Problem reflecting property: " + dgvcColumn.DataPropertyName);
-						// This next bit prevents lots and lots of repeated failed reflection look ups.
-						m_dicColumnMap.Add(dgvcColumn, null);
+						e.Value = m_miCustomTagValue.Invoke(lstCards[e.RowIndex], astrTagName);
 					}
 				}
-				if (piProp != null)
-					e.Value = piProp.GetValue(lstCards[e.RowIndex], null);
+				else
+				{
+					// Look up this column and get the property without a reflection look up.
+					if (m_dicColumnMap.ContainsKey(dgvcColumn))
+						piProp = m_dicColumnMap[dgvcColumn];
+					else
+					{
+						try
+						{
+							piProp = lstCards[e.RowIndex].GetType().GetProperty(dgvcColumn.DataPropertyName, BindingFlags.GetProperty | BindingFlags.Instance | BindingFlags.Public);
+							// Make sure we don't need to do any more expensive reflection look ups.
+							m_dicColumnMap.Add(dgvcColumn, piProp);
+						}
+						catch (Exception ex)
+						{
+							Settings.ReportError(ex, ErrorPriority.Zero, "Problem reflecting property: " + dgvcColumn.DataPropertyName);
+							// This next bit prevents lots and lots of repeated failed reflection look ups.
+							m_dicColumnMap.Add(dgvcColumn, null);
+						}
+					}
+					if (piProp != null)
+						e.Value = piProp.GetValue(lstCards[e.RowIndex], null);
+				}
 			}
 		}
 
@@ -2368,18 +2563,27 @@ namespace RSN.DotP
 				// Add to new location.
 				if (sender == cmnuiMoveToMainDeck)
 				{
-					m_dkWorking.AddCard(dcCardToAdd.Card, dcCardToAdd.Bias, dcCardToAdd.Promo);
+					DeckCard dcAdded = m_dkWorking.AddCard(dcCardToAdd.Card, dcCardToAdd.Bias, dcCardToAdd.Promo);
+					int nIndex = m_dkWorking.Cards.IndexOf(dcAdded);
 					lblBasicLandCount.Text = m_dkWorking.BasicLandAmount.ToString();
+					lblTotalCardCount.Text = m_dkWorking.CardCount.ToString();
+					dgvDeckCards.CurrentCell = dgvDeckCards.Rows[nIndex].Cells[0];
 					dgvDeckCards.Refresh();
 				}
 				else if (sender == cmnuiMoveToRegularUnlocks)
 				{
 					m_dkWorking.RegularUnlocks.Cards.Add(dcCardToAdd);
+					int nIndex = m_dkWorking.RegularUnlocks.Cards.IndexOf(dcCardToAdd);
+					lblRegUnlockCardCount.Text = m_dkWorking.RegularUnlockCardCount.ToString();
+					dgvUnlocksRegular.CurrentCell = dgvUnlocksRegular.Rows[nIndex].Cells[0];
 					CheckRegularButtons();
 				}
 				else if (sender == cmnuiMoveToPromoUnlocks)
 				{
 					m_dkWorking.PromoUnlocks.Cards.Add(dcCardToAdd);
+					int nIndex = m_dkWorking.PromoUnlocks.Cards.IndexOf(dcCardToAdd);
+					lblPromoUnlockCardCount.Text = m_dkWorking.PromoUnlockCardCount.ToString();
+					dgvUnlocksPromo.CurrentCell = dgvUnlocksPromo.Rows[nIndex].Cells[0];
 					CheckPromoButtons();
 				}
 
@@ -2392,14 +2596,17 @@ namespace RSN.DotP
 						else
 							m_dkWorking.Cards.Remove(m_dcContextCard);
 						lblBasicLandCount.Text = m_dkWorking.BasicLandAmount.ToString();
+						lblTotalCardCount.Text = m_dkWorking.CardCount.ToString();
 						dgvDeckCards.Refresh();
 						break;
 					case DeckLocation.RegularUnlocks:
 						m_dkWorking.RegularUnlocks.Cards.Remove(m_dcContextCard);
+						lblRegUnlockCardCount.Text = m_dkWorking.RegularUnlockCardCount.ToString();
 						CheckRegularButtons();
 						break;
 					case DeckLocation.PromoUnlocks:
 						m_dkWorking.PromoUnlocks.Cards.Remove(m_dcContextCard);
+						lblPromoUnlockCardCount.Text = m_dkWorking.PromoUnlockCardCount.ToString();
 						CheckPromoButtons();
 						break;
 				}

@@ -76,11 +76,15 @@ namespace RSN.DotP
 		private string m_strWad;
 		private string m_strExportFilename;		// This is the filename given at last export.
 
+		// To allow for overriding deck colours.
+		private bool m_bOverrideColours;		// Are we overriding or not?
+		private ColourFlags m_eOverrideColour;	// This is the colour(s) to override with.
+
 		public Deck(GameDirectory gdData, bool bLandPool = false)
 		{
 			InitDefaultIds();
 			InitLandPools();
-			m_strFileName = string.Empty;										// If a filename is not present it will be generated from the English deck name.
+			m_strFileName = string.Empty;							// If a filename is not present it will be generated from the English deck name.
 			m_nUid = 0;
 			m_apPersonality = new AiPersonality();
 			m_strPersonality = string.Empty;
@@ -89,7 +93,7 @@ namespace RSN.DotP
 			m_strDeckBoxImageLocked = "locked";						// Most if not all decks use the same locked image.
 			m_nContentPack = 0;										// By default should be available to all game versions.
 			m_eAvailability = DeckAvailability.AlwaysAvailable;		// Deck should always be available by default.
-			m_eColour = 0;											// Do not give it any colour by default (even colourless).
+			m_eColour = ColourFlags.NotDefined;						// Do not give it any colour by default (even colourless).
 			m_strNameTag = string.Empty;
 			m_strDescriptionTag = string.Empty;
 			m_strCreatureSize = "?";
@@ -112,7 +116,9 @@ namespace RSN.DotP
 			//m_dicDeckDescription.Add("en-US", string.Empty);
 			m_bIsLandPool = bLandPool;
 			m_bEditedDeck = false;
-			m_strWad = string.Empty;									// For a new deck Wad name will be generated when exported.
+			m_strWad = string.Empty;								// For a new deck Wad name will be generated when exported.
+			m_bOverrideColours = false;
+			m_eOverrideColour = ColourFlags.NotDefined;
 
 			if (!m_bIsLandPool)
 			{
@@ -126,6 +132,8 @@ namespace RSN.DotP
 		{
 			InitDefaultIds();
 			InitLandPools();
+			m_bOverrideColours = false;
+			m_eOverrideColour = ColourFlags.NotDefined;
 			m_strFileName = strFileName;
 			m_strWad = strWad;
 			m_bIsLandPool = (strFileName.IndexOf("_LAND_POOL", StringComparison.OrdinalIgnoreCase) > -1) || bLandPool;
@@ -248,6 +256,12 @@ namespace RSN.DotP
 
 					if (xnDeck["DeckBoxImage"] != null)
 						m_bmpDeckBoxImage = XmlTools.ImageFromNode(xnDeck["DeckBoxImage"]);
+
+					if (xnDeck["ColourOverride"] != null)
+					{
+						m_bOverrideColours = true;
+						m_eOverrideColour = (ColourFlags)Int32.Parse(XmlTools.GetValueFromAttribute(xnDeck["ColourOverride"], "Value", "0"));
+					}
 				}
 				else
 					Settings.ReportError(null, ErrorPriority.Low, "File is missing DECK tag: " + Path.GetFileName(m_strFileName) + " in " + m_strWad);
@@ -273,7 +287,9 @@ namespace RSN.DotP
 			m_strDeckBoxImageLocked = dkToCopy.DeckBoxImageLocked;
 			m_nContentPack = dkToCopy.ContentPack;
 			m_eAvailability = dkToCopy.Availability;
-			m_eColour = dkToCopy.Colour;
+			m_bOverrideColours = dkToCopy.OverrideColours;
+			m_eOverrideColour = dkToCopy.OverrideColour;
+			Colour = dkToCopy.Colour;
 
 			// Deck Statistics
 			m_strCreatureSize = dkToCopy.CreatureSize;
@@ -558,7 +574,24 @@ namespace RSN.DotP
 		public ColourFlags Colour
 		{
 			get { return m_eColour; }
-			set { m_eColour = value; }
+			set
+			{
+				m_eColour = value;
+				if (!m_bOverrideColours)
+					m_eOverrideColour = value;
+			}
+		}
+
+		public bool OverrideColours
+		{
+			get { return m_bOverrideColours; }
+			set { m_bOverrideColours = value; }
+		}
+
+		public ColourFlags OverrideColour
+		{
+			get { return m_eOverrideColour; }
+			set { m_eOverrideColour = value; }
 		}
 
 		public string NameTag
@@ -755,7 +788,7 @@ namespace RSN.DotP
 			}
 			if (eColour == 0)
 				eColour = ColourFlags.Colourless;
-			m_eColour = eColour;
+			Colour = eColour;
 			return eColour;
 		}
 
@@ -878,6 +911,43 @@ namespace RSN.DotP
 			return bFound;
 		}
 
+		// Remove a card from the deck in X quantity.
+		//	If nQuantity is -1 it will completely remove the card from the deck.
+		//	Will return the dcCard instance that was found if one was found (though it may or may not remain in the list depending on the quantity to remove).
+		public DeckCard RemoveCard(CardInfo ciCard, int nQuantity = 1)
+		{
+			// Quick return conditions.
+			if ((ciCard == null) || (nQuantity == 0))
+				return null;
+
+			// We may not find the card we want to remove at all as it may not be in the list so we should initialize as null.
+			DeckCard dcFound = null;
+
+			for (int i = 0; i < m_lstCards.Count; i++)
+			{
+				DeckCard dcCard = m_lstCards[i];
+				if (dcCard.Card == ciCard)
+				{
+					dcFound = dcCard;
+					if ((nQuantity == -1) || (dcCard.Quantity <= nQuantity))
+					{
+						// Requested to remove all or quantity is less than or equal to what we want to remove so simply remove.
+						m_lstCards.Remove(dcCard);
+					}
+					else
+					{
+						// More than we are removing so we need to return what's left.
+						dcCard.Quantity -= nQuantity;
+					}
+
+					// We should only find one in the list so we can break out now.
+					break;
+				}
+			}
+
+			return dcFound;
+		}
+
 		// This will create an appropriate Land Pool for the deck based on the colours of the deck.
 		//	It will add 4 land for each used colour randomly from the appropriate land pool.
 		public void CreateLandPool(GameDirectory gdData)
@@ -959,7 +1029,7 @@ namespace RSN.DotP
 		//	Land Pool (if finished)
 		//  Unlocks (regular & promo, if any of either and finished)
 		//	AI Personality (if not built-in and finished)
-		public Dictionary<string, XmlDocument> Export(IdScheme isScheme = null)
+		public Dictionary<string, XmlDocument> Export(IdScheme isScheme = null, bool bForceExport = false)
 		{
 			// If we have not been passed in an id scheme then we know that we are not finished with this deck.
 			bool bUnfinished = (isScheme == null);
@@ -1002,7 +1072,8 @@ namespace RSN.DotP
 			if (!bUnfinished)
 			{
 				// We may or may not have a custom personality to export.
-				if ((m_apPersonality != null) && (!m_apPersonality.BuiltIn))
+				//	NOTE: We may also be forcing a personality export because of changing a deck's IdBlock.
+				if ((m_apPersonality != null) && ((!m_apPersonality.BuiltIn) || (bForceExport)))
 				{
 					KeyValuePair<string, XmlDocument> kvPersonality = m_apPersonality.Export();
 					dicRelated.Add(kvPersonality.Key, kvPersonality.Value);
@@ -1046,7 +1117,8 @@ namespace RSN.DotP
 				}
 
 				// Put in any custom personality (if any)
-				if ((m_apPersonality != null) && (!m_apPersonality.BuiltIn))
+				//	NOTE: We may also be forcing a personality export because of changing a deck's IdBlock.
+				if ((m_apPersonality != null) && ((!m_apPersonality.BuiltIn) || (bForceExport)))
 				{
 					XmlNode xnPersonality = xdDeck.CreateElement("AiPersonality");
 					xnDeckTag.AppendChild(xnPersonality);
@@ -1084,6 +1156,16 @@ namespace RSN.DotP
 					XmlNode xnDeckBoxImage = xdDeck.CreateElement("DeckBoxImage");
 					xnDeckBoxImage.InnerText = XmlTools.ImageToBase64String(m_bmpDeckBoxImage);
 					xnDeckTag.AppendChild(xnDeckBoxImage);
+				}
+
+				// Since this is unfinished we need to force out the deck colour overrides separately so that it isn't forgotten on load.
+				if (m_bOverrideColours)
+				{
+					XmlNode xnColourOverride = xdDeck.CreateElement("ColourOverride");
+					XmlAttribute xaColour = xdDeck.CreateAttribute("Value");
+					xaColour.Value = ((int)m_eOverrideColour).ToString();
+					xnColourOverride.Attributes.Append(xaColour);
+					xnDeckTag.AppendChild(xnColourOverride);
 				}
 			}
 			else
@@ -1232,31 +1314,37 @@ namespace RSN.DotP
 
 		private void AddColoursToDeckTag(XmlDocument xdDeck, XmlNode xnDeckBlock)
 		{
-			if ((m_eColour & ColourFlags.Black) == ColourFlags.Black)
+			ColourFlags eColour = m_eColour;
+
+			// Allow for colour overriding.
+			if (m_bOverrideColours)
+				eColour = m_eOverrideColour;
+
+			if ((eColour & ColourFlags.Black) == ColourFlags.Black)
 			{
 				XmlAttribute xaAttr = xdDeck.CreateAttribute("is_black");
 				xaAttr.Value = "true";
 				xnDeckBlock.Attributes.Append(xaAttr);
 			}
-			if ((m_eColour & ColourFlags.Blue) == ColourFlags.Blue)
+			if ((eColour & ColourFlags.Blue) == ColourFlags.Blue)
 			{
 				XmlAttribute xaAttr = xdDeck.CreateAttribute("is_blue");
 				xaAttr.Value = "true";
 				xnDeckBlock.Attributes.Append(xaAttr);
 			}
-			if ((m_eColour & ColourFlags.Green) == ColourFlags.Green)
+			if ((eColour & ColourFlags.Green) == ColourFlags.Green)
 			{
 				XmlAttribute xaAttr = xdDeck.CreateAttribute("is_green");
 				xaAttr.Value = "true";
 				xnDeckBlock.Attributes.Append(xaAttr);
 			}
-			if ((m_eColour & ColourFlags.Red) == ColourFlags.Red)
+			if ((eColour & ColourFlags.Red) == ColourFlags.Red)
 			{
 				XmlAttribute xaAttr = xdDeck.CreateAttribute("is_red");
 				xaAttr.Value = "true";
 				xnDeckBlock.Attributes.Append(xaAttr);
 			}
-			if ((m_eColour & ColourFlags.White) == ColourFlags.White)
+			if ((eColour & ColourFlags.White) == ColourFlags.White)
 			{
 				XmlAttribute xaAttr = xdDeck.CreateAttribute("is_white");
 				xaAttr.Value = "true";

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using System.Xml;
 using Be.Timvw.Framework.ComponentModel;
 using RSN.Tools;
 
@@ -41,6 +42,10 @@ namespace RSN.DotP
 			m_strFullDir = strDir + "\\";
 			m_strName = Path.GetFileNameWithoutExtension(strDir);
 
+			// Load Header
+			m_xdHeader = LoadHeader();
+			ReadHeaderXml(m_xdHeader);
+
 			// Load Cards & Images
 			m_lstCards = LoadCards(gdData);
 			m_hsetImages = LoadImageList();
@@ -50,6 +55,28 @@ namespace RSN.DotP
 
 			// Load up the SPECS present (if any)
 			LoadSpecs();
+		}
+
+		private XmlDocument LoadHeader()
+		{
+			XmlDocument xdHeader = null;
+
+			string strHeader = FindTextFile("HEADER.XML");
+			if ((strHeader != null) && (strHeader.Length > 0))
+			{
+				try
+				{
+					xdHeader = new XmlDocument();
+					xdHeader.LoadXml(strHeader);
+				}
+				catch (Exception e)
+				{
+					xdHeader = null;
+					Settings.ReportError(e, ErrorPriority.Low, "Wad " + m_strName + " has a header that could not be loaded, header text follows.\n" + strHeader);
+				}
+			}
+
+			return xdHeader;
 		}
 
 		private Dictionary<string, Dictionary<string, string>> LoadStringTable()
@@ -133,6 +160,7 @@ namespace RSN.DotP
 			LoadImageListFrom(set, m_strFullDir + CARD_FRAME_IMAGES_LOCATION, LoadImageType.Frame);
 			LoadImageListFrom(set, m_strFullDir + TEXTURE_IMAGES_LOCATION, LoadImageType.Texture);
 			LoadImageListFrom(set, m_strFullDir + MANA_IMAGES_LOCATION, LoadImageType.Mana);
+			LoadImageListFrom(set, m_strFullDir + FRONT_END_IMAGES_LOCATION, LoadImageType.FrontEnd);
 
 			return set;
 		}
@@ -220,6 +248,9 @@ namespace RSN.DotP
 				case LoadImageType.Frame:
 					strFile = m_strFullDir + CARD_FRAME_IMAGES_LOCATION + strId + ".tdx";
 					break;
+				case LoadImageType.FrontEnd:
+					strFile = m_strFullDir + FRONT_END_IMAGES_LOCATION + strId + ".tdx";
+					break;
 				case LoadImageType.Mana:
 					strFile = m_strFullDir + MANA_IMAGES_LOCATION + strId + ".tdx";
 					break;
@@ -272,6 +303,8 @@ namespace RSN.DotP
 				strFile = m_strFullDir + TEXTURE_IMAGES_LOCATION + strId + ".tdx";
 			else if (File.Exists(m_strFullDir + MANA_IMAGES_LOCATION + strId + ".tdx"))
 				strFile = m_strFullDir + MANA_IMAGES_LOCATION + strId + ".tdx";
+			else if (File.Exists(m_strFullDir + FRONT_END_IMAGES_LOCATION + strId + ".tdx"))
+				strFile = m_strFullDir + FRONT_END_IMAGES_LOCATION + strId + ".tdx";
 
 			TdxWrapper tdx = null;
 

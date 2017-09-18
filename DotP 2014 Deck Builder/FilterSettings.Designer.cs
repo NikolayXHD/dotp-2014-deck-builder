@@ -67,6 +67,7 @@
 			this.txtName = new System.Windows.Forms.TextBox();
 			this.chkName = new System.Windows.Forms.CheckBox();
 			this.gbRarity = new System.Windows.Forms.GroupBox();
+			this.chkRaritySpecial = new System.Windows.Forms.CheckBox();
 			this.chkRarityMythic = new System.Windows.Forms.CheckBox();
 			this.chkRarityRare = new System.Windows.Forms.CheckBox();
 			this.chkRarityUncommon = new System.Windows.Forms.CheckBox();
@@ -95,7 +96,7 @@
 			this.chkTokens = new System.Windows.Forms.CheckBox();
 			this.cmdCancel = new System.Windows.Forms.Button();
 			this.cmdApply = new System.Windows.Forms.Button();
-			this.chkRaritySpecial = new System.Windows.Forms.CheckBox();
+			this.cmdReset = new System.Windows.Forms.Button();
 			this.gbSupertype.SuspendLayout();
 			this.gbTypes.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.scTypes)).BeginInit();
@@ -590,6 +591,17 @@
 			this.gbRarity.Tag = "RARITY";
 			this.gbRarity.Text = "Rarity";
 			// 
+			// chkRaritySpecial
+			// 
+			this.chkRaritySpecial.AutoSize = true;
+			this.chkRaritySpecial.Location = new System.Drawing.Point(6, 157);
+			this.chkRaritySpecial.Name = "chkRaritySpecial";
+			this.chkRaritySpecial.Size = new System.Drawing.Size(61, 17);
+			this.chkRaritySpecial.TabIndex = 6;
+			this.chkRaritySpecial.Tag = "RARITY_SPECIAL";
+			this.chkRaritySpecial.Text = "Special";
+			this.chkRaritySpecial.UseVisualStyleBackColor = true;
+			// 
 			// chkRarityMythic
 			// 
 			this.chkRarityMythic.AutoSize = true;
@@ -890,10 +902,11 @@
 			// cmdCancel
 			// 
 			this.cmdCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+			this.cmdCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
 			this.cmdCancel.Location = new System.Drawing.Point(545, 462);
 			this.cmdCancel.Name = "cmdCancel";
 			this.cmdCancel.Size = new System.Drawing.Size(95, 21);
-			this.cmdCancel.TabIndex = 11;
+			this.cmdCancel.TabIndex = 12;
 			this.cmdCancel.Tag = "CANCEL";
 			this.cmdCancel.Text = "Cancel";
 			this.cmdCancel.UseVisualStyleBackColor = true;
@@ -905,29 +918,33 @@
 			this.cmdApply.Location = new System.Drawing.Point(444, 462);
 			this.cmdApply.Name = "cmdApply";
 			this.cmdApply.Size = new System.Drawing.Size(95, 21);
-			this.cmdApply.TabIndex = 10;
+			this.cmdApply.TabIndex = 11;
 			this.cmdApply.Tag = "APPLY";
 			this.cmdApply.Text = "Apply";
 			this.cmdApply.UseVisualStyleBackColor = true;
 			this.cmdApply.Click += new System.EventHandler(this.cmdApply_Click);
 			// 
-			// chkRaritySpecial
+			// cmdReset
 			// 
-			this.chkRaritySpecial.AutoSize = true;
-			this.chkRaritySpecial.Location = new System.Drawing.Point(6, 157);
-			this.chkRaritySpecial.Name = "chkRaritySpecial";
-			this.chkRaritySpecial.Size = new System.Drawing.Size(61, 17);
-			this.chkRaritySpecial.TabIndex = 6;
-			this.chkRaritySpecial.Tag = "RARITY_SPECIAL";
-			this.chkRaritySpecial.Text = "Special";
-			this.chkRaritySpecial.UseVisualStyleBackColor = true;
+			this.cmdReset.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+			this.cmdReset.Location = new System.Drawing.Point(343, 462);
+			this.cmdReset.Name = "cmdReset";
+			this.cmdReset.Size = new System.Drawing.Size(95, 21);
+			this.cmdReset.TabIndex = 10;
+			this.cmdReset.Tag = "RESET";
+			this.cmdReset.Text = "Reset";
+			this.cmdReset.UseVisualStyleBackColor = true;
+			this.cmdReset.Click += new System.EventHandler(this.cmdReset_Click);
 			// 
 			// FilterSettings
 			// 
+			this.AcceptButton = this.cmdApply;
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+			this.CancelButton = this.cmdCancel;
 			this.ClientSize = new System.Drawing.Size(652, 495);
 			this.ControlBox = false;
+			this.Controls.Add(this.cmdReset);
 			this.Controls.Add(this.cmdCancel);
 			this.Controls.Add(this.cmdApply);
 			this.Controls.Add(this.gbExtra);
@@ -1051,5 +1068,6 @@
 		private System.Windows.Forms.TextBox txtToughness;
 		private System.Windows.Forms.TextBox txtPower;
 		private System.Windows.Forms.CheckBox chkRaritySpecial;
+		private System.Windows.Forms.Button cmdReset;
 	}
 }

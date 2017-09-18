@@ -34,9 +34,13 @@ namespace RSN.DotP
 			m_strFilename = string.Empty;
 			m_dicName = new Dictionary<string, string>();
 			m_dicName.Add("en-US", "New Personality");
+			m_bmpLargeAvatarImage = null;
 			m_strLargeAvatarImage = string.Empty;
+			m_bmpSmallAvatarImage = null;
 			m_strSmallAvatarImage = string.Empty;
+			m_bmpSmallAvatarLockedImage = null;
 			m_strSmallAvatarLockedImage = string.Empty;
+			m_bmpLobbyImage = null;
 			m_strLobbyImage = string.Empty;
 			m_bBuiltIn = false;
 		}

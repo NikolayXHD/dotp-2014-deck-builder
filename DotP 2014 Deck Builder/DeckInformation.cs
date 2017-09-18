@@ -105,7 +105,30 @@ namespace RSN.DotP
 			m_apPersonality = m_dkInfo.Personality;
 			lblAiPersonality.Text = m_apPersonality.LocalizedName.Replace("&", "&&");
 
+			// Do we have a Colour Override set.
+			chkColourOverride.Checked = m_dkInfo.OverrideColours;
+			chkColourOverride_CheckedChanged(null, null);
+
+			// Load checkbox images.
+			Size szImageSize = new Size(30, 30);
+			chkOverrideBlack.Image = LoadAndResize(szImageSize, "MANA_PIP_BLACK", LoadImageType.FrontEnd);
+			chkOverrideBlue.Image = LoadAndResize(szImageSize, "MANA_PIP_BLUE", LoadImageType.FrontEnd);
+			chkOverrideGreen.Image = LoadAndResize(szImageSize, "MANA_PIP_GREEN", LoadImageType.FrontEnd);
+			chkOverrideRed.Image = LoadAndResize(szImageSize, "MANA_PIP_RED", LoadImageType.FrontEnd);
+			chkOverrideWhite.Image = LoadAndResize(szImageSize, "MANA_PIP_WHITE", LoadImageType.FrontEnd);
+
+			// Set the colour check boxes.
+			ColourFlags eColour = m_dkInfo.Colour;
+			if (m_dkInfo.OverrideColours)
+				eColour = m_dkInfo.OverrideColour;
+			chkOverrideBlack.Checked = ((eColour & ColourFlags.Black) != 0);
+			chkOverrideBlue.Checked = ((eColour & ColourFlags.Blue) != 0);
+			chkOverrideGreen.Checked = ((eColour & ColourFlags.Green) != 0);
+			chkOverrideRed.Checked = ((eColour & ColourFlags.Red) != 0);
+			chkOverrideWhite.Checked = ((eColour & ColourFlags.White) != 0);
+
 			// Make sure we can build deck box images.
+			m_rbDeckLastChecked = rbUseDeckImage;
 			if ((!File.Exists(Settings.GetProgramDir() + "Images\\D14_DeckBoxOverlay.png")) ||
 				(!File.Exists(Settings.GetProgramDir() + "Images\\D14_DeckBoxMask.png")) ||
 				(!File.Exists(Settings.GetProgramDir() + "Images\\D14_DeckBoxAlpha.png")))
@@ -176,12 +199,31 @@ namespace RSN.DotP
 			gbDeckLocation.Text = Settings.UIStrings[(string)gbDeckLocation.Tag];
 			gbDeckSize.Text = Settings.UIStrings[(string)gbDeckSize.Tag];
 
+			// Colour override
+			chkColourOverride.Text = Settings.UIStrings[(string)chkColourOverride.Tag];
+
 			// Apply & Cancel
 			cmdApply.Text = Settings.UIStrings[(string)cmdApply.Tag];
 			cmdCancel.Text = Settings.UIStrings[(string)cmdCancel.Tag];
 
 			// Context Menu for exporting images.
 			cmnuiExport.Text = Settings.UIStrings[(string)cmnuiExport.Tag];
+		}
+
+		private Bitmap LoadAndResize(Size szDesired, string strImage, LoadImageType eSearch = LoadImageType.SearchAll)
+		{
+			Bitmap bmpImage = null;
+			TdxWrapper twImage = m_gdData.LoadImage(strImage, eSearch);
+
+			if (twImage != null)
+			{
+				// Found image now we need to resize.
+				bmpImage = new Bitmap(szDesired.Width, szDesired.Height, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
+				Graphics grfx = Graphics.FromImage(bmpImage);
+				grfx.DrawImage(twImage.Image, new Rectangle(new Point(0, 0), szDesired));
+			}
+
+			return bmpImage;
 		}
 
 		private void cmdCancel_Click(object sender, EventArgs e)
@@ -206,15 +248,55 @@ namespace RSN.DotP
 			m_dkInfo.MinSwamps = (int)numMinSwamps.Value;
 			m_dkInfo.NumberOfSpellsThatCountAsLands = (int)numSpellsThatCountAsLand.Value;
 			// If they apply with a null image then trying to make a new bitmap from it will error out so check for that.
-			if (m_dkInfo.DeckBoxImage != null)
-			{
-				m_dkInfo.DeckBoxImage.Dispose();
-				m_dkInfo.DeckBoxImage = null;
-			}
 			if (picDeckBox.Image != null)
 				m_dkInfo.DeckBoxImage = new Bitmap(picDeckBox.Image);
+			else
+				m_dkInfo.DeckBoxImage = null;
 			// Set our personality.
 			m_dkInfo.Personality = m_apPersonality;
+			// Set any colour overrides.
+			m_dkInfo.OverrideColours = chkColourOverride.Checked;
+			if (m_dkInfo.OverrideColours)
+			{
+				// Build our proper colour var.
+				ColourFlags eColour = ColourFlags.NotDefined;
+				if (chkOverrideBlack.Checked)
+				{
+					if (eColour != ColourFlags.NotDefined)
+						eColour |= ColourFlags.MultiColour;
+					eColour |= ColourFlags.Black;
+				}
+				if (chkOverrideBlue.Checked)
+				{
+					if (eColour != ColourFlags.NotDefined)
+						eColour |= ColourFlags.MultiColour;
+					eColour |= ColourFlags.Blue;
+				}
+				if (chkOverrideGreen.Checked)
+				{
+					if (eColour != ColourFlags.NotDefined)
+						eColour |= ColourFlags.MultiColour;
+					eColour |= ColourFlags.Green;
+				}
+				if (chkOverrideRed.Checked)
+				{
+					if (eColour != ColourFlags.NotDefined)
+						eColour |= ColourFlags.MultiColour;
+					eColour |= ColourFlags.Red;
+				}
+				if (chkOverrideWhite.Checked)
+				{
+					if (eColour != ColourFlags.NotDefined)
+						eColour |= ColourFlags.MultiColour;
+					eColour |= ColourFlags.White;
+				}
+
+				// See if any colours are defined.
+				if (eColour == ColourFlags.NotDefined)
+					eColour = ColourFlags.Colourless;
+
+				m_dkInfo.OverrideColour = eColour;
+			}
 			m_dkInfo.Edited = true;
 
 			this.Close();
@@ -275,10 +357,8 @@ namespace RSN.DotP
 		{
 			if ((rbUseDeckImage.Checked) && (!m_bChangingToLast))
 			{
-				if (picDeckBox.Image != null)
-					picDeckBox.Image.Dispose();
 				if (m_dkInfo.DeckBoxImage != null)
-					picDeckBox.Image = new Bitmap(m_dkInfo.DeckBoxImage);
+					picDeckBox.Image = m_dkInfo.DeckBoxImage;
 				else
 					picDeckBox.Image = null;
 				m_bBuildDeckImage = false;
@@ -293,8 +373,6 @@ namespace RSN.DotP
 				Bitmap bmpChosen = ChooseImage();
 				if (bmpChosen != null)
 				{
-					if (picDeckBox.Image != null)
-						picDeckBox.Image.Dispose();
 					picDeckBox.Image = bmpChosen;
 					m_rbDeckLastChecked = rbLoadImage;
 				}
@@ -317,8 +395,6 @@ namespace RSN.DotP
 				{
 					m_ibDeckBox.LoadedImage = bmpChosen;
 					InitialDeckImageAdjust();
-					if (picDeckBox.Image != null)
-						picDeckBox.Image.Dispose();
 					picDeckBox.Image = m_ibDeckBox.BuildImage();
 
 					// We've successfully built an initial image so go ahead and enable our controls.
@@ -537,6 +613,16 @@ namespace RSN.DotP
 				lblAiPersonality.Text = m_apPersonality.LocalizedName.Replace("&", "&&");
 			}
 			frmPersonality.Dispose();
+		}
+
+		private void chkColourOverride_CheckedChanged(object sender, EventArgs e)
+		{
+			bool bEnable = chkColourOverride.Checked;
+			chkOverrideBlack.Enabled = bEnable;
+			chkOverrideBlue.Enabled = bEnable;
+			chkOverrideGreen.Enabled = bEnable;
+			chkOverrideRed.Enabled = bEnable;
+			chkOverrideWhite.Enabled = bEnable;
 		}
 	}
 }

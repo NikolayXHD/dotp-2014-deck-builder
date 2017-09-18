@@ -67,19 +67,30 @@
 			this.cmdFilterAdvanced = new System.Windows.Forms.Button();
 			this.scDeckUnlocks = new System.Windows.Forms.SplitContainer();
 			this.gbDeck = new System.Windows.Forms.GroupBox();
+			this.scCounts = new System.Windows.Forms.SplitContainer();
+			this.scTotalCount = new System.Windows.Forms.SplitContainer();
+			this.lblTotalCount = new System.Windows.Forms.Label();
+			this.lblTotalCardCount = new System.Windows.Forms.Label();
+			this.scBasicLand = new System.Windows.Forms.SplitContainer();
+			this.lblBasicLand = new System.Windows.Forms.Label();
+			this.lblBasicLandCount = new System.Windows.Forms.Label();
 			this.cmdDeckInformation = new System.Windows.Forms.Button();
 			this.cmdEditName = new System.Windows.Forms.Button();
-			this.lblBasicLandCount = new System.Windows.Forms.Label();
-			this.lblBasicLand = new System.Windows.Forms.Label();
 			this.lblDeckName = new System.Windows.Forms.Label();
 			this.dgvDeckCards = new System.Windows.Forms.DataGridView();
 			this.scRegularPromo = new System.Windows.Forms.SplitContainer();
 			this.gbRegularUnlocks = new System.Windows.Forms.GroupBox();
+			this.scRegularUnlockCount = new System.Windows.Forms.SplitContainer();
+			this.lblRegUnlockCount = new System.Windows.Forms.Label();
+			this.lblRegUnlockCardCount = new System.Windows.Forms.Label();
 			this.scRegularButtons = new System.Windows.Forms.SplitContainer();
 			this.cmdRegularMoveUp = new System.Windows.Forms.Button();
 			this.cmdRegularMoveDown = new System.Windows.Forms.Button();
 			this.dgvUnlocksRegular = new System.Windows.Forms.DataGridView();
 			this.gbPromoUnlocks = new System.Windows.Forms.GroupBox();
+			this.scPromoCount = new System.Windows.Forms.SplitContainer();
+			this.lblPromoUnlockCount = new System.Windows.Forms.Label();
+			this.lblPromoUnlockCardCount = new System.Windows.Forms.Label();
 			this.scPromoButtons = new System.Windows.Forms.SplitContainer();
 			this.cmdPromoMoveUp = new System.Windows.Forms.Button();
 			this.cmdPromoMoveDown = new System.Windows.Forms.Button();
@@ -130,18 +141,38 @@
 			this.scDeckUnlocks.Panel2.SuspendLayout();
 			this.scDeckUnlocks.SuspendLayout();
 			this.gbDeck.SuspendLayout();
+			((System.ComponentModel.ISupportInitialize)(this.scCounts)).BeginInit();
+			this.scCounts.Panel1.SuspendLayout();
+			this.scCounts.Panel2.SuspendLayout();
+			this.scCounts.SuspendLayout();
+			((System.ComponentModel.ISupportInitialize)(this.scTotalCount)).BeginInit();
+			this.scTotalCount.Panel1.SuspendLayout();
+			this.scTotalCount.Panel2.SuspendLayout();
+			this.scTotalCount.SuspendLayout();
+			((System.ComponentModel.ISupportInitialize)(this.scBasicLand)).BeginInit();
+			this.scBasicLand.Panel1.SuspendLayout();
+			this.scBasicLand.Panel2.SuspendLayout();
+			this.scBasicLand.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.dgvDeckCards)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.scRegularPromo)).BeginInit();
 			this.scRegularPromo.Panel1.SuspendLayout();
 			this.scRegularPromo.Panel2.SuspendLayout();
 			this.scRegularPromo.SuspendLayout();
 			this.gbRegularUnlocks.SuspendLayout();
+			((System.ComponentModel.ISupportInitialize)(this.scRegularUnlockCount)).BeginInit();
+			this.scRegularUnlockCount.Panel1.SuspendLayout();
+			this.scRegularUnlockCount.Panel2.SuspendLayout();
+			this.scRegularUnlockCount.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.scRegularButtons)).BeginInit();
 			this.scRegularButtons.Panel1.SuspendLayout();
 			this.scRegularButtons.Panel2.SuspendLayout();
 			this.scRegularButtons.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.dgvUnlocksRegular)).BeginInit();
 			this.gbPromoUnlocks.SuspendLayout();
+			((System.ComponentModel.ISupportInitialize)(this.scPromoCount)).BeginInit();
+			this.scPromoCount.Panel1.SuspendLayout();
+			this.scPromoCount.Panel2.SuspendLayout();
+			this.scPromoCount.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.scPromoButtons)).BeginInit();
 			this.scPromoButtons.Panel1.SuspendLayout();
 			this.scPromoButtons.Panel2.SuspendLayout();
@@ -540,10 +571,9 @@
 			// 
 			// gbDeck
 			// 
+			this.gbDeck.Controls.Add(this.scCounts);
 			this.gbDeck.Controls.Add(this.cmdDeckInformation);
 			this.gbDeck.Controls.Add(this.cmdEditName);
-			this.gbDeck.Controls.Add(this.lblBasicLandCount);
-			this.gbDeck.Controls.Add(this.lblBasicLand);
 			this.gbDeck.Controls.Add(this.lblDeckName);
 			this.gbDeck.Controls.Add(this.dgvDeckCards);
 			this.gbDeck.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -554,6 +584,113 @@
 			this.gbDeck.TabStop = false;
 			this.gbDeck.Tag = "DECK";
 			this.gbDeck.Text = "Deck";
+			// 
+			// scCounts
+			// 
+			this.scCounts.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+						| System.Windows.Forms.AnchorStyles.Right)));
+			this.scCounts.IsSplitterFixed = true;
+			this.scCounts.Location = new System.Drawing.Point(7, 46);
+			this.scCounts.Name = "scCounts";
+			// 
+			// scCounts.Panel1
+			// 
+			this.scCounts.Panel1.Controls.Add(this.scTotalCount);
+			// 
+			// scCounts.Panel2
+			// 
+			this.scCounts.Panel2.Controls.Add(this.scBasicLand);
+			this.scCounts.Size = new System.Drawing.Size(228, 15);
+			this.scCounts.SplitterDistance = 111;
+			this.scCounts.TabIndex = 4;
+			// 
+			// scTotalCount
+			// 
+			this.scTotalCount.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.scTotalCount.IsSplitterFixed = true;
+			this.scTotalCount.Location = new System.Drawing.Point(0, 0);
+			this.scTotalCount.Name = "scTotalCount";
+			// 
+			// scTotalCount.Panel1
+			// 
+			this.scTotalCount.Panel1.Controls.Add(this.lblTotalCount);
+			// 
+			// scTotalCount.Panel2
+			// 
+			this.scTotalCount.Panel2.Controls.Add(this.lblTotalCardCount);
+			this.scTotalCount.Size = new System.Drawing.Size(111, 15);
+			this.scTotalCount.SplitterDistance = 73;
+			this.scTotalCount.TabIndex = 1;
+			// 
+			// lblTotalCount
+			// 
+			this.lblTotalCount.AutoSize = true;
+			this.lblTotalCount.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.lblTotalCount.Location = new System.Drawing.Point(0, 0);
+			this.lblTotalCount.Margin = new System.Windows.Forms.Padding(3);
+			this.lblTotalCount.Name = "lblTotalCount";
+			this.lblTotalCount.Size = new System.Drawing.Size(60, 13);
+			this.lblTotalCount.TabIndex = 3;
+			this.lblTotalCount.Tag = "COLUMN_TEXT_CARD_COUNT";
+			this.lblTotalCount.Text = "Card Count";
+			this.lblTotalCount.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+			// 
+			// lblTotalCardCount
+			// 
+			this.lblTotalCardCount.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+			this.lblTotalCardCount.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.lblTotalCardCount.Location = new System.Drawing.Point(0, 0);
+			this.lblTotalCardCount.Margin = new System.Windows.Forms.Padding(3);
+			this.lblTotalCardCount.Name = "lblTotalCardCount";
+			this.lblTotalCardCount.Size = new System.Drawing.Size(34, 15);
+			this.lblTotalCardCount.TabIndex = 4;
+			this.lblTotalCardCount.Tag = "";
+			this.lblTotalCardCount.Text = "0";
+			this.lblTotalCardCount.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+			// 
+			// scBasicLand
+			// 
+			this.scBasicLand.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.scBasicLand.IsSplitterFixed = true;
+			this.scBasicLand.Location = new System.Drawing.Point(0, 0);
+			this.scBasicLand.Name = "scBasicLand";
+			// 
+			// scBasicLand.Panel1
+			// 
+			this.scBasicLand.Panel1.Controls.Add(this.lblBasicLand);
+			// 
+			// scBasicLand.Panel2
+			// 
+			this.scBasicLand.Panel2.Controls.Add(this.lblBasicLandCount);
+			this.scBasicLand.Size = new System.Drawing.Size(113, 15);
+			this.scBasicLand.SplitterDistance = 74;
+			this.scBasicLand.TabIndex = 0;
+			// 
+			// lblBasicLand
+			// 
+			this.lblBasicLand.AutoSize = true;
+			this.lblBasicLand.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.lblBasicLand.Location = new System.Drawing.Point(0, 0);
+			this.lblBasicLand.Margin = new System.Windows.Forms.Padding(3);
+			this.lblBasicLand.Name = "lblBasicLand";
+			this.lblBasicLand.Size = new System.Drawing.Size(60, 13);
+			this.lblBasicLand.TabIndex = 3;
+			this.lblBasicLand.Tag = "BASIC_LAND";
+			this.lblBasicLand.Text = "Basic Land";
+			this.lblBasicLand.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+			// 
+			// lblBasicLandCount
+			// 
+			this.lblBasicLandCount.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+			this.lblBasicLandCount.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.lblBasicLandCount.Location = new System.Drawing.Point(0, 0);
+			this.lblBasicLandCount.Margin = new System.Windows.Forms.Padding(3);
+			this.lblBasicLandCount.Name = "lblBasicLandCount";
+			this.lblBasicLandCount.Size = new System.Drawing.Size(35, 15);
+			this.lblBasicLandCount.TabIndex = 4;
+			this.lblBasicLandCount.Tag = "";
+			this.lblBasicLandCount.Text = "60";
+			this.lblBasicLandCount.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
 			// 
 			// cmdDeckInformation
 			// 
@@ -579,30 +716,6 @@
 			this.cmdEditName.Text = "Edit Name ...";
 			this.cmdEditName.UseVisualStyleBackColor = true;
 			this.cmdEditName.Click += new System.EventHandler(this.cmdEditName_Click);
-			// 
-			// lblBasicLandCount
-			// 
-			this.lblBasicLandCount.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-			this.lblBasicLandCount.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-			this.lblBasicLandCount.Location = new System.Drawing.Point(147, 46);
-			this.lblBasicLandCount.Margin = new System.Windows.Forms.Padding(3);
-			this.lblBasicLandCount.Name = "lblBasicLandCount";
-			this.lblBasicLandCount.Size = new System.Drawing.Size(88, 15);
-			this.lblBasicLandCount.TabIndex = 3;
-			this.lblBasicLandCount.Tag = "";
-			this.lblBasicLandCount.Text = "60";
-			this.lblBasicLandCount.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
-			// 
-			// lblBasicLand
-			// 
-			this.lblBasicLand.AutoSize = true;
-			this.lblBasicLand.Location = new System.Drawing.Point(6, 47);
-			this.lblBasicLand.Margin = new System.Windows.Forms.Padding(3);
-			this.lblBasicLand.Name = "lblBasicLand";
-			this.lblBasicLand.Size = new System.Drawing.Size(60, 13);
-			this.lblBasicLand.TabIndex = 2;
-			this.lblBasicLand.Tag = "BASIC_LAND";
-			this.lblBasicLand.Text = "Basic Land";
 			// 
 			// lblDeckName
 			// 
@@ -657,6 +770,7 @@
 			// 
 			// gbRegularUnlocks
 			// 
+			this.gbRegularUnlocks.Controls.Add(this.scRegularUnlockCount);
 			this.gbRegularUnlocks.Controls.Add(this.scRegularButtons);
 			this.gbRegularUnlocks.Controls.Add(this.dgvUnlocksRegular);
 			this.gbRegularUnlocks.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -667,6 +781,51 @@
 			this.gbRegularUnlocks.TabStop = false;
 			this.gbRegularUnlocks.Tag = "REGULAR_UNLOCKS";
 			this.gbRegularUnlocks.Text = "Regular Unlocks";
+			// 
+			// scRegularUnlockCount
+			// 
+			this.scRegularUnlockCount.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+						| System.Windows.Forms.AnchorStyles.Right)));
+			this.scRegularUnlockCount.IsSplitterFixed = true;
+			this.scRegularUnlockCount.Location = new System.Drawing.Point(6, 19);
+			this.scRegularUnlockCount.Name = "scRegularUnlockCount";
+			// 
+			// scRegularUnlockCount.Panel1
+			// 
+			this.scRegularUnlockCount.Panel1.Controls.Add(this.lblRegUnlockCount);
+			// 
+			// scRegularUnlockCount.Panel2
+			// 
+			this.scRegularUnlockCount.Panel2.Controls.Add(this.lblRegUnlockCardCount);
+			this.scRegularUnlockCount.Size = new System.Drawing.Size(226, 15);
+			this.scRegularUnlockCount.SplitterDistance = 148;
+			this.scRegularUnlockCount.TabIndex = 3;
+			// 
+			// lblRegUnlockCount
+			// 
+			this.lblRegUnlockCount.AutoSize = true;
+			this.lblRegUnlockCount.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.lblRegUnlockCount.Location = new System.Drawing.Point(0, 0);
+			this.lblRegUnlockCount.Margin = new System.Windows.Forms.Padding(3);
+			this.lblRegUnlockCount.Name = "lblRegUnlockCount";
+			this.lblRegUnlockCount.Size = new System.Drawing.Size(60, 13);
+			this.lblRegUnlockCount.TabIndex = 3;
+			this.lblRegUnlockCount.Tag = "COLUMN_TEXT_CARD_COUNT";
+			this.lblRegUnlockCount.Text = "Card Count";
+			this.lblRegUnlockCount.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+			// 
+			// lblRegUnlockCardCount
+			// 
+			this.lblRegUnlockCardCount.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+			this.lblRegUnlockCardCount.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.lblRegUnlockCardCount.Location = new System.Drawing.Point(0, 0);
+			this.lblRegUnlockCardCount.Margin = new System.Windows.Forms.Padding(3);
+			this.lblRegUnlockCardCount.Name = "lblRegUnlockCardCount";
+			this.lblRegUnlockCardCount.Size = new System.Drawing.Size(74, 15);
+			this.lblRegUnlockCardCount.TabIndex = 4;
+			this.lblRegUnlockCardCount.Tag = "";
+			this.lblRegUnlockCardCount.Text = "0";
+			this.lblRegUnlockCardCount.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
 			// 
 			// scRegularButtons
 			// 
@@ -720,12 +879,12 @@
 						| System.Windows.Forms.AnchorStyles.Right)));
 			this.dgvUnlocksRegular.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
 			this.dgvUnlocksRegular.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-			this.dgvUnlocksRegular.Location = new System.Drawing.Point(6, 19);
+			this.dgvUnlocksRegular.Location = new System.Drawing.Point(6, 40);
 			this.dgvUnlocksRegular.MultiSelect = false;
 			this.dgvUnlocksRegular.Name = "dgvUnlocksRegular";
 			this.dgvUnlocksRegular.RowHeadersVisible = false;
 			this.dgvUnlocksRegular.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-			this.dgvUnlocksRegular.Size = new System.Drawing.Size(226, 412);
+			this.dgvUnlocksRegular.Size = new System.Drawing.Size(226, 391);
 			this.dgvUnlocksRegular.TabIndex = 0;
 			this.dgvUnlocksRegular.CellBeginEdit += new System.Windows.Forms.DataGridViewCellCancelEventHandler(this.dgvUnlocksRegular_CellBeginEdit);
 			this.dgvUnlocksRegular.CellEndEdit += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgvUnlocksRegular_CellEndEdit);
@@ -737,6 +896,7 @@
 			// 
 			// gbPromoUnlocks
 			// 
+			this.gbPromoUnlocks.Controls.Add(this.scPromoCount);
 			this.gbPromoUnlocks.Controls.Add(this.scPromoButtons);
 			this.gbPromoUnlocks.Controls.Add(this.dgvUnlocksPromo);
 			this.gbPromoUnlocks.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -747,6 +907,51 @@
 			this.gbPromoUnlocks.TabStop = false;
 			this.gbPromoUnlocks.Tag = "PROMO_UNLOCKS";
 			this.gbPromoUnlocks.Text = "Promo Unlocks";
+			// 
+			// scPromoCount
+			// 
+			this.scPromoCount.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+						| System.Windows.Forms.AnchorStyles.Right)));
+			this.scPromoCount.IsSplitterFixed = true;
+			this.scPromoCount.Location = new System.Drawing.Point(6, 19);
+			this.scPromoCount.Name = "scPromoCount";
+			// 
+			// scPromoCount.Panel1
+			// 
+			this.scPromoCount.Panel1.Controls.Add(this.lblPromoUnlockCount);
+			// 
+			// scPromoCount.Panel2
+			// 
+			this.scPromoCount.Panel2.Controls.Add(this.lblPromoUnlockCardCount);
+			this.scPromoCount.Size = new System.Drawing.Size(225, 15);
+			this.scPromoCount.SplitterDistance = 147;
+			this.scPromoCount.TabIndex = 4;
+			// 
+			// lblPromoUnlockCount
+			// 
+			this.lblPromoUnlockCount.AutoSize = true;
+			this.lblPromoUnlockCount.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.lblPromoUnlockCount.Location = new System.Drawing.Point(0, 0);
+			this.lblPromoUnlockCount.Margin = new System.Windows.Forms.Padding(3);
+			this.lblPromoUnlockCount.Name = "lblPromoUnlockCount";
+			this.lblPromoUnlockCount.Size = new System.Drawing.Size(60, 13);
+			this.lblPromoUnlockCount.TabIndex = 3;
+			this.lblPromoUnlockCount.Tag = "COLUMN_TEXT_CARD_COUNT";
+			this.lblPromoUnlockCount.Text = "Card Count";
+			this.lblPromoUnlockCount.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+			// 
+			// lblPromoUnlockCardCount
+			// 
+			this.lblPromoUnlockCardCount.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+			this.lblPromoUnlockCardCount.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.lblPromoUnlockCardCount.Location = new System.Drawing.Point(0, 0);
+			this.lblPromoUnlockCardCount.Margin = new System.Windows.Forms.Padding(3);
+			this.lblPromoUnlockCardCount.Name = "lblPromoUnlockCardCount";
+			this.lblPromoUnlockCardCount.Size = new System.Drawing.Size(74, 15);
+			this.lblPromoUnlockCardCount.TabIndex = 4;
+			this.lblPromoUnlockCardCount.Tag = "";
+			this.lblPromoUnlockCardCount.Text = "0";
+			this.lblPromoUnlockCardCount.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
 			// 
 			// scPromoButtons
 			// 
@@ -800,12 +1005,12 @@
 						| System.Windows.Forms.AnchorStyles.Right)));
 			this.dgvUnlocksPromo.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
 			this.dgvUnlocksPromo.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-			this.dgvUnlocksPromo.Location = new System.Drawing.Point(6, 19);
+			this.dgvUnlocksPromo.Location = new System.Drawing.Point(6, 40);
 			this.dgvUnlocksPromo.MultiSelect = false;
 			this.dgvUnlocksPromo.Name = "dgvUnlocksPromo";
 			this.dgvUnlocksPromo.RowHeadersVisible = false;
 			this.dgvUnlocksPromo.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-			this.dgvUnlocksPromo.Size = new System.Drawing.Size(225, 412);
+			this.dgvUnlocksPromo.Size = new System.Drawing.Size(225, 391);
 			this.dgvUnlocksPromo.TabIndex = 0;
 			this.dgvUnlocksPromo.CellBeginEdit += new System.Windows.Forms.DataGridViewCellCancelEventHandler(this.dgvUnlocksPromo_CellBeginEdit);
 			this.dgvUnlocksPromo.CellEndEdit += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgvUnlocksPromo_CellEndEdit);
@@ -830,7 +1035,7 @@
             this.toolStripSeparator9,
             this.cmnuiMoveTo});
 			this.cmnuContext.Name = "cmnuContext";
-			this.cmnuContext.Size = new System.Drawing.Size(185, 220);
+			this.cmnuContext.Size = new System.Drawing.Size(185, 198);
 			// 
 			// cmnuiColumns
 			// 
@@ -1099,18 +1304,42 @@
 			this.scDeckUnlocks.ResumeLayout(false);
 			this.gbDeck.ResumeLayout(false);
 			this.gbDeck.PerformLayout();
+			this.scCounts.Panel1.ResumeLayout(false);
+			this.scCounts.Panel2.ResumeLayout(false);
+			((System.ComponentModel.ISupportInitialize)(this.scCounts)).EndInit();
+			this.scCounts.ResumeLayout(false);
+			this.scTotalCount.Panel1.ResumeLayout(false);
+			this.scTotalCount.Panel1.PerformLayout();
+			this.scTotalCount.Panel2.ResumeLayout(false);
+			((System.ComponentModel.ISupportInitialize)(this.scTotalCount)).EndInit();
+			this.scTotalCount.ResumeLayout(false);
+			this.scBasicLand.Panel1.ResumeLayout(false);
+			this.scBasicLand.Panel1.PerformLayout();
+			this.scBasicLand.Panel2.ResumeLayout(false);
+			((System.ComponentModel.ISupportInitialize)(this.scBasicLand)).EndInit();
+			this.scBasicLand.ResumeLayout(false);
 			((System.ComponentModel.ISupportInitialize)(this.dgvDeckCards)).EndInit();
 			this.scRegularPromo.Panel1.ResumeLayout(false);
 			this.scRegularPromo.Panel2.ResumeLayout(false);
 			((System.ComponentModel.ISupportInitialize)(this.scRegularPromo)).EndInit();
 			this.scRegularPromo.ResumeLayout(false);
 			this.gbRegularUnlocks.ResumeLayout(false);
+			this.scRegularUnlockCount.Panel1.ResumeLayout(false);
+			this.scRegularUnlockCount.Panel1.PerformLayout();
+			this.scRegularUnlockCount.Panel2.ResumeLayout(false);
+			((System.ComponentModel.ISupportInitialize)(this.scRegularUnlockCount)).EndInit();
+			this.scRegularUnlockCount.ResumeLayout(false);
 			this.scRegularButtons.Panel1.ResumeLayout(false);
 			this.scRegularButtons.Panel2.ResumeLayout(false);
 			((System.ComponentModel.ISupportInitialize)(this.scRegularButtons)).EndInit();
 			this.scRegularButtons.ResumeLayout(false);
 			((System.ComponentModel.ISupportInitialize)(this.dgvUnlocksRegular)).EndInit();
 			this.gbPromoUnlocks.ResumeLayout(false);
+			this.scPromoCount.Panel1.ResumeLayout(false);
+			this.scPromoCount.Panel1.PerformLayout();
+			this.scPromoCount.Panel2.ResumeLayout(false);
+			((System.ComponentModel.ISupportInitialize)(this.scPromoCount)).EndInit();
+			this.scPromoCount.ResumeLayout(false);
 			this.scPromoButtons.Panel1.ResumeLayout(false);
 			this.scPromoButtons.Panel2.ResumeLayout(false);
 			((System.ComponentModel.ISupportInitialize)(this.scPromoButtons)).EndInit();
@@ -1161,8 +1390,6 @@
 		private System.Windows.Forms.GroupBox gbPromoUnlocks;
 		private System.Windows.Forms.Label lblDeckName;
 		private System.Windows.Forms.DataGridView dgvDeckCards;
-		private System.Windows.Forms.Label lblBasicLandCount;
-		private System.Windows.Forms.Label lblBasicLand;
 		private System.Windows.Forms.Button cmdEditName;
 		private System.Windows.Forms.DataGridView dgvUnlocksRegular;
 		private System.Windows.Forms.DataGridView dgvUnlocksPromo;
@@ -1211,6 +1438,19 @@
 		private System.Windows.Forms.ToolStripMenuItem cmnuiMoveToMainDeck;
 		private System.Windows.Forms.ToolStripMenuItem cmnuiMoveToRegularUnlocks;
 		private System.Windows.Forms.ToolStripMenuItem cmnuiMoveToPromoUnlocks;
+		private System.Windows.Forms.SplitContainer scCounts;
+		private System.Windows.Forms.SplitContainer scTotalCount;
+		private System.Windows.Forms.Label lblTotalCount;
+		private System.Windows.Forms.Label lblTotalCardCount;
+		private System.Windows.Forms.SplitContainer scBasicLand;
+		private System.Windows.Forms.Label lblBasicLand;
+		private System.Windows.Forms.Label lblBasicLandCount;
+		private System.Windows.Forms.SplitContainer scRegularUnlockCount;
+		private System.Windows.Forms.Label lblRegUnlockCount;
+		private System.Windows.Forms.Label lblRegUnlockCardCount;
+		private System.Windows.Forms.SplitContainer scPromoCount;
+		private System.Windows.Forms.Label lblPromoUnlockCount;
+		private System.Windows.Forms.Label lblPromoUnlockCardCount;
 	}
 }
 

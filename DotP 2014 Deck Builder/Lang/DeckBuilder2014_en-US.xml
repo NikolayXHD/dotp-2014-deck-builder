@@ -1,8 +1,8 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <LOCALIZATION>
 	<!-- Localization information to credit the person who did this localization. -->
-	<STRING key="LOCALIZED_BY"><![CDATA[Localized by Riiak Shi Nal - 2013]]></STRING>
-	<STRING key="LOCALIZATION_VERSION"><![CDATA[English (US) v1.4.0.0]]></STRING>
+	<STRING key="LOCALIZED_BY"><![CDATA[Localized by Riiak Shi Nal - 2013-2015]]></STRING>
+	<STRING key="LOCALIZATION_VERSION"><![CDATA[English (US) v1.5.0.0]]></STRING>
 	<!-- Strings for Main Window -->
 	<STRING key="MISSING_DOTP_DIRECTORY_TITLE"><![CDATA[DotP 2014 Directory not set.]]></STRING>
 	<STRING key="MISSING_DOTP_DIRECTORY_MESSAGE"><![CDATA[The Duels of the Planeswalkers 2014 game directory has not yet been set.  Please do so now.]]></STRING>
@@ -637,4 +637,8 @@ Please give one before applying.]]></STRING>
 	<STRING key="MENU_MOVE_CARD_TO_MAIN_DECK"><![CDATA[M&ain Deck]]></STRING>
 	<STRING key="MENU_MOVE_CARD_TO_REGULAR_UNLOCKS"><![CDATA[Re&gular Unlocks]]></STRING>
 	<STRING key="MENU_MOVE_CARD_TO_PROMO_UNLOCKS"><![CDATA[Pr&omo Unlocks]]></STRING>
+	<!-- Strings added for v1.5.0.0 -->
+	<STRING key="RESET"><![CDATA[Reset]]></STRING>
+	<STRING key="OVERRIDE_DECK_COLOUR"><![CDATA[Override Deck Colour]]></STRING>
+	<STRING key="ALWAYS_EXPORT_PERSONALITIES"><![CDATA[Always Export AI Personalities]]></STRING>
 </LOCALIZATION>

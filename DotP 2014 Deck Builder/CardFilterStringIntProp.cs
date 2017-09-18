@@ -19,7 +19,73 @@ namespace RSN.DotP
 		{
 			DataProperty = strDataProperty;
 			Operation = fictOperation;
-			Value = strValue;
+			Value = CleanValue(strValue);
+		}
+
+		// Public and Static so that I don't have to rewrite it for the regular filters.
+		public static string CleanValue(string strValue)
+		{
+			string strCleaned = strValue;
+			bool bArithFound = false;
+			bool bStarFound = false;
+
+			// First we need to loop through and check for invalid characters:
+			for (int i = 0; i < strValue.Length; i++)
+			{
+				char cExamine = strCleaned[i];
+				if ((cExamine >= '0') && (cExamine <= '9'))
+					continue;
+				else if ((cExamine == '+') || (cExamine == '-'))
+				{
+					if (bArithFound)
+					{
+						// We now have at least 2 arithmetic characters in the string making it invalid.
+						strCleaned = string.Empty;
+						break;
+					}
+
+					bArithFound = true;
+				}
+				else if (cExamine == '*')
+				{
+					if (bStarFound)
+					{
+						// We now have at least 2 * characters in the string making it invalid.
+						strCleaned = string.Empty;
+						break;
+					}
+
+					bStarFound = true;
+				}
+				else if ((cExamine == 'x') || (cExamine == 'X'))
+				{
+					if (bStarFound)
+					{
+						// We now have at least 2 * characters in the string making it invalid.
+						strCleaned = string.Empty;
+						break;
+					}
+
+					// X Detected (or x) so we need to change it to *.
+					strCleaned = strCleaned.Replace('x', '*');
+					strCleaned = strCleaned.Replace('X', '*');
+					bStarFound = true;
+				}
+				else if (cExamine == ' ')
+				{
+					// We have a space so lets clear out all spaces and go back one to start this char again.
+					strCleaned = strCleaned.Replace(" ", string.Empty);
+					i--;
+				}
+				else
+				{
+					// We have an invalid character which invalidates our string.
+					strCleaned = string.Empty;
+					break;
+				}
+			}
+
+			return strCleaned;
 		}
 
 		public override bool IsAllowed(CardInfo ciCard)
@@ -28,17 +94,19 @@ namespace RSN.DotP
 
 			try
 			{
-				string strValue = GetCardValue(ciCard);
+				string strValue = CleanValue(GetCardValue(ciCard));
 
 				if ((strValue == null) || (strValue.Length == 0) || (Value == null) || (Value.Length == 0))
 					bReturn = false;
 				else
 				{
-					if ((strValue.Equals("*")) || (Value.Equals("*")))
+					if ((strValue.Contains("*")) || (Value.Contains("*")))
 					{
 						switch (Operation)
 						{
 							case FilterIntComparisonType.Equal:
+							case FilterIntComparisonType.GreaterThanOrEqualTo:
+							case FilterIntComparisonType.LessThanOrEqualTo:
 								bReturn = (strValue.Equals(Value));
 								break;
 							case FilterIntComparisonType.NotEqual:

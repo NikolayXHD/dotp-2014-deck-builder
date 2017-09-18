@@ -191,6 +191,22 @@ namespace RSN.DotP
 					m_bmpImage = bmpNew;
 				}
 			}
+			else if ((m_bmpImage.Width >= 2000) || (m_bmpImage.Height > 2000))
+			{
+				// Image is too large for TDX serialization and needs to be cut down to size.
+				Size szNewSize = new Size(m_bmpImage.Width / 2, m_bmpImage.Height / 2);
+				while ((szNewSize.Width >= 2000) || (szNewSize.Height >= 2000))
+				{
+					szNewSize.Width /= 2;
+					szNewSize.Height /= 2;
+				}
+				Bitmap bmpNew = new Bitmap(szNewSize.Width, szNewSize.Height);
+				Graphics grfx = Graphics.FromImage(bmpNew);
+				grfx.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.HighQualityBicubic;
+				grfx.DrawImage(m_bmpImage, 0, 0, szNewSize.Width, szNewSize.Height);
+				// Set our main image to the new MoF sized image.
+				m_bmpImage = bmpNew;
+			}
 
 			Bitmap bitmap = m_bmpImage;
 			TdxFile tdx = new TdxFile();
@@ -212,11 +228,9 @@ namespace RSN.DotP
 					// Reduce size and keep to MoF sizing.
 					//  Even mipmap sizing removed as it has proven problematic in game for sizes that do not have even decay.
 					usLevelWidth /= 2;
-					//usLevelWidth -= (ushort)(usLevelWidth % 2);
 					if (usLevelWidth < 1)
 						usLevelWidth = 1;
 					usLevelHeight /= 2;
-					//usLevelHeight -= (ushort)(usLevelHeight % 2);
 					if (usLevelHeight < 1)
 						usLevelHeight = 1;
 					AddMipMap(tdx, bitmap, usLevelWidth, usLevelHeight, eFlags, bCompressing);
