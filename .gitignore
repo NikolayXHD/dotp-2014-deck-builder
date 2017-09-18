@@ -1,0 +1,12 @@
+*.user
+*.suo
+*.DotSettings
+Bin/
+obj/
+TestResults
+*.dbmdl
+*.log
+*.VisualState.xml
+TestResult.xml
+packages/
+.vs
