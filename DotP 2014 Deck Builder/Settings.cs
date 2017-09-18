@@ -370,7 +370,14 @@ namespace RSN.Tools
 							if (xnEntry.Attributes["HeaderText"] != null)
 							{
 								dgvcColumn.Tag = xnEntry.Attributes["HeaderText"].Value.Trim();
-								dgvcColumn.HeaderText = UIStrings[(string)dgvcColumn.Tag];
+								if (((string)dgvcColumn.Tag).StartsWith("CustomTag:", StringComparison.OrdinalIgnoreCase))
+								{
+									// Custom Tag title processing.
+									string strTitle = ((string)dgvcColumn.Tag).Substring(10);
+									dgvcColumn.HeaderText = strTitle;
+								}
+								else
+									dgvcColumn.HeaderText = UIStrings[(string)dgvcColumn.Tag];
 							}
 							if (xnEntry.Attributes["SortMode"] != null)
 							{
