@@ -141,6 +141,12 @@ namespace RSN.Tools
 			}
 		}
 
+        public static void ResetErrorLog()
+        {
+            m_mlErrorLog.Close();
+            m_mlErrorLog = new MessageLog("Errors.log");
+        }
+
 		public static string GetSetting(string strSettingName, string strDefault)
 		{
 			string strReturn = strDefault;

@@ -693,6 +693,7 @@ namespace RSN.DotP
 				DialogResult drResult = MessageBox.Show(Settings.UIStrings["REFRESH_DATA_WARNING_TEXT"], Settings.UIStrings["REFRESH_DATA_WARNING_CAPTION"], MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation);
 				if (drResult == DialogResult.Yes)
 				{
+                    Settings.ResetErrorLog();
 					RefreshGameData();
 					if (m_dkWorking != null)
 					{
@@ -702,10 +703,19 @@ namespace RSN.DotP
 						else
 							mnuiFileNew_Click(null, null);
 					}
+
+                    // Check to see if there were any errors during load.
+                    if (Settings.ErrorLog.Opened)
+                    {
+                        // Error log was opened so we have errors, now we need to show them to user.
+                        ErrorReportWindow frmErrors = new ErrorReportWindow(Settings.ErrorLog);
+                        frmErrors.Show(this);
+					}
 				}
 			}
 			else
 			{
+                Settings.ResetErrorLog();
 				RefreshGameData();
 				if (m_dkWorking != null)
 				{
@@ -714,6 +724,14 @@ namespace RSN.DotP
 						AttemptToLoadDeck(strFilename);
 					else
 						mnuiFileNew_Click(null, null);
+				}
+
+                // Check to see if there were any errors during load.
+                if (Settings.ErrorLog.Opened)
+                {
+                    // Error log was opened so we have errors, now we need to show them to user.
+                    ErrorReportWindow frmErrors = new ErrorReportWindow(Settings.ErrorLog);
+                    frmErrors.Show(this);
 				}
 			}
 		}
@@ -728,6 +746,7 @@ namespace RSN.DotP
 			//	should be very rare because for most people it doesn't move around.
 			if (m_strGameDirectory != Settings.GetSetting("DotP2014Directory", m_strGameDirectory))
 			{
+                Settings.ResetErrorLog();
 				RefreshGameData();
 				// Also need to reload our current working deck.
 				if (m_dkWorking != null)
@@ -737,6 +756,14 @@ namespace RSN.DotP
 						AttemptToLoadDeck(strFilename);
 					else
 						mnuiFileNew_Click(null, null);
+				}
+
+                // Check to see if there were any errors during load.
+                if (Settings.ErrorLog.Opened)
+                {
+                    // Error log was opened so we have errors, now we need to show them to user.
+                    ErrorReportWindow frmErrors = new ErrorReportWindow(Settings.ErrorLog);
+                    frmErrors.Show(this);
 				}
 			}
 			frmOptions.Dispose();
