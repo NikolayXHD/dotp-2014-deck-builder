@@ -1084,7 +1084,7 @@ namespace RSN.DotP
 			}
 			else
 			{
-				if ((m_apPersonality != null) && (m_apPersonality.BuiltIn))
+				if ((m_apPersonality != null) && ((!m_apPersonality.BuiltIn) || (bForceExport)))
 					m_strPersonality = m_apPersonality.Filename;
 			}
 

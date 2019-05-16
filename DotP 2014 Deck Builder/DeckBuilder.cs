@@ -1264,7 +1264,7 @@ namespace RSN.DotP
 			KeyValuePair<string, Dictionary<string, string>> kvpPersonalityName = new KeyValuePair<string,Dictionary<string,string>>();
 			if ((m_dkWorking.DescriptionTag.Length > 0) && (m_dkWorking.Description != null))
 				kvpDeckDescription = new KeyValuePair<string, Dictionary<string, string>>(m_dkWorking.DescriptionTag, m_dkWorking.Description);
-			if (!m_dkWorking.Personality.BuiltIn)
+			if (!m_dkWorking.Personality.BuiltIn || bForceExport)
 				kvpPersonalityName = new KeyValuePair<string, Dictionary<string, string>>(m_dkWorking.Personality.NameId, m_dkWorking.Personality.Name);
 			XmlDocument xdStringTable = XmlTools.CreateStringTable(kvpDeckName, kvpDeckDescription, kvpPersonalityName);
 			wad.AddTextPermanent(m_dkWorking.ExportFileName + "_TEXT.XML", xdStringTable);

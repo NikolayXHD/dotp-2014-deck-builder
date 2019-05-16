@@ -214,9 +214,9 @@
 			// mnuMain
 			// 
 			this.mnuMain.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.mnuiFile,
-            this.mnuiTools,
-            this.mnuiAbout});
+			this.mnuiFile,
+			this.mnuiTools,
+			this.mnuiAbout});
 			this.mnuMain.Location = new System.Drawing.Point(0, 0);
 			this.mnuMain.Name = "mnuMain";
 			this.mnuMain.Size = new System.Drawing.Size(1110, 24);
@@ -226,16 +226,16 @@
 			// mnuiFile
 			// 
 			this.mnuiFile.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.mnuiFileNew,
-            this.mnuiFileCreateFromExisting,
-            this.mnuiFileOpen,
-            this.toolStripSeparator1,
-            this.mnuiFileSave,
-            this.mnuiFileSaveAs,
-            this.toolStripSeparator2,
-            this.mnuiFileExportTo,
-            this.toolStripSeparator3,
-            this.mnuiFileExit});
+			this.mnuiFileNew,
+			this.mnuiFileCreateFromExisting,
+			this.mnuiFileOpen,
+			this.toolStripSeparator1,
+			this.mnuiFileSave,
+			this.mnuiFileSaveAs,
+			this.toolStripSeparator2,
+			this.mnuiFileExportTo,
+			this.toolStripSeparator3,
+			this.mnuiFileExit});
 			this.mnuiFile.Name = "mnuiFile";
 			this.mnuiFile.Size = new System.Drawing.Size(37, 20);
 			this.mnuiFile.Tag = "MENU_FILE";
@@ -294,8 +294,8 @@
 			// mnuiFileExportTo
 			// 
 			this.mnuiFileExportTo.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.mnuiFileExportToDirectory,
-            this.mnuiFileExportToWad});
+			this.mnuiFileExportToDirectory,
+			this.mnuiFileExportToWad});
 			this.mnuiFileExportTo.Name = "mnuiFileExportTo";
 			this.mnuiFileExportTo.Size = new System.Drawing.Size(223, 22);
 			this.mnuiFileExportTo.Tag = "MENU_FILE_EXPORT";
@@ -333,15 +333,15 @@
 			// mnuiTools
 			// 
 			this.mnuiTools.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.mnuiToolsRefresh,
-            this.toolStripSeparator4,
-            this.mnuiToolsSetupCustomData,
-            this.mnuiToolsCreateCoreWad,
-            this.toolStripSeparator8,
-            this.mnuiToolsGenerateCPE,
-            this.mnuiToolsCombineSpecData,
-            this.toolStripSeparator6,
-            this.mnuiToolsOptions});
+			this.mnuiToolsRefresh,
+			this.toolStripSeparator4,
+			this.mnuiToolsSetupCustomData,
+			this.mnuiToolsCreateCoreWad,
+			this.toolStripSeparator8,
+			this.mnuiToolsGenerateCPE,
+			this.mnuiToolsCombineSpecData,
+			this.toolStripSeparator6,
+			this.mnuiToolsOptions});
 			this.mnuiTools.Name = "mnuiTools";
 			this.mnuiTools.Size = new System.Drawing.Size(48, 20);
 			this.mnuiTools.Tag = "MENU_TOOLS";
@@ -1023,17 +1023,17 @@
 			// cmnuContext
 			// 
 			this.cmnuContext.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.cmnuiColumns,
-            this.toolStripSeparator5,
-            this.cmnuiRemoveCard,
-            this.cmnuiViewCard,
-            this.cmnuiDecksUsedIn,
-            this.cmnuiExportCard,
-            this.toolStripSeparator7,
-            this.cmnuiExportPreviews,
-            this.cmnuiExportImageCrop,
-            this.toolStripSeparator9,
-            this.cmnuiMoveTo});
+			this.cmnuiColumns,
+			this.toolStripSeparator5,
+			this.cmnuiRemoveCard,
+			this.cmnuiViewCard,
+			this.cmnuiDecksUsedIn,
+			this.cmnuiExportCard,
+			this.toolStripSeparator7,
+			this.cmnuiExportPreviews,
+			this.cmnuiExportImageCrop,
+			this.toolStripSeparator9,
+			this.cmnuiMoveTo});
 			this.cmnuContext.Name = "cmnuContext";
 			this.cmnuContext.Size = new System.Drawing.Size(185, 198);
 			// 
@@ -1089,8 +1089,8 @@
 			// cmnuiExportPreviews
 			// 
 			this.cmnuiExportPreviews.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.cmnuiExportPreviewsPng,
-            this.cmnuiExportPreviewsTdx});
+			this.cmnuiExportPreviewsPng,
+			this.cmnuiExportPreviewsTdx});
 			this.cmnuiExportPreviews.Name = "cmnuiExportPreviews";
 			this.cmnuiExportPreviews.Size = new System.Drawing.Size(184, 22);
 			this.cmnuiExportPreviews.Tag = "MENU_EXPORT_CARD_PREVIEWS";
@@ -1113,8 +1113,8 @@
 			// cmnuiExportImageCrop
 			// 
 			this.cmnuiExportImageCrop.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.cmnuiExportImageCropPng,
-            this.cmnuiExportImageCropTdx});
+			this.cmnuiExportImageCropPng,
+			this.cmnuiExportImageCropTdx});
 			this.cmnuiExportImageCrop.Name = "cmnuiExportImageCrop";
 			this.cmnuiExportImageCrop.Size = new System.Drawing.Size(184, 22);
 			this.cmnuiExportImageCrop.Tag = "MENU_EXPORT_IMAGE_CROP";
@@ -1142,9 +1142,9 @@
 			// cmnuiMoveTo
 			// 
 			this.cmnuiMoveTo.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.cmnuiMoveToMainDeck,
-            this.cmnuiMoveToRegularUnlocks,
-            this.cmnuiMoveToPromoUnlocks});
+			this.cmnuiMoveToMainDeck,
+			this.cmnuiMoveToRegularUnlocks,
+			this.cmnuiMoveToPromoUnlocks});
 			this.cmnuiMoveTo.Name = "cmnuiMoveTo";
 			this.cmnuiMoveTo.Size = new System.Drawing.Size(184, 22);
 			this.cmnuiMoveTo.Tag = "MENU_MOVE_CARD_TO";
@@ -1177,15 +1177,15 @@
 			// cmnuPictures
 			// 
 			this.cmnuPictures.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.cmnuiExport});
+			this.cmnuiExport});
 			this.cmnuPictures.Name = "cmnuPictures";
 			this.cmnuPictures.Size = new System.Drawing.Size(144, 26);
 			// 
 			// cmnuiExport
 			// 
 			this.cmnuiExport.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.cmnuiExportPng,
-            this.cmnuiExportTdx});
+			this.cmnuiExportPng,
+			this.cmnuiExportTdx});
 			this.cmnuiExport.Name = "cmnuiExport";
 			this.cmnuiExport.Size = new System.Drawing.Size(143, 22);
 			this.cmnuiExport.Tag = "MENU_EXPORT_IMAGE";
@@ -1208,11 +1208,11 @@
 			// ssStatus
 			// 
 			this.ssStatus.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.sslblSpacing,
-            this.sslblLoadedCards,
-            this.sslblLoadedCardsNum,
-            this.sslblCardsInList,
-            this.sslblCardsInListNum});
+			this.sslblSpacing,
+			this.sslblLoadedCards,
+			this.sslblLoadedCardsNum,
+			this.sslblCardsInList,
+			this.sslblCardsInListNum});
 			this.ssStatus.Location = new System.Drawing.Point(0, 630);
 			this.ssStatus.Name = "ssStatus";
 			this.ssStatus.Size = new System.Drawing.Size(1110, 24);

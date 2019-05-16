@@ -178,7 +178,7 @@ namespace RSN.DotP
 				else if (m_dicName.ContainsKey("en-US"))
 					return m_dicName["en-US"];
 				else
-					return null;
+					return "New Personality";
 			}
 		}
 

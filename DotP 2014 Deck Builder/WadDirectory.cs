@@ -343,8 +343,20 @@ namespace RSN.DotP
 						try
 						{
 							AiPersonality ap = new AiPersonality(gdData, strXml, strFileName);
-							// This was loaded from the game directory so we consider it built-in because the user already has it.
-							ap.BuiltIn = true;
+							//Check if the personality was in a deck wad. If it was, don't consider it built-in.
+                            if (
+                                //Don't include all deck wads. Only the official deck wads.
+                                m_strFullDir.IndexOf("\\DATA_DECKS_", StringComparison.OrdinalIgnoreCase) < 0 ||
+                                m_strFullDir.IndexOf("\\DATA_DECKS_D14\\", StringComparison.OrdinalIgnoreCase) >= 0 ||
+                                m_strFullDir.IndexOf("\\DATA_DECKS_E14\\", StringComparison.OrdinalIgnoreCase) >= 0 ||
+                                m_strFullDir.IndexOf("\\DATA_DECKS_F14_PACK1\\", StringComparison.OrdinalIgnoreCase) >= 0 ||
+                                m_strFullDir.IndexOf("\\DATA_DECKS_F14_PACK2\\", StringComparison.OrdinalIgnoreCase) >= 0 ||
+                                m_strFullDir.IndexOf("\\DATA_DECKS_F14_PACK3\\", StringComparison.OrdinalIgnoreCase) >= 0
+                                )
+                            {
+								// This was loaded from the game directory and not a custom deck so we consider it built-in because the user already has it.
+								ap.BuiltIn = true;
+                            }
 							m_lstPersonalities.Add(ap);
 						}
 						catch (Exception e)

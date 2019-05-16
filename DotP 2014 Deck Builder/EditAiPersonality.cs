@@ -32,9 +32,12 @@ namespace RSN.DotP
 		private RadioButton m_rbSmallAvatarLastChecked;
 		private RadioButton m_rbLargeAvatarLastChecked;
 		private RadioButton m_rbFullAvatarLastChecked;
-
+		
 		// For context menu support for exporting images.
 		private PictureBox m_picContextPicBox;
+		
+        // Determine whether we are forcing to always export AI Personalities.
+        bool bForceExport = Settings.GetSetting("AlwaysExportPersonalities", false);
 
 		public EditAiPersonality(AiPersonality apPersonality, GameDirectory gdData)
 		{
@@ -63,7 +66,7 @@ namespace RSN.DotP
 			m_bLoadingPersonality = true;
 			cboMusic.DataSource = gdData.Music;
 			cboPersonality.DisplayMember = "LocalizedName";
-			if ((apPersonality != null) && (!apPersonality.BuiltIn))
+			if ((apPersonality != null) && ((!apPersonality.BuiltIn) || (bForceExport)))
 			{
 				m_apPersonality = new AiPersonality(apPersonality);
 				SortableBindingList<AiPersonality> lstPersonalities = new SortableBindingList<AiPersonality>(gdData.Personalities.Values);
