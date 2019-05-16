@@ -1,6 +1,8 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 11.00
-# Visual Studio 2010
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.28803.156
+MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FFC5FB1C-6A06-48E3-A6FE-A41A46B17F49}") = "DotP 2014 Deck Builder", "DotP 2014 Deck Builder\DotP 2014 Deck Builder.csproj", "{E1BFAB20-A2AC-41C5-8267-614CA2A8A86C}"
 EndProject
 Global
@@ -16,6 +18,7 @@ Global
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{E1BFAB20-A2AC-41C5-8267-614CA2A8A86C}.Debug|Any CPU.ActiveCfg = Debug|x86
+		{E1BFAB20-A2AC-41C5-8267-614CA2A8A86C}.Debug|Any CPU.Build.0 = Debug|x86
 		{E1BFAB20-A2AC-41C5-8267-614CA2A8A86C}.Debug|Mixed Platforms.ActiveCfg = Debug|x86
 		{E1BFAB20-A2AC-41C5-8267-614CA2A8A86C}.Debug|Mixed Platforms.Build.0 = Debug|x86
 		{E1BFAB20-A2AC-41C5-8267-614CA2A8A86C}.Debug|x64.ActiveCfg = Debug|x64

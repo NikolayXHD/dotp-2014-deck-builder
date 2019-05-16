@@ -119,5 +119,13 @@ namespace RSN.DotP
 		{
 			Settings.SaveSetting("StringEditPosition", new Rectangle(this.Location, this.Size));
 		}
-	}
+
+        private void CmdClear_Click(object sender, EventArgs e)
+        {
+            foreach (TextBox txtBox in m_atxtTextBoxes)
+            {
+                txtBox.Text = "";
+            }
+        }
+    }
 }

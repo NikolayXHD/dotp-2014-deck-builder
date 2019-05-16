@@ -28,6 +28,7 @@ namespace RSN.DotP
 			// Now that we know the state of trailing backslashes.
 			m_strFullDir = strDir + "\\";
 			m_strName = Path.GetFileNameWithoutExtension(strDir);
+            m_bIsDirectory = true;
 		}
 
 		public WadDirectory(string strDir, GameDirectory gdData)
@@ -41,9 +42,10 @@ namespace RSN.DotP
 			// Now that we know the state of trailing backslashes.
 			m_strFullDir = strDir + "\\";
 			m_strName = Path.GetFileNameWithoutExtension(strDir);
+            m_bIsDirectory = true;
 
-			// Load Header
-			m_xdHeader = LoadHeader();
+            // Load Header
+            m_xdHeader = LoadHeader();
 			ReadHeaderXml(m_xdHeader);
 
 			// Load Cards & Images

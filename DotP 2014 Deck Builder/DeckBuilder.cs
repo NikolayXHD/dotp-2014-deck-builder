@@ -1183,7 +1183,9 @@ namespace RSN.DotP
 				}
 			}
 
-			CreateFromExistingDeck frmCreate = new CreateFromExistingDeck(m_gdWads.Decks);
+            IdScheme isScheme = Settings.GetSerializableSetting("CurrentIdScheme", new IdScheme());
+
+            CreateFromExistingDeck frmCreate = new CreateFromExistingDeck(m_gdWads.Decks, isScheme.IdBlock);
 			DialogResult drResult = frmCreate.ShowDialog(this);
 			if (drResult == DialogResult.OK)
 			{
@@ -1194,7 +1196,6 @@ namespace RSN.DotP
 				if (twDeckBox != null)
 					m_dkWorking.DeckBoxImage = twDeckBox.Image;
 				// Changed from clamping to get next available id to be more new-user friendly.
-				IdScheme isScheme = Settings.GetSerializableSetting("CurrentIdScheme", new IdScheme());
 				int nUid = isScheme.GetNextAvailableId(m_gdWads.UsedIds);
 				if (nUid > -1)
 					m_dkWorking.Uid = nUid;
@@ -1241,10 +1242,8 @@ namespace RSN.DotP
                 if (m_dkWorking != null)
                     m_dkWorking.Cards.ListChanged -= m_lcehListHandler;
                 m_dkWorking = frmCreate.CreatedDeck;
-                TdxWrapper twDeckBox = m_gdWads.LoadImage(m_dkWorking.DeckBoxImageName, LoadImageType.Deck);
-                if (twDeckBox != null)
-                    m_dkWorking.DeckBoxImage = twDeckBox.Image;
-                
+                m_dkWorking.DeleteFileOnExport = frmCreate.FileName;
+
                 int nUid = -1;
                 if (m_dkWorking.TryMatchScheme != -1)
                 {
@@ -1261,7 +1260,9 @@ namespace RSN.DotP
                 if (nUid == -1)
                     nUid = isScheme.GetNextAvailableId(m_gdWads.UsedIds);
                 if (nUid > -1)
+                {
                     m_dkWorking.Uid = nUid;
+                }
                 else
                 {
                     // Getting next id failed due to no more ids in the block.
@@ -1294,11 +1295,11 @@ namespace RSN.DotP
 			try
 			{
 				bool bConflict = false;
-				bConflict |= m_gdWads.UsedIds.ContainsKey(isScheme.GetDeckId(m_dkWorking.Uid));
+                bConflict |= (m_gdWads.UsedIds.ContainsKey(isScheme.GetDeckId(m_dkWorking.Uid)) && m_gdWads.UsedIds[isScheme.GetDeckId(m_dkWorking.Uid)].ToUpper() != m_dkWorking.DeleteFileOnExport.ToUpper());
 				bConflict |= m_gdWads.UsedIds.ContainsKey(isScheme.GetLandPoolId(m_dkWorking.Uid));
 				bConflict |= m_gdWads.UsedIds.ContainsKey(isScheme.GetRegularUnlockId(m_dkWorking.Uid));
 				bConflict |= m_gdWads.UsedIds.ContainsKey(isScheme.GetPromoUnlockId(m_dkWorking.Uid));
-				if (bConflict)
+				if (bConflict && m_dkWorking.DeleteFileOnExport == String.Empty)
 				{
 					DialogResult drResult = MessageBox.Show(Settings.UIStrings["UID_CONFLICT_DETECTED_MESSAGE"], Settings.UIStrings["UID_CONFLICT_DETECTED_CAPTION"], MessageBoxButtons.YesNo, MessageBoxIcon.Question);
 					if (drResult == DialogResult.No)
@@ -1410,15 +1411,48 @@ namespace RSN.DotP
 				// Give the user a simple readme.
 				GenerateWadReadme(wad, m_dkWorking, strGameDirectory);
 
+                //If the export was supposed to delete a file/folder, do so now (unless it's one we would have just overwritten).
+                if (m_dkWorking.DeleteFileOnExport != String.Empty)
+                {
+                    if (File.Exists(strGameDirectory + "\\Data_Decks_" + m_dkWorking.DeleteFileOnExport.Substring(4) + ".wad")
+                        && (m_dkWorking.DeleteFileOnExport != Path.GetFileNameWithoutExtension(m_dkWorking.ExportFileName).ToUpper()
+                        || wad.IsDirectory))
+                    {
+                        File.Delete(strGameDirectory + "\\Data_Decks_" + m_dkWorking.DeleteFileOnExport.Substring(4) + ".wad");
+                    }
+                    else if (Directory.Exists(strGameDirectory + "\\Data_Decks_" + m_dkWorking.DeleteFileOnExport)
+                        && (m_dkWorking.DeleteFileOnExport != Path.GetFileNameWithoutExtension(m_dkWorking.ExportFileName).ToUpper()
+                        || !wad.IsDirectory))
+                    {
+                        Directory.Delete(strGameDirectory + "\\Data_Decks_" + m_dkWorking.DeleteFileOnExport.Substring(4));
+                    }
+                    if (m_dkWorking.DeleteFileOnExport != Path.GetFileNameWithoutExtension(m_dkWorking.ExportFileName).ToUpper()
+                        && File.Exists(strGameDirectory + "\\Data_Decks_" + m_dkWorking.DeleteFileOnExport.Substring(4) + "_README.TXT"))
+                        File.Delete(strGameDirectory + "\\Data_Decks_" + m_dkWorking.DeleteFileOnExport.Substring(4) + "_README.TXT");
+                    m_dkWorking.DeleteFileOnExport = Path.GetFileNameWithoutExtension(m_dkWorking.ExportFileName).ToUpper();
+                }
+                
 				// Now that generation is complete we should add the ids to the used id list so that they won't be used accidently if making more than one deck in a session.
 				//	We don't really care if it says the same filename is using all 4 ids, because this one deck (and its related files) did really use those ids.
 				try
 				{
-					m_gdWads.UsedIds.Add(isScheme.GetDeckId(m_dkWorking.Uid), m_dkWorking.ExportFileName);
-					m_gdWads.UsedIds.Add(isScheme.GetLandPoolId(m_dkWorking.Uid), m_dkWorking.ExportFileName);
-					m_gdWads.UsedIds.Add(isScheme.GetRegularUnlockId(m_dkWorking.Uid), m_dkWorking.ExportFileName);
-					m_gdWads.UsedIds.Add(isScheme.GetPromoUnlockId(m_dkWorking.Uid), m_dkWorking.ExportFileName);
-				}
+                    if (!m_gdWads.UsedIds.ContainsKey(isScheme.GetDeckId(m_dkWorking.Uid)))
+                        m_gdWads.UsedIds.Add(isScheme.GetDeckId(m_dkWorking.Uid), m_dkWorking.ExportFileName);
+                    else
+                        m_gdWads.UsedIds[isScheme.GetDeckId(m_dkWorking.Uid)] = m_dkWorking.ExportFileName;
+                    if (!m_gdWads.UsedIds.ContainsKey(isScheme.GetLandPoolId(m_dkWorking.Uid)))
+                        m_gdWads.UsedIds.Add(isScheme.GetLandPoolId(m_dkWorking.Uid), m_dkWorking.ExportFileName);
+                    else
+                        m_gdWads.UsedIds[isScheme.GetLandPoolId(m_dkWorking.Uid)] = m_dkWorking.ExportFileName;
+                    if (!m_gdWads.UsedIds.ContainsKey(isScheme.GetRegularUnlockId(m_dkWorking.Uid)))
+                        m_gdWads.UsedIds.Add(isScheme.GetRegularUnlockId(m_dkWorking.Uid), m_dkWorking.ExportFileName);
+                    else
+                        m_gdWads.UsedIds[isScheme.GetRegularUnlockId(m_dkWorking.Uid)] = m_dkWorking.ExportFileName;
+                    if (!m_gdWads.UsedIds.ContainsKey(isScheme.GetPromoUnlockId(m_dkWorking.Uid)))
+                        m_gdWads.UsedIds.Add(isScheme.GetPromoUnlockId(m_dkWorking.Uid), m_dkWorking.ExportFileName);
+                    else
+                        m_gdWads.UsedIds[isScheme.GetPromoUnlockId(m_dkWorking.Uid)] = m_dkWorking.ExportFileName;
+                }
 				catch (Exception e)
 				{
 					// Don't really care if there is an error in adding them to the used ids because it is possible the user decided to write out a file using a previously used id.

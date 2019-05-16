@@ -42,9 +42,10 @@ namespace RSN.DotP
 		private ColourFlags m_eColour;			// is_black, is_blue, is_green, is_red, is_white
 		private string m_strNameTag;			// name_tag
 		private string m_strDescriptionTag;		// description_tag
+        private string m_strDeleteFileOnExport; // When exported as a wad or directory, this file/folder will be deleted.
 
-		// For DECKSTATISTICS tag
-		private string m_strCreatureSize;		// Size
+        // For DECKSTATISTICS tag
+        private string m_strCreatureSize;		// Size
 		private string m_strDeckSpeed;			// Speed
 		private string m_strFlexiblity;			// Flex
 		private string m_strSynergy;			// Syn
@@ -97,6 +98,7 @@ namespace RSN.DotP
 			m_eColour = ColourFlags.NotDefined;						// Do not give it any colour by default (even colourless).
 			m_strNameTag = string.Empty;
 			m_strDescriptionTag = string.Empty;
+            m_strDeleteFileOnExport = string.Empty;
 			m_strCreatureSize = "?";
 			m_strDeckSpeed = "?";
 			m_strFlexiblity = "?";
@@ -142,7 +144,8 @@ namespace RSN.DotP
 			m_duUnlocksRegular = new DeckUnlocks();
 			m_duUnlocksPromo = new DeckUnlocks();
 			m_apPersonality = new AiPersonality();
-			try
+            m_strDeleteFileOnExport = string.Empty;
+            try
 			{
 				XmlDocument xdDoc = new XmlDocument();
 				xdDoc.LoadXml(strXml);
@@ -608,7 +611,14 @@ namespace RSN.DotP
 			set { m_strDescriptionTag = value; }
 		}
 
-		public string ColourText
+        public string DeleteFileOnExport
+        {
+            get { return m_strDeleteFileOnExport; }
+            set { m_strDeleteFileOnExport = value; }
+        }
+
+
+        public string ColourText
 		{
 			get { return Tools.ColourText(m_eColour); }
 		}

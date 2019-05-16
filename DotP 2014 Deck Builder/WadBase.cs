@@ -38,7 +38,8 @@ namespace RSN.DotP
 		public const string UNLOCKS_LOCATION = @"DATA_ALL_PLATFORMS\UNLOCKS\";
 
 		protected string m_strName;
-		protected HashSet<KeyValuePair<string, LoadImageType>> m_hsetImages;
+        protected bool m_bIsDirectory = false;
+        protected HashSet<KeyValuePair<string, LoadImageType>> m_hsetImages;
 		protected Dictionary<string, TdxWrapper> m_dicCachedImages;
 		protected Dictionary<string, Dictionary<string, string>> m_dicStringTable;
 		protected SortableBindingList<CardInfo> m_lstCards;
@@ -70,6 +71,11 @@ namespace RSN.DotP
 			// The set here should be used sparingly.
 			set { m_strName = value; }
 		}
+
+        public bool IsDirectory
+        {
+            get { return m_bIsDirectory; } 
+        }
 
 		public SortableBindingList<CardInfo> Cards
 		{
