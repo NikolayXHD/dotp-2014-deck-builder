@@ -14,6 +14,7 @@
   <STRING key="MENU_FILE"><![CDATA[文件]]></STRING>
   <STRING key="MENU_FILE_NEW"><![CDATA[新建套牌...]]></STRING>
   <STRING key="MENU_FILE_CREATE_FROM_EXISTING"><![CDATA[創建自現有的套牌...]]></STRING>
+	<STRING key="MENU_FILE_EDIT_EXISTING"><![CDATA[&编辑现有的甲板...]]></STRING>
   <STRING key="MENU_FILE_OPEN"><![CDATA[開啟套牌...]]></STRING>
   <STRING key="MENU_FILE_SAVE"><![CDATA[儲存套牌]]></STRING>
   <STRING key="MENU_FILE_SAVE_AS"><![CDATA[另存套牌為...]]></STRING>

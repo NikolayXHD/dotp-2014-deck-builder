@@ -72,6 +72,7 @@ namespace RSN.DotP
 		private Dictionary<string, string> m_dicDeckName;
 		private Dictionary<string, string> m_dicDeckDescription;
 		private bool m_bIsLandPool;
+        private Int32 m_iTryMatchScheme;
 		private bool m_bEditedDeck;
 		private string m_strWad;
 		private string m_strExportFilename;		// This is the filename given at last export.
@@ -115,6 +116,7 @@ namespace RSN.DotP
 			m_dicDeckDescription = new Dictionary<string, string>();
 			//m_dicDeckDescription.Add("en-US", string.Empty);
 			m_bIsLandPool = bLandPool;
+            m_iTryMatchScheme = -1;
 			m_bEditedDeck = false;
 			m_strWad = string.Empty;								// For a new deck Wad name will be generated when exported.
 			m_bOverrideColours = false;
@@ -699,6 +701,19 @@ namespace RSN.DotP
 			get { return m_bIsLandPool; }
 			set { m_bIsLandPool = value; }
 		}
+
+        public Int32 TryMatchScheme
+        {
+            get { return m_iTryMatchScheme; }
+            set { m_iTryMatchScheme = value; }
+        }
+
+        public bool MatchesScheme(Int32 Scheme)
+        {
+            //MessageBox.Show("Uid: " + Uid.ToString() + "\nUid Len: " + Uid.ToString().Length.ToString() + "\nScheme: " + Scheme.ToString() + "\nScheme Len: " + Scheme.ToString().Length.ToString() + "\nUid Trim: " + Uid.ToString().Substring(0, Scheme.ToString().Length));
+            //return true;
+            return Uid.ToString().Length >= Scheme.ToString().Length && Uid.ToString().Substring(0, Scheme.ToString().Length) == Scheme.ToString();
+        }
 
 		public bool Edited
 		{

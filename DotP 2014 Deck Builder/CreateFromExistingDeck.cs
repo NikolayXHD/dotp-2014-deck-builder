@@ -14,13 +14,15 @@ namespace RSN.DotP
 	public partial class CreateFromExistingDeck : Form
 	{
 		private Deck m_dkNew;
+        private Boolean m_bSchemeMatch = false;
+        private int m_iSchemeMatch = -1;
 		private EventHandler m_ehColumnMenuItemClick;
 
 		// For multiple column sorting.
 		private BindingSource m_bsDecks;
 		private List<ColumnSort> m_lstDeckSort;
 
-		public CreateFromExistingDeck(SortableBindingList<Deck> lstDecks)
+		public CreateFromExistingDeck(SortableBindingList<Deck> lstDecks, Int32 iSchemeToMatch = -1)
 		{
 			InitializeComponent();
 
@@ -41,13 +43,16 @@ namespace RSN.DotP
 			}
 
 			LoadLocalizedStrings();
+            
+            m_bSchemeMatch = iSchemeToMatch != -1;
+            m_iSchemeMatch = iSchemeToMatch;
 
 			// Set up columns.
 			SetupDeckList();
 
 			// Set Data.
 			m_bsDecks = new BindingSource();
-			m_bsDecks.DataSource = new SortableBindingList<Deck>(lstDecks.Where(x => !x.IsLandPool));
+			m_bsDecks.DataSource = new SortableBindingList<Deck>(lstDecks.Where(x => !x.IsLandPool && (!m_bSchemeMatch || x.MatchesScheme(iSchemeToMatch))));
 			dgvDecks.DataSource = m_bsDecks;
 			// Restore previous sort.
 			RestoreDeckSort();
@@ -132,7 +137,11 @@ namespace RSN.DotP
 				// We really should only have a single deck here so...
 				Deck dkSelected = dgvDecks.SelectedRows[0].DataBoundItem as Deck;
 				if (dkSelected != null)
+				{
 					m_dkNew = new Deck(dkSelected);
+                    if (m_bSchemeMatch)
+                        m_dkNew.TryMatchScheme = m_iSchemeMatch;
+                }
 			}
 			this.DialogResult = DialogResult.OK;
 			this.Close();

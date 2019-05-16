@@ -34,6 +34,7 @@
 			this.mnuiFile = new System.Windows.Forms.ToolStripMenuItem();
 			this.mnuiFileNew = new System.Windows.Forms.ToolStripMenuItem();
 			this.mnuiFileCreateFromExisting = new System.Windows.Forms.ToolStripMenuItem();
+			this.editExistingToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.mnuiFileOpen = new System.Windows.Forms.ToolStripMenuItem();
 			this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
 			this.mnuiFileSave = new System.Windows.Forms.ToolStripMenuItem();
@@ -228,6 +229,7 @@
 			this.mnuiFile.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
 			this.mnuiFileNew,
 			this.mnuiFileCreateFromExisting,
+			this.editExistingToolStripMenuItem,
 			this.mnuiFileOpen,
 			this.toolStripSeparator1,
 			this.mnuiFileSave,
@@ -256,6 +258,14 @@
 			this.mnuiFileCreateFromExisting.Tag = "MENU_FILE_CREATE_FROM_EXISTING";
 			this.mnuiFileCreateFromExisting.Text = "&Create From Existing Deck ...";
 			this.mnuiFileCreateFromExisting.Click += new System.EventHandler(this.mnuiFileCreateFromExisting_Click);
+			// 
+			// editExistingToolStripMenuItem
+			// 
+			this.editExistingToolStripMenuItem.Name = "editExistingToolStripMenuItem";
+			this.editExistingToolStripMenuItem.Size = new System.Drawing.Size(223, 22);
+			this.editExistingToolStripMenuItem.Tag = "MENU_FILE_EDIT_EXISTING";
+			this.editExistingToolStripMenuItem.Text = "&Edit Existing Deck ...";
+			this.editExistingToolStripMenuItem.Click += new System.EventHandler(this.editExistingToolStripMenuItem_Click);
 			// 
 			// mnuiFileOpen
 			// 
@@ -1361,6 +1371,7 @@
 		private System.Windows.Forms.ToolStripMenuItem mnuiFile;
 		private System.Windows.Forms.ToolStripMenuItem mnuiFileNew;
 		private System.Windows.Forms.ToolStripMenuItem mnuiFileCreateFromExisting;
+		private System.Windows.Forms.ToolStripMenuItem editExistingToolStripMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem mnuiFileOpen;
 		private System.Windows.Forms.ToolStripMenuItem mnuiFileSave;
 		private System.Windows.Forms.ToolStripMenuItem mnuiFileSaveAs;

@@ -14,6 +14,7 @@
 	<STRING key="MENU_FILE"><![CDATA[&File]]></STRING>
 	<STRING key="MENU_FILE_NEW"><![CDATA[&Nuovo mazzo...]]></STRING>
 	<STRING key="MENU_FILE_CREATE_FROM_EXISTING"><![CDATA[&Crea da un mazzo esistente...]]></STRING>
+  <STRING key="MENU_FILE_EDIT_EXISTING"><![CDATA[&Modifica mazzo esistente ...]]></STRING>
 	<STRING key="MENU_FILE_OPEN"><![CDATA[&Apri mazzo...]]></STRING>
 	<STRING key="MENU_FILE_SAVE"><![CDATA[&Salva mazzo]]></STRING>
 	<STRING key="MENU_FILE_SAVE_AS"><![CDATA[Sal&va mazzo con nome...]]></STRING>

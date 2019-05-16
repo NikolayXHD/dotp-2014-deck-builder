@@ -1188,6 +1188,70 @@ namespace RSN.DotP
 			frmCreate.Dispose();
 		}
 
+        private void editExistingToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if ((m_dkWorking != null) && (m_dkWorking.Edited))
+            {
+                // They have unsaved work so we should probably ask if they want to save first.
+                DialogResult drChoice = MessageBox.Show(Settings.UIStrings["UNSAVED_WORK_MESSAGE"], Settings.UIStrings["UNSAVED_WORK_CAPTION"], MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question);
+                if (drChoice == DialogResult.Cancel)
+                    return;
+                else if (drChoice == DialogResult.Yes)
+                {
+                    // We only continue if saving completes successfully.
+                    if (!SaveDeck())
+                        return;
+                }
+            }
+
+            // Changed from clamping to get next available id to be more new-user friendly.
+            IdScheme isScheme = Settings.GetSerializableSetting("CurrentIdScheme", new IdScheme());
+
+            CreateFromExistingDeck frmCreate = new CreateFromExistingDeck(m_gdWads.Decks, isScheme.IdBlock);
+            DialogResult drResult = frmCreate.ShowDialog(this);
+            if (drResult == DialogResult.OK)
+            {
+                if (m_dkWorking != null)
+                    m_dkWorking.Cards.ListChanged -= m_lcehListHandler;
+                m_dkWorking = frmCreate.CreatedDeck;
+                TdxWrapper twDeckBox = m_gdWads.LoadImage(m_dkWorking.DeckBoxImageName, LoadImageType.Deck);
+                if (twDeckBox != null)
+                    m_dkWorking.DeckBoxImage = twDeckBox.Image;
+                
+                int nUid = -1;
+                if (m_dkWorking.TryMatchScheme != -1)
+                {
+                    nUid = m_dkWorking.Uid;
+                    if (nUid.ToString().Length >= m_dkWorking.TryMatchScheme.ToString().Length && 
+                        nUid.ToString().Substring(0, m_dkWorking.TryMatchScheme.ToString().Length) == m_dkWorking.TryMatchScheme.ToString())
+                    {
+                        nUid = Int32.Parse(nUid.ToString().Substring(m_dkWorking.TryMatchScheme.ToString().Length));
+                    } else
+                    {
+                        nUid = -1;
+                    }
+                }
+                if (nUid == -1)
+                    nUid = isScheme.GetNextAvailableId(m_gdWads.UsedIds);
+                if (nUid > -1)
+                    m_dkWorking.Uid = nUid;
+                else
+                {
+                    // Getting next id failed due to no more ids in the block.
+                    // Now we fall back to clamping.
+                    if (m_dkWorking.Uid < isScheme.MinimumId)
+                        m_dkWorking.Uid = isScheme.MinimumId;
+                    else if (m_dkWorking.Uid > isScheme.MaximumId)
+                        m_dkWorking.Uid = isScheme.MaximumId;
+                }
+                // Refresh our events and deck view on the window.
+                m_lcehListHandler = new ListChangedEventHandler(DeckCards_ListChanged);
+                m_dkWorking.Cards.ListChanged += m_lcehListHandler;
+                RefreshDeck();
+            }
+            frmCreate.Dispose();
+        }
+
 		private void ExportWad(WadBase wad, string strGameDirectory)
 		{
 			// Create a WadHeaderInfo to fill for our header.

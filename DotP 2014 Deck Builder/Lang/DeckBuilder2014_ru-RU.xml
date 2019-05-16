@@ -14,6 +14,7 @@
 	<STRING key="MENU_FILE"><![CDATA[&File]]></STRING>
 	<STRING key="MENU_FILE_NEW"><![CDATA[&New Deck ...]]></STRING>
 	<STRING key="MENU_FILE_CREATE_FROM_EXISTING"><![CDATA[&Create From Existing Deck ...]]></STRING>
+  <STRING key="MENU_FILE_EDIT_EXISTING"><![CDATA[&Редактировать существующую колоду ...]]></STRING>
 	<STRING key="MENU_FILE_OPEN"><![CDATA[&Open Deck ...]]></STRING>
 	<STRING key="MENU_FILE_SAVE"><![CDATA[&Save Deck]]></STRING>
 	<STRING key="MENU_FILE_SAVE_AS"><![CDATA[Save Deck &As ...]]></STRING>
