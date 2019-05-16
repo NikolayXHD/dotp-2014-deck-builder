@@ -1263,6 +1263,12 @@ namespace RSN.DotP
 						}
 					}
 
+                    //Ensure we don't return planewalkers when filtering for enchantments.
+					if (((m_eType & CardType.Planeswalker) == CardType.Planeswalker) && ((m_eType & CardType.Enchantment) == CardType.Enchantment))
+                    {
+                        m_eType &= ~CardType.Enchantment;
+                    }
+
 					// Now to check that we have a bare minimum of information to establish this as a card.
 					if ((m_strFilename != null) && (m_dicName.Count > 0))
 					{
