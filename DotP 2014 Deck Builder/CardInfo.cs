@@ -49,6 +49,7 @@ namespace RSN.DotP
 		private bool m_bToken;
         private bool m_bUnderscore;
 		private string m_strFrameType;
+        private string m_strFlipFileName;
 
 		// These are values that are derived from the card attributes at one point or another.
 		//	These may also be additional convenience members so that expensive operations don't
@@ -473,6 +474,16 @@ namespace RSN.DotP
 		{
 			get { return m_strFrameType; }
 		}
+
+        public CardInfo ReverseFace
+        {
+            get {
+                if (m_strFlipFileName != null && !m_strFlipFileName.Equals(String.Empty))
+                    return m_gdData.GetCardByFileName(m_strFlipFileName);
+                else
+                    return null;
+            }
+        }
 
 		public Dictionary<string, SortableBindingList<string>> CustomTags
 		{
@@ -1236,6 +1247,10 @@ namespace RSN.DotP
 							// These tags are being used wrong.
 							Settings.ReportError(null, ErrorPriority.Low, "Card (" + m_strActualFilename + ") in Wad " + m_strWadName + " is using the " + xnNode.Name + " tag incorrectly (will likely result in this piece not working properly in game).");
 						}
+                        else if (xnNode.Name.Equals("REVERSE_FACE", StringComparison.OrdinalIgnoreCase))
+                        {
+                            m_strFlipFileName = XmlTools.GetValueFromAttribute(xnNode, "value");
+                        }
 						else
 						{
 							// These are tags that I haven't accounted for and as such are loaded as custom tags.

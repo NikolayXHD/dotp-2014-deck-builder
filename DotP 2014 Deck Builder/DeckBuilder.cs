@@ -73,6 +73,11 @@ namespace RSN.DotP
 
 			this.Text = Settings.GetAssemblyTitle();
 
+            picFrame.Controls.Add(picFlip);
+            picFlip.Location = new Point(0, picFrame.Height - picFlip.Height);
+            picFlip.BackColor = Color.Transparent;
+            picFlip.Visible = false;
+
 			// Now we need to properly localized strings for this form.
 			LoadLocalizedStrings();
 
@@ -606,6 +611,7 @@ namespace RSN.DotP
 				if (m_ciCurrentViewingCard != ciCard)
 					m_ciCurrentViewingCard = ciCard;
 				picFrame.Image = ciCard.GetLocalizedPreviewImage();
+                picFlip.Visible = ciCard.ReverseFace != null;
 			}
 			else
 				picFrame.Image = null;
@@ -2917,5 +2923,10 @@ namespace RSN.DotP
 				}
 			}
 		}
-	}
+
+        private void PicFlip_Click(object sender, EventArgs e)
+        {
+            ShowCardInfo(m_ciCurrentViewingCard.ReverseFace);
+        }
+    }
 }

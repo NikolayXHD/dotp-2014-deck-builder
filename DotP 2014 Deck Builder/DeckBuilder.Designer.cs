@@ -29,6 +29,7 @@
 		private void InitializeComponent()
 		{
             this.components = new System.ComponentModel.Container();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(DeckBuilder));
             this.dgvCards = new System.Windows.Forms.DataGridView();
             this.mnuMain = new System.Windows.Forms.MenuStrip();
             this.mnuiFile = new System.Windows.Forms.ToolStripMenuItem();
@@ -125,6 +126,7 @@
             this.sslblLoadedCardsNum = new System.Windows.Forms.ToolStripStatusLabel();
             this.sslblCardsInList = new System.Windows.Forms.ToolStripStatusLabel();
             this.sslblCardsInListNum = new System.Windows.Forms.ToolStripStatusLabel();
+            this.picFlip = new System.Windows.Forms.PictureBox();
             ((System.ComponentModel.ISupportInitialize)(this.dgvCards)).BeginInit();
             this.mnuMain.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.picFrame)).BeginInit();
@@ -182,6 +184,7 @@
             this.cmnuContext.SuspendLayout();
             this.cmnuPictures.SuspendLayout();
             this.ssStatus.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.picFlip)).BeginInit();
             this.SuspendLayout();
             // 
             // dgvCards
@@ -1276,11 +1279,24 @@
             this.sslblCardsInListNum.Size = new System.Drawing.Size(17, 19);
             this.sslblCardsInListNum.Text = "0";
             // 
+            // picFlip
+            // 
+            this.picFlip.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.picFlip.Image = ((System.Drawing.Image)(resources.GetObject("picFlip.Image")));
+            this.picFlip.InitialImage = null;
+            this.picFlip.Location = new System.Drawing.Point(742, 514);
+            this.picFlip.Name = "picFlip";
+            this.picFlip.Size = new System.Drawing.Size(25, 25);
+            this.picFlip.TabIndex = 11;
+            this.picFlip.TabStop = false;
+            this.picFlip.Click += new System.EventHandler(this.PicFlip_Click);
+            // 
             // DeckBuilder
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1110, 654);
+            this.Controls.Add(this.picFlip);
             this.Controls.Add(this.ssStatus);
             this.Controls.Add(this.scDeckUnlocks);
             this.Controls.Add(this.scFilterNormalAdvanced);
@@ -1359,6 +1375,7 @@
             this.cmnuPictures.ResumeLayout(false);
             this.ssStatus.ResumeLayout(false);
             this.ssStatus.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.picFlip)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -1462,6 +1479,7 @@
 		private System.Windows.Forms.SplitContainer scPromoCount;
 		private System.Windows.Forms.Label lblPromoUnlockCount;
 		private System.Windows.Forms.Label lblPromoUnlockCardCount;
-	}
+        private System.Windows.Forms.PictureBox picFlip;
+    }
 }
 

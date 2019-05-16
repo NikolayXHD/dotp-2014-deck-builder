@@ -201,6 +201,7 @@
     </EmbeddedResource>
     <EmbeddedResource Include="DeckBuilder.resx">
       <DependentUpon>DeckBuilder.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="DeckInformation.resx">
       <DependentUpon>DeckInformation.cs</DependentUpon>
@@ -270,6 +271,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Images\D14_PersonalityCircularMask.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Images\Icon_Flip.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Lang\DeckBuilder2014_zh-CN.xml">
