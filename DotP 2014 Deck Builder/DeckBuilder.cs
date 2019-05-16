@@ -1651,6 +1651,9 @@ namespace RSN.DotP
 				{
 					int nIndex = m_dkWorking.RegularUnlocks.Cards.IndexOf(dcCard);
 					SwapListIndexes(m_dkWorking.RegularUnlocks.Cards, nIndex, nIndex - 1);
+					dgvUnlocksRegular.Rows[nIndex].Selected = false;
+                    dgvUnlocksRegular.Rows[nIndex - 1].Selected = true;
+
 				}
 			}
 		}
@@ -1670,7 +1673,9 @@ namespace RSN.DotP
 				{
 					int nIndex = m_dkWorking.RegularUnlocks.Cards.IndexOf(dcCard);
 					SwapListIndexes(m_dkWorking.RegularUnlocks.Cards, nIndex, nIndex + 1);
-				}
+					dgvUnlocksRegular.Rows[nIndex].Selected = false;
+                    dgvUnlocksRegular.Rows[nIndex + 1].Selected = true;
+                }
 			}
 		}
 
@@ -1689,6 +1694,8 @@ namespace RSN.DotP
 				{
 					int nIndex = m_dkWorking.PromoUnlocks.Cards.IndexOf(dcCard);
 					SwapListIndexes(m_dkWorking.PromoUnlocks.Cards, nIndex, nIndex - 1);
+					dgvUnlocksPromo.Rows[nIndex].Selected = false;
+                    dgvUnlocksPromo.Rows[nIndex - 1].Selected = true;
 				}
 			}
 		}
@@ -1708,6 +1715,8 @@ namespace RSN.DotP
 				{
 					int nIndex = m_dkWorking.PromoUnlocks.Cards.IndexOf(dcCard);
 					SwapListIndexes(m_dkWorking.PromoUnlocks.Cards, nIndex, nIndex + 1);
+					dgvUnlocksPromo.Rows[nIndex].Selected = false;
+                    dgvUnlocksPromo.Rows[nIndex + 1].Selected = true;
 				}
 			}
 		}
