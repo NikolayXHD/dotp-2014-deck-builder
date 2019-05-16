@@ -67,7 +67,7 @@
 	<STRING key="SET_FILTERS_ADVANCED"><![CDATA[Configurar Filtro Avançado ...]]></STRING>
 	<STRING key="DECK_OPEN_TITLE"><![CDATA[Abrir Grimório ...]]></STRING>
 	<STRING key="DECK_SAVE_TITLE"><![CDATA[Salvar Grimório Como ...]]></STRING>
-	<STRING key="DECK_FILTER"><![CDATA[XML do Grimório (*.xml)|*.xml|Todos os Arquivos|*]]></STRING>
+	<STRING key="DECK_FILTER"><![CDATA[XML do Grimório (*.xml)|*.xml|Forge do Grimório (*.dck)|*.dck|Todos os Arquivos|*]]></STRING>
 	<STRING key="CARD_SAVE_TITLE"><![CDATA[Save Card As ...]]></STRING>
 	<STRING key="CARD_FILTER"><![CDATA[Card XML (*.xml)|*.xml|All Files|*]]></STRING>
 	<STRING key="UNABLE_TO_LOAD_DECK_CAPTION"><![CDATA[Falha ao carregar Grimório.]]></STRING>

@@ -67,7 +67,7 @@
 	<STRING key="SET_FILTERS_ADVANCED"><![CDATA[Set Advanced Filter ...]]></STRING>
 	<STRING key="DECK_OPEN_TITLE"><![CDATA[Open Deck ...]]></STRING>
 	<STRING key="DECK_SAVE_TITLE"><![CDATA[Save Deck As ...]]></STRING>
-	<STRING key="DECK_FILTER"><![CDATA[Deck XML (*.xml)|*.xml|All Files|*]]></STRING>
+	<STRING key="DECK_FILTER"><![CDATA[Deck XML (*.xml)|*.xml|Forge Deck (*.dck)|*.dck|All Files|*]]></STRING>
 	<STRING key="CARD_SAVE_TITLE"><![CDATA[Save Card As ...]]></STRING>
 	<STRING key="CARD_FILTER"><![CDATA[Card XML (*.xml)|*.xml|All Files|*]]></STRING>
 	<STRING key="UNABLE_TO_LOAD_DECK_CAPTION"><![CDATA[Unable to load deck.]]></STRING>

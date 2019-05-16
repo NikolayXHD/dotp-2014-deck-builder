@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Data;
 using System.Drawing;
 using System.Drawing.Imaging;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -19,6 +20,8 @@ namespace RSN.DotP
 {
 	public partial class DeckBuilder : Form
 	{
+		private const string ForgeDeckExtension = ".dck";
+
 		private const string DECK_BUILDER_CUSTOM_DATA_WAD_NAME = "DATA_DLC_DECK_BUILDER_CUSTOM";
 
 		private GameDirectory m_gdWads;
@@ -983,6 +986,28 @@ namespace RSN.DotP
 			SaveDeckAs();
 		}
 
+		private bool SaveForgeDeck()
+		{
+			var result = new StringBuilder();
+			result.AppendLine(@"[metadata]");
+			result.AppendLine($@"Name={Path.GetFileNameWithoutExtension(m_dkWorking.FileName)}");
+
+			result.AppendLine(@"[Main]");
+
+			foreach (var card in m_dkWorking.Cards)
+			{
+				result.Append($"{card.Quantity} {card.Card.GetLocalizedName("en-US").Replace('’', '\'')}");
+				
+				if (!string.IsNullOrEmpty(card.Expansion))
+					result.AppendFormat("|{0}", card.Expansion);
+
+				result.AppendLine();
+			}
+
+			File.WriteAllText(m_dkWorking.FileName, result.ToString());
+			return true;
+		}
+
 		private bool SaveDeck()
 		{
 			if ((m_dkWorking.FileName != null) && (m_dkWorking.FileName.Length > 0))
@@ -1025,13 +1050,16 @@ namespace RSN.DotP
 			sfdSave.Title = Settings.UIStrings["DECK_SAVE_TITLE"];
 			sfdSave.FileName = "DECK_" + Tools.CodifyName(m_dkWorking.LocalizedName);
 			DialogResult drResult = sfdSave.ShowDialog();
-			if (drResult == DialogResult.OK)
-			{
-				// Now that we have a valid filename it should be exactly the same as "saving"
-				m_dkWorking.FileName = sfdSave.FileName;
+			if (drResult != DialogResult.OK)
+				return false;
+			
+			// Now that we have a valid filename it should be exactly the same as "saving"
+			m_dkWorking.FileName = sfdSave.FileName;
+
+			if (string.Equals(Path.GetExtension(sfdSave.FileName), ForgeDeckExtension, StringComparison.InvariantCultureIgnoreCase))
+				return SaveForgeDeck();
+			else
 				return SaveDeck();
-			}
-			return false;
 		}
 
 		private void mnuiFileOpen_Click(object sender, EventArgs e)
@@ -1061,10 +1089,14 @@ namespace RSN.DotP
 			ofdLoad.SupportMultiDottedExtensions = true;
 			ofdLoad.Title = Settings.UIStrings["DECK_OPEN_TITLE"];
 			DialogResult drResult = ofdLoad.ShowDialog();
-			if (drResult == DialogResult.OK)
-			{
+
+			if (drResult != DialogResult.OK)
+				return;
+
+			if (string.Equals(Path.GetExtension(ofdLoad.FileName), ForgeDeckExtension, StringComparison.InvariantCultureIgnoreCase))
+				AttemptToLoadForgeDeck(ofdLoad.FileName);
+			else
 				AttemptToLoadDeck(ofdLoad.FileName);
-			}
 		}
 
 		private void AttemptToLoadDeck(string strFilename)
@@ -1087,6 +1119,113 @@ namespace RSN.DotP
 				Settings.ReportError(err, ErrorPriority.High, "Unable to fully load deck: " + strFilename);
 				MessageBox.Show(Settings.UIStrings["UNABLE_TO_LOAD_DECK_MESSAGE"], Settings.UIStrings["UNABLE_TO_LOAD_DECK_CAPTION"], MessageBoxButtons.OK, MessageBoxIcon.Error);
 			}
+		}
+
+		private void AttemptToLoadForgeDeck(string fileName)
+		{
+			string fileContent = FileTools.ReadFileString(fileName);
+			var lines = fileContent.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
+
+			// create empty deck
+			mnuiFileNew_Click(null, null);
+			m_dkWorking.Edited = true;
+			//m_dkWorking.FileName = Path.GetFileNameWithoutExtension(fileName);
+
+
+			bool mainDeckStarted = false;
+			bool sideboardStarted = false;
+			foreach (string line in lines)
+			{
+				mainDeckStarted |= line.StartsWith("[main]", StringComparison.InvariantCultureIgnoreCase);
+				sideboardStarted |= line.StartsWith("[sideboard]", StringComparison.InvariantCultureIgnoreCase);
+
+				if (!mainDeckStarted)
+					continue;
+
+				if (sideboardStarted)
+					break;
+
+				var spaceIndex = line.IndexOf(' ');
+				if (spaceIndex < 0)
+					continue;
+
+				int count;
+				if (!int.TryParse(line.Substring(0, spaceIndex), out count))
+					continue;
+
+				string name = line.Substring(spaceIndex);
+				string expansion = null;
+
+				int expansionIndex = name.IndexOf("|", StringComparison.InvariantCultureIgnoreCase);
+				if (expansionIndex >= 0)
+				{
+					expansion = name.Substring(expansionIndex);
+					expansion = expansion.Trim();
+
+					name = name.Substring(0, expansionIndex);
+				}
+
+
+				int commentIndex = name.IndexOf("//", StringComparison.InvariantCultureIgnoreCase);
+				if (commentIndex >= 0)
+					name = name.Substring(0, commentIndex);
+
+				name = name.Trim();
+				name = normalize(name);
+
+				CardInfo ciCard;
+				if (expansion != null)
+				{
+					ciCard = m_gdWads.Cards.FirstOrDefault(cardInfo => hasName(cardInfo, name, expansion)) ??
+					         m_gdWads.Cards.FirstOrDefault(cardInfo => hasName(cardInfo, name, null));
+				}
+				else
+				{
+					ciCard = m_gdWads.Cards.FirstOrDefault(cardInfo => hasName(cardInfo, name, null));
+				}
+
+				if (ciCard == null)
+					continue;
+
+				for (int i = 0; i < count; i++)
+					m_dkWorking.AddCard(ciCard);
+			}
+
+			lblBasicLandCount.Text = m_dkWorking.BasicLandAmount.ToString();
+			lblTotalCardCount.Text = m_dkWorking.CardCount.ToString();
+
+			dgvDeckCards.CurrentCell = dgvDeckCards.Rows[m_dkWorking.Cards.Count - 1].Cells[0];
+			dgvDeckCards.Refresh();
+		}
+
+		private static bool hasName(CardInfo cardInfo, string name, string expansion)
+		{
+			if (expansion != null && !string.Equals(cardInfo.Expansion, expansion, StringComparison.InvariantCultureIgnoreCase))
+				return false;
+
+			var cardName = normalize(cardInfo.GetLocalizedName("en-US"));
+
+			return string.Equals(name, cardName, StringComparison.InvariantCultureIgnoreCase);
+		}
+
+		private static string normalize(string text)
+		{
+			var normalizedString = text.Normalize(NormalizationForm.FormD);
+			var stringBuilder = new StringBuilder();
+
+			foreach (var c in normalizedString)
+			{
+				var unicodeCategory = CharUnicodeInfo.GetUnicodeCategory(c);
+
+				if (unicodeCategory == UnicodeCategory.LowercaseLetter ||
+				    unicodeCategory == UnicodeCategory.UppercaseLetter ||
+				    unicodeCategory == UnicodeCategory.DecimalDigitNumber)
+				{
+					stringBuilder.Append(c);
+				}
+			}
+
+			return stringBuilder.ToString().Normalize(NormalizationForm.FormC);
 		}
 
 		private void DeckCards_ListChanged(object sender, ListChangedEventArgs e)
