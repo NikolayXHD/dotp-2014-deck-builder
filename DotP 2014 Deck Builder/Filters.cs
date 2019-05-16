@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Text;
 using System.Xml.Serialization;
 using RSN.Tools;
+using System.Text.RegularExpressions;
 
 namespace RSN.DotP
 {
@@ -339,17 +340,24 @@ namespace RSN.DotP
 							// We only check granted abilities if the user wants us to.
 							if ((ab.ResourceId < 0) || (CheckGrantedAbilities))
 							{
+								// Due to using regex and no longer using explicit strings, some characters need escaped.
+								// If the user types one (though only "+" has any results) without them being escaped, it'll crash.
+								string[] SpecialCharacters = {"\\", "+", "?", "|", "{", "[", "(", ")", "^", "$", ".", "#"};
+								string sAbility = Ability;
+								foreach (string s in SpecialCharacters)
+									sAbility = sAbility.Replace(s, Regex.Escape(s));
+								sAbility = sAbility.Replace("*", ".*").Replace("~", ciCard.LocalizedName);
 								switch (AbilityFilter)
 								{
 									case FilterStringComparisonType.Contains:
 										{
-											if (ab.LocalizedText.IndexOf(Ability, StringComparison.CurrentCultureIgnoreCase) > -1)
+											if (Regex.IsMatch(ab.LocalizedText, sAbility, System.Text.RegularExpressions.RegexOptions.IgnoreCase))
 												bAllowed = true;
 										}
 										break;
 									case FilterStringComparisonType.DoesNotContain:
 										{
-											if (ab.LocalizedText.IndexOf(Ability, StringComparison.CurrentCultureIgnoreCase) > -1)
+											if (Regex.IsMatch(ab.LocalizedText, sAbility, System.Text.RegularExpressions.RegexOptions.IgnoreCase))
 												bAllowed = false;
 										}
 										break;

@@ -2,6 +2,7 @@
 using System.Reflection;
 using System.Text;
 using RSN.Tools;
+using System.Text.RegularExpressions;
 
 namespace RSN.DotP
 {
@@ -29,10 +30,16 @@ namespace RSN.DotP
 			{
 				string strValue = GetCardValue(ciCard);
 
+                string[] SpecialCharacters = { "\\", "+", "?", "|", "{", "[", "(", ")", "^", "$", ".", "#" };
+                string sAbility = Value;
+                foreach (string s in SpecialCharacters)
+                    sAbility = sAbility.Replace(s, Regex.Escape(s));
+                sAbility = sAbility.Replace("*", ".*").Replace("~", ciCard.LocalizedName);
+
 				switch (Operation)
 				{
 					case FilterStringComparisonType.DoesNotContain:
-						bReturn = !(strValue.IndexOf(Value, StringComparison.CurrentCultureIgnoreCase) > -1);
+						bReturn = !Regex.IsMatch(strValue, sAbility, System.Text.RegularExpressions.RegexOptions.IgnoreCase);
 						break;
 					case FilterStringComparisonType.Equal:
 						bReturn = strValue.Equals(Value, StringComparison.CurrentCultureIgnoreCase);
@@ -42,7 +49,7 @@ namespace RSN.DotP
 						break;
 					case FilterStringComparisonType.Contains:
 					default:
-						bReturn = (strValue.IndexOf(Value, StringComparison.CurrentCultureIgnoreCase) > -1);
+						bReturn = Regex.IsMatch(strValue, sAbility, System.Text.RegularExpressions.RegexOptions.IgnoreCase);
 						break;
 				}
 			}
