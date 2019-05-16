@@ -231,6 +231,7 @@ Si prega di impostarne una prima di applicare.]]></STRING>
 	<STRING key="CHECK_GRANTED_ABILITIES"><![CDATA[Controlla Abilità Concesse]]></STRING>
 	<STRING key="EXTRA_FILTERS"><![CDATA[Filtri Extra]]></STRING>
 	<STRING key="TOKENS"><![CDATA[Pedine]]></STRING>
+  <STRING key="UNDERSCORES"><![CDATA[Sottolineatura]]></STRING>
 	<STRING key="CARDS_THAT_CREATE_TOKENS"><![CDATA[Carte che creano Pedine]]></STRING>
 	<STRING key="USES_REGULAR_MANA"><![CDATA[Carte che usano mana regolare]]></STRING>
 	<STRING key="USES_HYBRID_MANA"><![CDATA[Carte che usano mana ibrido]]></STRING>
@@ -308,6 +309,7 @@ Si prega di impostarne una prima di applicare.]]></STRING>
 	<STRING key="CARD_FILTER_PROP_TOUGHNESS"><![CDATA[Toughness]]></STRING>
 	<STRING key="CARD_FILTER_PROP_TYPE"><![CDATA[Type]]></STRING>
 	<STRING key="CARD_FILTER_PROP_TOKEN"><![CDATA[Token]]></STRING>
+  <STRING key="CARD_FILTER_PROP_UNDERSCORE"><![CDATA[Sottolineare]]></STRING>
 	<!-- Strings for the Colours -->
 	<STRING key="MANA_BLACK"><![CDATA[Nero]]></STRING>
 	<STRING key="MANA_BLUE"><![CDATA[Blu]]></STRING>

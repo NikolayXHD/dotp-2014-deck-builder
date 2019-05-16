@@ -230,6 +230,7 @@ Please give one before applying.]]></STRING>
 	<STRING key="CHECK_GRANTED_ABILITIES"><![CDATA[Check Granted Abilities]]></STRING>
 	<STRING key="EXTRA_FILTERS"><![CDATA[Extra Filters]]></STRING>
 	<STRING key="TOKENS"><![CDATA[Tokens]]></STRING>
+  <STRING key="UNDERSCORES"><![CDATA[Unterstriche]]></STRING>
 	<STRING key="CARDS_THAT_CREATE_TOKENS"><![CDATA[Cards that create Tokens]]></STRING>
 	<STRING key="USES_REGULAR_MANA"><![CDATA[Cards that use Regular Mana]]></STRING>
 	<STRING key="USES_HYBRID_MANA"><![CDATA[Cards that use Hybrid Mana]]></STRING>
@@ -307,6 +308,7 @@ Please give one before applying.]]></STRING>
 	<STRING key="CARD_FILTER_PROP_TOUGHNESS"><![CDATA[Toughness]]></STRING>
 	<STRING key="CARD_FILTER_PROP_TYPE"><![CDATA[Type]]></STRING>
 	<STRING key="CARD_FILTER_PROP_TOKEN"><![CDATA[Token]]></STRING>
+  <STRING key="CARD_FILTER_PROP_UNDERSCORE"><![CDATA[Unterstreichen]]></STRING>
 	<!-- Strings for the Colours -->
 	<STRING key="MANA_BLACK"><![CDATA[Schwarz]]></STRING>
 	<STRING key="MANA_BLUE"><![CDATA[Blau]]></STRING>

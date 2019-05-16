@@ -47,6 +47,7 @@ namespace RSN.DotP
 		private string m_strExpansion;
 		private SortedSet<string> m_setRegisteredTokens;
 		private bool m_bToken;
+        private bool m_bUnderscore;
 		private string m_strFrameType;
 
 		// These are values that are derived from the card attributes at one point or another.
@@ -421,6 +422,11 @@ namespace RSN.DotP
 			get { return m_bToken; }
 		}
 
+        public bool Underscore
+        {
+            get { return m_bUnderscore; }
+        }
+
 		public bool MustBeIncludedInWad
 		{
 			get { return m_bMustBeIncludedInWad; }
@@ -498,6 +504,7 @@ namespace RSN.DotP
 			string strArtifact = string.Empty;
 			string strFrame = string.Empty;
 			string strToken = string.Empty;
+            string strUnderscore = string.Empty;
 			string strHybrid = string.Empty;
 			string strBox = null;
 
@@ -538,6 +545,9 @@ namespace RSN.DotP
 			{
 				if (m_bToken)
 					strToken = "_TOKEN2";
+
+                if (m_bUnderscore)
+                    strUnderscore = "_UNDERSCORE";
 
 				// Check for Artifact frame
 				if ((m_eType & CardType.Artifact) == CardType.Artifact)
@@ -1095,7 +1105,10 @@ namespace RSN.DotP
 					foreach (XmlNode xnNode in xnRoot.ChildNodes)
 					{
 						if (xnNode.Name.Equals("FILENAME", StringComparison.OrdinalIgnoreCase))
+						{
 							m_strFilename = XmlTools.GetValueFromAttribute(xnNode, "text");
+                            m_bUnderscore = m_strFilename[0] == '_';
+                        }
 						else if (xnNode.Name.Equals("CARDNAME", StringComparison.OrdinalIgnoreCase))
 							m_strCardName = XmlTools.GetValueFromAttribute(xnNode, "text");
 						else if (xnNode.Name.Equals("TITLE", StringComparison.OrdinalIgnoreCase))

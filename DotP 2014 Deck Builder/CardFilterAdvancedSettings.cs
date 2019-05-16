@@ -15,7 +15,7 @@ namespace RSN.DotP
 		// Set up what are our allowable DataProperties are for each filter group.
 		//	Special filters like "SubTypes" will need to be individually configured in
 		//	the appropriate CreateX function.
-		private string[] BOOLEAN_FIELDS = new string[] { "CreateTokens", "HybridMana", "PhyrexianMana", "Token" };
+		private string[] BOOLEAN_FIELDS = new string[] { "CreateTokens", "HybridMana", "PhyrexianMana", "Token", "Underscore" };
 		private string[] INTEGER_FIELDS = new string[] { "ConvertedManaCost", "MultiverseId" };
 		private string[] STRING_FIELDS = new string[] { "LocalizedAbilitiesText", "Artist", "CardXML", "CastingCost", "Expansion", "LocalizedFlavour", "Filename", "ImageFilename", "LocalizedName", "RegisteredTokensText", "SubTypes", "PresentInWad" };
 		private string[] ENUM_FIELDS = new string[] { "Colour", "Rarity", "SuperTypes", "Type" };

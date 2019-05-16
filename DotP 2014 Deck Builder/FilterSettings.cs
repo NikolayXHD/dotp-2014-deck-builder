@@ -114,6 +114,7 @@ namespace RSN.DotP
 
 			// Extras
 			chkTokens.Checked = filters.AllowToken;
+			chkUnderscores.Checked = filters.AllowUnderscores;
 			chkCardsThatCreateTokens.Checked = filters.AllowCreateTokens;
 			chkRegularMana.Checked = filters.AllowManaRegular;
 			chkHybridMana.Checked = filters.AllowManaHybrid;
@@ -203,6 +204,7 @@ namespace RSN.DotP
 			// Extra Filters
 			gbExtra.Text = Settings.UIStrings[(string)gbExtra.Tag];
 			chkTokens.Text = Settings.UIStrings[(string)chkTokens.Tag];
+			chkUnderscores.Text = Settings.UIStrings[(string)chkUnderscores.Tag];
 			chkCardsThatCreateTokens.Text = Settings.UIStrings[(string)chkCardsThatCreateTokens.Tag];
 			chkRegularMana.Text = Settings.UIStrings[(string)chkRegularMana.Tag];
 			chkHybridMana.Text = Settings.UIStrings[(string)chkHybridMana.Tag];
@@ -328,6 +330,7 @@ namespace RSN.DotP
 
 			// Extras
 			m_fltSettings.AllowToken = chkTokens.Checked;
+			m_fltSettings.AllowUnderscores = chkUnderscores.Checked;
 			m_fltSettings.AllowCreateTokens = chkCardsThatCreateTokens.Checked;
 			m_fltSettings.AllowManaRegular = chkRegularMana.Checked;
 			m_fltSettings.AllowManaHybrid = chkHybridMana.Checked;

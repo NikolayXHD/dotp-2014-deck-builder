@@ -89,6 +89,7 @@
 			this.txtAbilities = new System.Windows.Forms.TextBox();
 			this.chkCheckAbilities = new System.Windows.Forms.CheckBox();
 			this.gbExtra = new System.Windows.Forms.GroupBox();
+			this.chkUnderscores = new System.Windows.Forms.CheckBox();
 			this.chkPhyrexianMana = new System.Windows.Forms.CheckBox();
 			this.chkHybridMana = new System.Windows.Forms.CheckBox();
 			this.chkRegularMana = new System.Windows.Forms.CheckBox();
@@ -831,6 +832,7 @@
 			// 
 			// gbExtra
 			// 
+			this.gbExtra.Controls.Add(this.chkUnderscores);
 			this.gbExtra.Controls.Add(this.chkPhyrexianMana);
 			this.gbExtra.Controls.Add(this.chkHybridMana);
 			this.gbExtra.Controls.Add(this.chkRegularMana);
@@ -843,6 +845,17 @@
 			this.gbExtra.TabStop = false;
 			this.gbExtra.Tag = "EXTRA_FILTERS";
 			this.gbExtra.Text = "Extra Filters";
+			// 
+			// chkUnderscores
+			// 
+			this.chkUnderscores.AutoSize = true;
+			this.chkUnderscores.Location = new System.Drawing.Point(74, 19);
+			this.chkUnderscores.Name = "chkUnderscores";
+			this.chkUnderscores.Size = new System.Drawing.Size(86, 17);
+			this.chkUnderscores.TabIndex = 13;
+			this.chkUnderscores.Tag = "UNDERSCORES";
+			this.chkUnderscores.Text = "Underscores";
+			this.chkUnderscores.UseVisualStyleBackColor = true;
 			// 
 			// chkPhyrexianMana
 			// 
@@ -1069,5 +1082,6 @@
 		private System.Windows.Forms.TextBox txtPower;
 		private System.Windows.Forms.CheckBox chkRaritySpecial;
 		private System.Windows.Forms.Button cmdReset;
+		private System.Windows.Forms.CheckBox chkUnderscores;
 	}
 }

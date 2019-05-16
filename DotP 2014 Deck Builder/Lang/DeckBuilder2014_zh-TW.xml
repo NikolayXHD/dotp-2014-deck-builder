@@ -231,6 +231,7 @@ http://www.slightlymagic.net/forum/viewforum.php?f=62]]><!--Tigertooth: The same
   <STRING key="CHECK_GRANTED_ABILITIES"><![CDATA[檢查授予異能]]></STRING>
   <STRING key="EXTRA_FILTERS"><![CDATA[額外過濾器]]></STRING>
   <STRING key="TOKENS"><![CDATA[衍生物]]></STRING>
+  <STRING key="UNDERSCORES"><![CDATA[下划线]]></STRING>
   <STRING key="CARDS_THAT_CREATE_TOKENS"><![CDATA[創造衍生物的卡牌]]></STRING>
   <STRING key="USES_REGULAR_MANA"><![CDATA[使用通常魔法力的卡牌]]></STRING>
   <STRING key="USES_HYBRID_MANA"><![CDATA[使用混血魔法力的卡牌]]></STRING>
@@ -308,6 +309,7 @@ http://www.slightlymagic.net/forum/viewforum.php?f=62]]><!--Tigertooth: The same
   <STRING key="CARD_FILTER_PROP_TOUGHNESS"><![CDATA[防禦力]]></STRING>
   <STRING key="CARD_FILTER_PROP_TYPE"><![CDATA[類別]]></STRING>
   <STRING key="CARD_FILTER_PROP_TOKEN"><![CDATA[衍生物]]></STRING>
+  <STRING key="CARD_FILTER_PROP_UNDERSCORE"><![CDATA[下划线]]></STRING>
   <!-- Strings for the Colours -->
   <STRING key="MANA_BLACK"><![CDATA[黑色]]></STRING>
   <STRING key="MANA_BLUE"><![CDATA[藍色]]></STRING>

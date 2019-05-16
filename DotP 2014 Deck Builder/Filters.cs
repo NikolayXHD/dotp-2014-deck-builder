@@ -54,6 +54,8 @@ namespace RSN.DotP
 		public bool AllowToken;
 		public bool AllowCreateTokens;
 
+		public bool AllowUnderscores;
+
 		public bool AllowManaRegular;
 		public bool AllowManaHybrid;
 		public bool AllowManaPhyrexian;
@@ -106,6 +108,9 @@ namespace RSN.DotP
 			// Do allow cards that create tokens though (assuming they aren't also tokens).
 			AllowCreateTokens = true;
 
+			//Don't allow cards that begin with an underscore because that aren't allowed in a regular deck.
+			AllowUnderscores = false;
+
 			// By default allow all mana types.
 			AllowManaRegular = true;
 			AllowManaHybrid = true;
@@ -151,6 +156,7 @@ namespace RSN.DotP
 			bAllowed &= CheckAgainstRarity(ciCard);
 			bAllowed &= CheckAgainstAbility(ciCard);
 			bAllowed &= CheckAgainstTokens(ciCard);
+			bAllowed &= CheckAgainstUnderscores(ciCard);
 			bAllowed &= CheckAgainstManaType(ciCard);
 
 			return bAllowed;
@@ -387,6 +393,16 @@ namespace RSN.DotP
 
 			if (((!AllowToken) && (ciCard.Token)) ||
 				((!AllowCreateTokens) && (ciCard.RegisteredTokens != null) && (ciCard.RegisteredTokens.Count > 0)))
+				bAllowed = false;
+
+			return bAllowed;
+		}
+
+		private bool CheckAgainstUnderscores(CardInfo ciCard)
+		{
+			bool bAllowed = true;
+
+			if ((!AllowUnderscores) && (ciCard.Underscore))
 				bAllowed = false;
 
 			return bAllowed;

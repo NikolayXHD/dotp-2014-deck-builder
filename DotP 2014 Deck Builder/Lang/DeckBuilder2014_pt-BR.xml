@@ -227,6 +227,7 @@ Por favor escolha um antes de aplicar.]]></STRING>
 	<STRING key="CHECK_GRANTED_ABILITIES"><![CDATA[Verificar Habilidades Garantidas]]></STRING>
 	<STRING key="EXTRA_FILTERS"><![CDATA[Filtros Extras]]></STRING>
 	<STRING key="TOKENS"><![CDATA[Fichas]]></STRING>
+  <STRING key="UNDERSCORES"><![CDATA[Sublinhados]]></STRING>
 	<STRING key="CARDS_THAT_CREATE_TOKENS"><![CDATA[Cartas que criam Fichas]]></STRING>
 	<STRING key="USES_REGULAR_MANA"><![CDATA[Cartas que usam Mana Regular]]></STRING>
 	<STRING key="USES_HYBRID_MANA"><![CDATA[Cartas que usam Mana Híbrido]]></STRING>
@@ -304,6 +305,7 @@ Por favor escolha um antes de aplicar.]]></STRING>
 	<STRING key="CARD_FILTER_PROP_TOUGHNESS"><![CDATA[Resistência]]></STRING>
 	<STRING key="CARD_FILTER_PROP_TYPE"><![CDATA[Tipo]]></STRING>
 	<STRING key="CARD_FILTER_PROP_TOKEN"><![CDATA[Ficha]]></STRING>
+  <STRING key="CARD_FILTER_PROP_UNDERSCORE"><![CDATA[Sublinhado]]></STRING>
 	<!-- Strings for the Colours -->
 	<STRING key="MANA_BLACK"><![CDATA[Preto]]></STRING>
 	<STRING key="MANA_BLUE"><![CDATA[Azul]]></STRING>
