@@ -201,6 +201,7 @@ namespace RSN.DotP
 					bAllowed |= CheckFlag((int)ciCard.Type, (int)Type, (int)CardType.Scheme, TypeFilter);
 					bAllowed |= CheckFlag((int)ciCard.Type, (int)Type, (int)CardType.Sorcery, TypeFilter);
 					bAllowed |= CheckFlag((int)ciCard.Type, (int)Type, (int)CardType.Tribal, TypeFilter);
+					bAllowed |= CheckFlag((int)ciCard.Type, (int)Type, (int)CardType.Vanguard, TypeFilter);
 					break;
 				case FilterType.Exclude:
 					bAllowed = CheckFlag((int)ciCard.Type, (int)Type, (int)CardType.Artifact, TypeFilter);
@@ -214,6 +215,7 @@ namespace RSN.DotP
 					bAllowed &= CheckFlag((int)ciCard.Type, (int)Type, (int)CardType.Scheme, TypeFilter);
 					bAllowed &= CheckFlag((int)ciCard.Type, (int)Type, (int)CardType.Sorcery, TypeFilter);
 					bAllowed &= CheckFlag((int)ciCard.Type, (int)Type, (int)CardType.Tribal, TypeFilter);
+					bAllowed &= CheckFlag((int)ciCard.Type, (int)Type, (int)CardType.Vanguard, TypeFilter);
 					break;
 			}
 

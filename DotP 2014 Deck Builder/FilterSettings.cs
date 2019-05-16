@@ -73,6 +73,7 @@ namespace RSN.DotP
 			chkScheme.Checked = ((filters.Type & CardType.Scheme) == CardType.Scheme);
 			chkSorcery.Checked = ((filters.Type & CardType.Sorcery) == CardType.Sorcery);
 			chkTribal.Checked = ((filters.Type & CardType.Tribal) == CardType.Tribal);
+			chkVanguard.Checked = ((filters.Type & CardType.Vanguard) == CardType.Vanguard);
 			cboTypeFilter.SelectedItem = new KeyValuePair<FilterType, string>(filters.TypeFilter, Settings.UIStrings[filters.TypeFilter.ToString().ToUpper()]);
 
 			// Super Types
@@ -283,6 +284,7 @@ namespace RSN.DotP
 			m_fltSettings.Type |= (chkScheme.Checked ? CardType.Scheme : 0);
 			m_fltSettings.Type |= (chkSorcery.Checked ? CardType.Sorcery : 0);
 			m_fltSettings.Type |= (chkTribal.Checked ? CardType.Tribal : 0);
+			m_fltSettings.Type |= (chkVanguard.Checked ? CardType.Vanguard : 0);
 			if (cboTypeFilter.SelectedIndex > -1)
 				m_fltSettings.TypeFilter = ((KeyValuePair<FilterType, string>)cboTypeFilter.SelectedItem).Key;
 

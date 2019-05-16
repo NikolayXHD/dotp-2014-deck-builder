@@ -42,6 +42,7 @@ namespace RSN.DotP
 		Scheme = 0x0100,
 		Sorcery = 0x0200,
 		Tribal = 0x0400,
+		Vanguard = 0x0800,
 	}
 
 	// These are specifically for loading of sub-types from the SPECS.
