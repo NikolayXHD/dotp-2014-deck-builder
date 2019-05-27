@@ -54,10 +54,6 @@ namespace RSN.DotP
 		private Dictionary<DataGridViewColumn, PropertyInfo> m_dicColumnMap;
 		private MethodInfo m_miCustomTagValue;
 
-        //Tells the refresh worker to make a new deck after the first time it runs.
-        private bool FirstRefresh = true;
-
-
         private enum DeckLocation
 		{
 			MainDeck = 0,
@@ -213,12 +209,21 @@ namespace RSN.DotP
 
             m_strGameDirectory = Settings.GetSetting("DotP2014Directory", m_strGameDirectory);
             if (m_gdWads != null)
-            {
                 m_gdWads.Dispose();
+            if (m_dkWorking != null)
+            {
                 m_dkWorking.Dispose();
-                m_gdWads = null;
-                m_bsCards = null;
+                m_dkWorking = null;
+                mnuiFileNew_Click(null, null);
             }
+            if (m_bsCards != null)
+                m_bsCards.Dispose();
+            if (m_bsDeckCards != null)
+                m_bsDeckCards.Dispose();
+            m_gdWads = null;
+            m_bsCards = null;
+            m_bsDeckCards = null;
+            GC.Collect();
             m_gdWads = new GameDirectory(m_strGameDirectory);
             m_gdWads.LoadMusic();
             m_gdWads.LoadWads();
@@ -1744,15 +1749,17 @@ namespace RSN.DotP
 		{
 			TdxWrapper twPreview = null;
 
-			if (ciCard != null)
-			{
-				Bitmap bmpPreview = Tools.AddCardBorder(ciCard.GetPreviewImage(strLangCode));
-				// The TdxWrapper handles resizing images to MoF sizes if compressing so
-				//	no need to worry about that.  Since our Card Border will add
-				//	transparency to have the nice rounded look we need to use DXT5.
-				twPreview = new TdxWrapper();
-				twPreview.LoadImage(bmpPreview, Gibbed.Duels.FileFormats.Tdx.D3DFormat.DXT5, Settings.GetSetting("IncludeMipMaps", true));
-			}
+            if (ciCard != null)
+            {
+                using (Bitmap bmpPreview = Tools.AddCardBorder(ciCard.GetPreviewImage(strLangCode)))
+                {
+                    // The TdxWrapper handles resizing images to MoF sizes if compressing so
+                    //	no need to worry about that.  Since our Card Border will add
+                    //	transparency to have the nice rounded look we need to use DXT5.
+                    twPreview = new TdxWrapper();
+                    twPreview.LoadImage(bmpPreview, Gibbed.Duels.FileFormats.Tdx.D3DFormat.DXT5, Settings.GetSetting("IncludeMipMaps", true));
+                }
+            }
 
 			return twPreview;
 		}
@@ -2369,6 +2376,7 @@ namespace RSN.DotP
 							Bitmap bmpPreview = Tools.AddCardBorder(ciCard.GetPreviewImage(lang.LanguageCode));
 							if (bmpPreview != null)
 								bmpPreview.Save(strDir + lang.ShortCode + "_" + strFileBase, ImageFormat.Png);
+                            bmpPreview.Dispose();
 						}
 					}
 				}
@@ -2932,8 +2940,9 @@ namespace RSN.DotP
 				}
 				catch (Exception ex)
 				{
-					// This is probably due to a permissions problem (read-only directory).
-					Settings.ReportError(ex, ErrorPriority.Medium, "Unable to Export Wad: Data_DLC_" + frmInput.IdBlock.ToString() + "Content_Pack_Enabler.wad");
+                    var A = frmInput.IdBlock; //Marshall-By-Reference access warning if used in-line.
+                    // This is probably due to a permissions problem (read-only directory).
+                    Settings.ReportError(ex, ErrorPriority.Medium, "Unable to Export Wad: Data_DLC_" + A.ToString() + "Content_Pack_Enabler.wad");
 					MessageBox.Show(Settings.UIStrings["EXPORT_UNSUCCESSFUL"], Settings.UIStrings["EXPORT_UNSUCCESSFUL"], MessageBoxButtons.OK, MessageBoxIcon.Error);
 				}
 			}

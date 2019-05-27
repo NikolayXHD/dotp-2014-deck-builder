@@ -259,8 +259,12 @@ namespace RSN.DotP
 					if (xnDeck["PromoUnlocks"] != null)
 						m_duUnlocksPromo = new DeckUnlocks(gdData, xnDeck["PromoUnlocks"], true);
 
-					if (xnDeck["DeckBoxImage"] != null)
-						m_bmpDeckBoxImage = XmlTools.ImageFromNode(xnDeck["DeckBoxImage"]);
+                    if (xnDeck["DeckBoxImage"] != null)
+                    {
+                        if (m_bmpDeckBoxImage != null)
+                            m_bmpDeckBoxImage.Dispose();
+                        m_bmpDeckBoxImage = XmlTools.ImageFromNode(xnDeck["DeckBoxImage"]);
+                    }
 
 					if (xnDeck["ColourOverride"] != null)
 					{

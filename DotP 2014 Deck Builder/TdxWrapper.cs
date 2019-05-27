@@ -26,7 +26,9 @@ namespace RSN.DotP
 				m_tdxImage = new TdxFile();
 				m_tdxImage.Deserialize(input);
 				input.Close();
-				m_bmpImage = ConvertTdxToBitmap();
+                if (m_bmpImage != null)
+                    m_bmpImage.Dispose();
+                m_bmpImage = ConvertTdxToBitmap();
 			}
 		}
 
@@ -35,7 +37,9 @@ namespace RSN.DotP
 		{
 			m_tdxImage = new TdxFile();
 			m_tdxImage.Deserialize(strmInput);
-			m_bmpImage = ConvertTdxToBitmap();
+            if (m_bmpImage != null)
+                m_bmpImage.Dispose();
+            m_bmpImage = ConvertTdxToBitmap();
 		}
 
 		public void LoadImage(string strFile, Tdx.D3DFormat eFormat = Tdx.D3DFormat.A8R8G8B8, bool bGenerateMipMaps = true)
@@ -43,13 +47,17 @@ namespace RSN.DotP
 			if (File.Exists(strFile))
 			{
 				m_strName = Path.GetFileNameWithoutExtension(strFile);
-				m_bmpImage = new Bitmap(strFile);
+                if (m_bmpImage != null)
+                    m_bmpImage.Dispose();
+                m_bmpImage = new Bitmap(strFile);
 				m_tdxImage = ConvertBitmapToTdx(eFormat, bGenerateMipMaps);
 			}
 		}
 
 		public void LoadImage(Image imgImage, Tdx.D3DFormat eFormat = Tdx.D3DFormat.A8R8G8B8, bool bGenerateMipMaps = true)
 		{
+            if (m_bmpImage != null)
+                m_bmpImage.Dispose();
 			m_bmpImage = new Bitmap(imgImage);
 			m_tdxImage = ConvertBitmapToTdx(eFormat, bGenerateMipMaps);
 		}
@@ -189,7 +197,8 @@ namespace RSN.DotP
                         grfx.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.HighQualityBicubic;
                         grfx.DrawImage(m_bmpImage, 0, 0, szNewSize.Width, szNewSize.Height);
                         // Set our main image to the new MoF sized image.
-                        m_bmpImage.Dispose();
+                        if (m_bmpImage != null)
+                            m_bmpImage.Dispose();
                         m_bmpImage = bmpNew;
                     }
 				}
@@ -209,7 +218,8 @@ namespace RSN.DotP
                     grfx.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.HighQualityBicubic;
                     grfx.DrawImage(m_bmpImage, 0, 0, szNewSize.Width, szNewSize.Height);
                     // Set our main image to the new MoF sized image.
-                    m_bmpImage.Dispose();
+                    if (m_bmpImage != null)
+                        m_bmpImage.Dispose();
                     m_bmpImage = bmpNew;
                 }
 			}

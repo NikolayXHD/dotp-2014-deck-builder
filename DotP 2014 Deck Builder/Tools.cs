@@ -442,29 +442,32 @@ namespace RSN.DotP
 		{
 			// I use the mask dimensions as those are what I designed the mask for.
 			Bitmap bmpMasked = new Bitmap(bmpMask.Width, bmpMask.Height);
-			Graphics grfx = Graphics.FromImage(bmpMasked);
-			// Since we may not be drawing at 100% size we want to use a high quality interpolation so that the source image still looks good.
-			grfx.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.HighQualityBicubic;
-			// Draw the source image onto the new bitmap.
-			grfx.DrawImage(bmpSource, rcSourceDestination);
-			// Draw the mask on top of it.
-			grfx.DrawImage(bmpMask, new Rectangle(0, 0, bmpMask.Width, bmpMask.Height));
-			// Make the mask color transparent.
-			bmpMasked.MakeTransparent(bmpMask.GetPixel(0, 0));
+            using (Graphics grfx = Graphics.FromImage(bmpMasked))
+            {
+                // Since we may not be drawing at 100% size we want to use a high quality interpolation so that the source image still looks good.
+                grfx.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.HighQualityBicubic;
+                // Draw the source image onto the new bitmap.
+                grfx.DrawImage(bmpSource, rcSourceDestination);
+                // Draw the mask on top of it.
+                grfx.DrawImage(bmpMask, new Rectangle(0, 0, bmpMask.Width, bmpMask.Height));
+                // Make the mask color transparent.
+                bmpMasked.MakeTransparent(bmpMask.GetPixel(0, 0));
+            }
 
-			return bmpMasked;
+            return bmpMasked;
 		}
 
 		public static Bitmap AdjustImage(Bitmap bmpSource, Size szSize, Rectangle rcSourceDestination)
 		{
 			// I use the mask dimensions as those are what I designed the mask for.
 			Bitmap bmpAdjusted = new Bitmap(szSize.Width, szSize.Height);
-			Graphics grfx = Graphics.FromImage(bmpAdjusted);
-			// Since we may not be drawing at 100% size we want to use a high quality interpolation so that the source image still looks good.
-			grfx.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.HighQualityBicubic;
-			// Draw the source image onto the new bitmap.
-			grfx.DrawImage(bmpSource, rcSourceDestination);
-
+            using (Graphics grfx = Graphics.FromImage(bmpAdjusted))
+            {
+                // Since we may not be drawing at 100% size we want to use a high quality interpolation so that the source image still looks good.
+                grfx.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.HighQualityBicubic;
+                // Draw the source image onto the new bitmap.
+                grfx.DrawImage(bmpSource, rcSourceDestination);
+            }
 			return bmpAdjusted;
 		}
 
@@ -472,25 +475,26 @@ namespace RSN.DotP
 		{
 			// Basic setup here.
 			Bitmap bmpGrayscale = new Bitmap(bmpImage.Width, bmpImage.Height);
-			Graphics grfx = Graphics.FromImage(bmpGrayscale);
-			// This color matrix does a matrix multiply on a RGBAW vector to get a grayscale vector of the input.
-			//	I'm not going to go into matrix math because I remember just enough to get by.
-			ColorMatrix cmGrayscaleAdjust = new ColorMatrix(
-				new float[][]
-				{
-					new float[] {0.33f, 0.33f, 0.33f, 0, 0},
-					new float[] {0.59f, 0.59f, 0.59f, 0, 0},
-					new float[] {0.11f, 0.11f, 0.11f, 0, 0},
-					new float[] {0, 0, 0, 1, 0},
-					new float[] {0, 0, 0, 0, 1},
-				});
-			// We need an ImageAttributes object so that we can use the ColorMatrix that we created.
-			ImageAttributes iaAdjust = new ImageAttributes();
-			iaAdjust.SetColorMatrix(cmGrayscaleAdjust);
+            using (Graphics grfx = Graphics.FromImage(bmpGrayscale))
+            {
+                // This color matrix does a matrix multiply on a RGBAW vector to get a grayscale vector of the input.
+                //	I'm not going to go into matrix math because I remember just enough to get by.
+                ColorMatrix cmGrayscaleAdjust = new ColorMatrix(
+                    new float[][]
+                    {
+                    new float[] {0.33f, 0.33f, 0.33f, 0, 0},
+                    new float[] {0.59f, 0.59f, 0.59f, 0, 0},
+                    new float[] {0.11f, 0.11f, 0.11f, 0, 0},
+                    new float[] {0, 0, 0, 1, 0},
+                    new float[] {0, 0, 0, 0, 1},
+                    });
+                // We need an ImageAttributes object so that we can use the ColorMatrix that we created.
+                ImageAttributes iaAdjust = new ImageAttributes();
+                iaAdjust.SetColorMatrix(cmGrayscaleAdjust);
 
-			// Now we re-draw the image in grayscale.
-			grfx.DrawImage(bmpImage, new Rectangle(0, 0, bmpImage.Width, bmpImage.Height), 0, 0, bmpImage.Width, bmpImage.Height, GraphicsUnit.Pixel, iaAdjust);
-
+                // Now we re-draw the image in grayscale.
+                grfx.DrawImage(bmpImage, new Rectangle(0, 0, bmpImage.Width, bmpImage.Height), 0, 0, bmpImage.Width, bmpImage.Height, GraphicsUnit.Pixel, iaAdjust);
+            }
 			// And return it.
 			return bmpGrayscale;
 		}
@@ -499,25 +503,26 @@ namespace RSN.DotP
 		{
 			// Basic setup here.
 			Bitmap bmpBluescale = new Bitmap(bmpImage.Width, bmpImage.Height);
-			Graphics grfx = Graphics.FromImage(bmpBluescale);
-			// This color matrix does a matrix multiply on a RGBAW vector to get a grayscale vector of the input.
-			//	I'm not going to go into matrix math because I remember just enough to get by.
-			ColorMatrix cmGrayscaleAdjust = new ColorMatrix(
-				new float[][]
-				{
-					new float[] {0.1f, 0.3f, 0.3f, 0, 0},
-					new float[] {0.59f, 0.39f, 0.59f, 0, 0},
-					new float[] {0.11f, 0.11f, 0.31f, 0, 0},
-					new float[] {0, 0, 0, 1, 0},
-					new float[] {0, 0, 0, 0, 1},
-				});
-			// We need an ImageAttributes object so that we can use the ColorMatrix that we created.
-			ImageAttributes iaAdjust = new ImageAttributes();
-			iaAdjust.SetColorMatrix(cmGrayscaleAdjust);
+            using (Graphics grfx = Graphics.FromImage(bmpBluescale))
+            {
+                // This color matrix does a matrix multiply on a RGBAW vector to get a grayscale vector of the input.
+                //	I'm not going to go into matrix math because I remember just enough to get by.
+                ColorMatrix cmGrayscaleAdjust = new ColorMatrix(
+                    new float[][]
+                    {
+                    new float[] {0.1f, 0.3f, 0.3f, 0, 0},
+                    new float[] {0.59f, 0.39f, 0.59f, 0, 0},
+                    new float[] {0.11f, 0.11f, 0.31f, 0, 0},
+                    new float[] {0, 0, 0, 1, 0},
+                    new float[] {0, 0, 0, 0, 1},
+                    });
+                // We need an ImageAttributes object so that we can use the ColorMatrix that we created.
+                ImageAttributes iaAdjust = new ImageAttributes();
+                iaAdjust.SetColorMatrix(cmGrayscaleAdjust);
 
-			// Now we re-draw the image in grayscale.
-			grfx.DrawImage(bmpImage, new Rectangle(0, 0, bmpImage.Width, bmpImage.Height), 0, 0, bmpImage.Width, bmpImage.Height, GraphicsUnit.Pixel, iaAdjust);
-
+                // Now we re-draw the image in grayscale.
+                grfx.DrawImage(bmpImage, new Rectangle(0, 0, bmpImage.Width, bmpImage.Height), 0, 0, bmpImage.Width, bmpImage.Height, GraphicsUnit.Pixel, iaAdjust);
+            }
 			// And return it.
 			return bmpBluescale;
 		}
@@ -642,11 +647,12 @@ namespace RSN.DotP
 			if (m_bmpCardBorder != null)
 			{
 				Bitmap bmpWithBorder = new Bitmap(m_bmpCardBorder);
-				Graphics grfx = Graphics.FromImage(bmpWithBorder);
-				grfx.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.HighQualityBicubic;
-				// Now we want 6 pixels on either side of the image to be the border so we will draw our preview image inside that rect.
-				grfx.DrawImage(bmpPreview, 20, 23, 324, 466);
-
+                using (Graphics grfx = Graphics.FromImage(bmpWithBorder))
+                {
+                    grfx.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.HighQualityBicubic;
+                    // Now we want 6 pixels on either side of the image to be the border so we will draw our preview image inside that rect.
+                    grfx.DrawImage(bmpPreview, 20, 23, 324, 466);
+                }
 				return bmpWithBorder;
 			}
 			else

@@ -117,11 +117,14 @@ namespace RSN.DotP
 			Bitmap bmpOverlaid = null;
 			if (m_bmpOverlay != null)
 			{
-				bmpOverlaid = new Bitmap(m_szFullImageSize.Width, m_szFullImageSize.Height);
-				Graphics grfx = Graphics.FromImage(bmpOverlaid);
-				grfx.InterpolationMode = InterpolationMode.HighQualityBicubic;
-				grfx.DrawImage(bmpMasked, m_rcFullImageRect);
-				grfx.DrawImage(m_bmpOverlay, m_rcFullImageRect);
+                bmpOverlaid.Dispose();
+                bmpOverlaid = new Bitmap(m_szFullImageSize.Width, m_szFullImageSize.Height);
+                using (Graphics grfx = Graphics.FromImage(bmpOverlaid))
+                {
+                    grfx.InterpolationMode = InterpolationMode.HighQualityBicubic;
+                    grfx.DrawImage(bmpMasked, m_rcFullImageRect);
+                    grfx.DrawImage(m_bmpOverlay, m_rcFullImageRect);
+                }
 
 				// Now we no longer need the masked image.
 				bmpMasked.Dispose();

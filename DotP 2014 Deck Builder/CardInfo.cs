@@ -263,21 +263,25 @@ namespace RSN.DotP
 						{
 							Point ptLocation = new Point(0, 0);
 							Bitmap bmpImage = new Bitmap(m_nManaIconShiftX * lstTokens.Count, m_nManaIconShiftY);
-							Graphics grfx = Graphics.FromImage(bmpImage);
-							grfx.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.HighQualityBicubic;
-							foreach (string strToken in lstTokens)
-							{
-								string strImg = Tools.CostTokenToImageName(strToken);
-								TdxWrapper twImage = m_gdData.LoadImage(strImg, LoadImageType.Mana);
-								if (twImage != null)
-								{
-									grfx.DrawImage(twImage.Image, new Rectangle(ptLocation.X + m_ptManaIconOffset.X, ptLocation.Y + m_ptManaIconOffset.Y, m_szManaIconTarget.Width, m_szManaIconTarget.Height));
-									if (!Settings.GetSetting("MaintainImageCache", Settings.MAINTAIN_IMAGE_CACHE_DEFAULT))
-										twImage.Dispose();
-								}
-								ptLocation.X += m_nManaIconShiftX;
-							}
-							m_imgCastingCost = bmpImage;
+                            using (Graphics grfx = Graphics.FromImage(bmpImage))
+                            {
+                                grfx.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.HighQualityBicubic;
+                                foreach (string strToken in lstTokens)
+                                {
+                                    string strImg = Tools.CostTokenToImageName(strToken);
+                                    TdxWrapper twImage = m_gdData.LoadImage(strImg, LoadImageType.Mana);
+                                    if (twImage != null)
+                                    {
+                                        grfx.DrawImage(twImage.Image, new Rectangle(ptLocation.X + m_ptManaIconOffset.X, ptLocation.Y + m_ptManaIconOffset.Y, m_szManaIconTarget.Width, m_szManaIconTarget.Height));
+                                        if (!Settings.GetSetting("MaintainImageCache", Settings.MAINTAIN_IMAGE_CACHE_DEFAULT))
+                                            twImage.Dispose();
+                                    }
+                                    ptLocation.X += m_nManaIconShiftX;
+                                }
+                            }
+                            if (m_imgCastingCost != null)
+                                m_imgCastingCost.Dispose();
+                            m_imgCastingCost = bmpImage;
 						}
 						else
 						{
@@ -743,141 +747,143 @@ namespace RSN.DotP
 							twFrame.Image.RotateFlip(RotateFlipType.Rotate270FlipNone);
 					}
 
-					Graphics grfx = Graphics.FromImage(bmpImage);
-					grfx.Clear(Color.Black);
-					grfx.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.HighQualityBicubic;
+                    using (Graphics grfx = Graphics.FromImage(bmpImage))
+                    {
+                        grfx.Clear(Color.Black);
+                        grfx.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.HighQualityBicubic;
 
-					if ((m_eColours == ColourFlags.Colourless) && ((m_eType & CardType.Artifact) != CardType.Artifact) && ((m_eType & CardType.Land) != CardType.Land))
-					{
-						if (twImage != null)
-							grfx.DrawImage(twImage.Image, m_rcCardImageFull);
-						if (twFrame != null)
-							grfx.DrawImage(twFrame.Image, m_rcCardImageFull);
-						if (m_bToken)
-						{
-							// PT Box gets double duty as Card Name Box for tokens.
-							if (twPTBox != null)
-								grfx.DrawImage(twPTBox.Image, m_rcCardPTBoxAsName);
-						}
-					}
-					else if (!m_bToken)
-					{
-						if (twFrame != null)
-							grfx.DrawImage(twFrame.Image, m_rcCardImageFull);
-						if (twImage != null)
-							grfx.DrawImage(twImage.Image, m_rcCardImagePicture);
-					}
-					else
-					{
-						if (twImage != null)
-							grfx.DrawImage(twImage.Image, m_rcCardImageFull);
-						if (twFrame != null)
-							grfx.DrawImage(twFrame.Image, m_rcCardImageFull);
-						// PT Box gets double duty as Card Name Box for tokens.
-						if (twPTBox != null)
-							grfx.DrawImage(twPTBox.Image, m_rcCardPTBoxAsName);
-					}
+                        if ((m_eColours == ColourFlags.Colourless) && ((m_eType & CardType.Artifact) != CardType.Artifact) && ((m_eType & CardType.Land) != CardType.Land))
+                        {
+                            if (twImage != null)
+                                grfx.DrawImage(twImage.Image, m_rcCardImageFull);
+                            if (twFrame != null)
+                                grfx.DrawImage(twFrame.Image, m_rcCardImageFull);
+                            if (m_bToken)
+                            {
+                                // PT Box gets double duty as Card Name Box for tokens.
+                                if (twPTBox != null)
+                                    grfx.DrawImage(twPTBox.Image, m_rcCardPTBoxAsName);
+                            }
+                        }
+                        else if (!m_bToken)
+                        {
+                            if (twFrame != null)
+                                grfx.DrawImage(twFrame.Image, m_rcCardImageFull);
+                            if (twImage != null)
+                                grfx.DrawImage(twImage.Image, m_rcCardImagePicture);
+                        }
+                        else
+                        {
+                            if (twImage != null)
+                                grfx.DrawImage(twImage.Image, m_rcCardImageFull);
+                            if (twFrame != null)
+                                grfx.DrawImage(twFrame.Image, m_rcCardImageFull);
+                            // PT Box gets double duty as Card Name Box for tokens.
+                            if (twPTBox != null)
+                                grfx.DrawImage(twPTBox.Image, m_rcCardPTBoxAsName);
+                        }
 
-					int nCostWidth = 0;
-					if (m_strCastingCost != null)
-					{
-						List<string> lstTokens = Tools.CostToTokenList(m_strCastingCost);
-						if (lstTokens.Count > 0)
-						{
-							int i = 0;
-							nCostWidth = m_nManaIconShiftX * lstTokens.Count;
-							foreach (string strToken in lstTokens)
-							{
-								string strImg = Tools.CostTokenToImageName(strToken);
-								TdxWrapper twCost = m_gdData.LoadImage(strImg, LoadImageType.Mana);
-								if (twCost != null)
-								{
-									grfx.DrawImage(twCost.Image, new Rectangle(m_ptManaIconStart.X - (m_nManaIconShiftX * (lstTokens.Count - i)), m_ptManaIconStart.Y, m_szManaIconTarget.Width, m_szManaIconTarget.Height));
-									if (!Settings.GetSetting("MaintainImageCache", Settings.MAINTAIN_IMAGE_CACHE_DEFAULT))
-										twCost.Dispose();
-								}
-								i++;
-							}
-						}
-					}
+                        int nCostWidth = 0;
+                        if (m_strCastingCost != null)
+                        {
+                            List<string> lstTokens = Tools.CostToTokenList(m_strCastingCost);
+                            if (lstTokens.Count > 0)
+                            {
+                                int i = 0;
+                                nCostWidth = m_nManaIconShiftX * lstTokens.Count;
+                                foreach (string strToken in lstTokens)
+                                {
+                                    string strImg = Tools.CostTokenToImageName(strToken);
+                                    TdxWrapper twCost = m_gdData.LoadImage(strImg, LoadImageType.Mana);
+                                    if (twCost != null)
+                                    {
+                                        grfx.DrawImage(twCost.Image, new Rectangle(m_ptManaIconStart.X - (m_nManaIconShiftX * (lstTokens.Count - i)), m_ptManaIconStart.Y, m_szManaIconTarget.Width, m_szManaIconTarget.Height));
+                                        if (!Settings.GetSetting("MaintainImageCache", Settings.MAINTAIN_IMAGE_CACHE_DEFAULT))
+                                            twCost.Dispose();
+                                    }
+                                    i++;
+                                }
+                            }
+                        }
 
-					if (m_bToken)
-					{
-						grfx.DrawString(GetLocalizationIfExists(m_dicName, strLangCode), m_ftCardNameFont, m_brCardTextBrush, m_rcCardNameToken, m_sfFullCenter);
-						grfx.DrawString(GetTypeLine(strLangCode), m_ftCardTypeFont, m_brCardTextBrush, m_rcCardTypeLineToken, m_sfLeftCenter);
-						DrawCardText(grfx, m_rcCardTextToken, m_ftCardTextFontRegular, m_ftCardTextFontItalic, m_brCardTextBrush, m_gdData, GetAbilitiesText(strLangCode));
-					}
-					else
-					{
-						Rectangle rcNameLimit = m_rcCardNameRegular;
-						rcNameLimit.Width -= nCostWidth;
-						grfx.DrawString(GetLocalizationIfExists(m_dicName, strLangCode), m_ftCardNameFont, m_brCardTextBrush, rcNameLimit, m_sfLeftCenter);
-						grfx.DrawString(GetTypeLine(strLangCode), m_ftCardTypeFont, m_brCardTextBrush, m_rcCardTypeLineRegular, m_sfLeftCenter);
-						string strLocalizedFlavour = GetLocalizationIfExists(m_dicFlavourText, strLangCode);
-						string strLocalizedAbilities = GetAbilitiesText(strLangCode);
-						if ((strLocalizedAbilities.Length == 0) && (strLocalizedFlavour != null) && (strLocalizedFlavour.Length > 0))
-							DrawCardText(grfx, m_rcCardTextRegular, m_ftCardTextFontRegular, m_ftCardTextFontItalic, m_brCardTextBrush, m_gdData, "|" + strLocalizedFlavour + "|");
-						else if ((strLocalizedFlavour != null) && (strLocalizedFlavour.Length > 0))
-							DrawCardText(grfx, m_rcCardTextRegular, m_ftCardTextFontRegular, m_ftCardTextFontItalic, m_brCardTextBrush, m_gdData, strLocalizedAbilities + "\r\n|" + strLocalizedFlavour + "|");
-						else
-							DrawCardText(grfx, m_rcCardTextRegular, m_ftCardTextFontRegular, m_ftCardTextFontItalic, m_brCardTextBrush, m_gdData, strLocalizedAbilities);
-					}
+                        if (m_bToken)
+                        {
+                            grfx.DrawString(GetLocalizationIfExists(m_dicName, strLangCode), m_ftCardNameFont, m_brCardTextBrush, m_rcCardNameToken, m_sfFullCenter);
+                            grfx.DrawString(GetTypeLine(strLangCode), m_ftCardTypeFont, m_brCardTextBrush, m_rcCardTypeLineToken, m_sfLeftCenter);
+                            DrawCardText(grfx, m_rcCardTextToken, m_ftCardTextFontRegular, m_ftCardTextFontItalic, m_brCardTextBrush, m_gdData, GetAbilitiesText(strLangCode));
+                        }
+                        else
+                        {
+                            Rectangle rcNameLimit = m_rcCardNameRegular;
+                            rcNameLimit.Width -= nCostWidth;
+                            grfx.DrawString(GetLocalizationIfExists(m_dicName, strLangCode), m_ftCardNameFont, m_brCardTextBrush, rcNameLimit, m_sfLeftCenter);
+                            grfx.DrawString(GetTypeLine(strLangCode), m_ftCardTypeFont, m_brCardTextBrush, m_rcCardTypeLineRegular, m_sfLeftCenter);
+                            string strLocalizedFlavour = GetLocalizationIfExists(m_dicFlavourText, strLangCode);
+                            string strLocalizedAbilities = GetAbilitiesText(strLangCode);
+                            if ((strLocalizedAbilities.Length == 0) && (strLocalizedFlavour != null) && (strLocalizedFlavour.Length > 0))
+                                DrawCardText(grfx, m_rcCardTextRegular, m_ftCardTextFontRegular, m_ftCardTextFontItalic, m_brCardTextBrush, m_gdData, "|" + strLocalizedFlavour + "|");
+                            else if ((strLocalizedFlavour != null) && (strLocalizedFlavour.Length > 0))
+                                DrawCardText(grfx, m_rcCardTextRegular, m_ftCardTextFontRegular, m_ftCardTextFontItalic, m_brCardTextBrush, m_gdData, strLocalizedAbilities + "\r\n|" + strLocalizedFlavour + "|");
+                            else
+                                DrawCardText(grfx, m_rcCardTextRegular, m_ftCardTextFontRegular, m_ftCardTextFontItalic, m_brCardTextBrush, m_gdData, strLocalizedAbilities);
+                        }
 
-					// Load up the P/T box if applicable.
-					if ((m_eType & CardType.Creature) == CardType.Creature)
-					{
-						if (twPTBox != null)
-							grfx.DrawImage(twPTBox.Image, m_rcCardPTBox);
-						grfx.DrawString(PowerToughness, m_ftCardNameFont, m_brCardTextBrush, m_rcCardPTBoxText, m_sfFullCenter);
-					}
+                        // Load up the P/T box if applicable.
+                        if ((m_eType & CardType.Creature) == CardType.Creature)
+                        {
+                            if (twPTBox != null)
+                                grfx.DrawImage(twPTBox.Image, m_rcCardPTBox);
+                            grfx.DrawString(PowerToughness, m_ftCardNameFont, m_brCardTextBrush, m_rcCardPTBoxText, m_sfFullCenter);
+                        }
 
-					// Artist Credit
-					string strCreditImage = "CREDIT_BLACK";
-					Brush brArtistBrush = m_brCardTextBrush;
-					if ((kvFrameBox.Key.StartsWith("B", StringComparison.OrdinalIgnoreCase)) ||
-						(kvFrameBox.Key.Equals("C_LAND", StringComparison.OrdinalIgnoreCase)))
-					{
-						strCreditImage = "CREDIT_WHITE";
-						brArtistBrush = m_brCardArtistWhite;
-					}
-					TdxWrapper twCredit = m_gdData.LoadImage(strCreditImage, LoadImageType.Texture);
-					if (twCredit != null)
-						grfx.DrawImage(twCredit.Image, m_rcCardArtistImage);
-					grfx.DrawString(m_strArtist, m_ftCardArtistFont, brArtistBrush, m_ptArtistCredit);
+                        // Artist Credit
+                        string strCreditImage = "CREDIT_BLACK";
+                        Brush brArtistBrush = m_brCardTextBrush;
+                        if ((kvFrameBox.Key.StartsWith("B", StringComparison.OrdinalIgnoreCase)) ||
+                            (kvFrameBox.Key.Equals("C_LAND", StringComparison.OrdinalIgnoreCase)))
+                        {
+                            strCreditImage = "CREDIT_WHITE";
+                            brArtistBrush = m_brCardArtistWhite;
+                        }
+                        TdxWrapper twCredit = m_gdData.LoadImage(strCreditImage, LoadImageType.Texture);
+                        if (twCredit != null)
+                            grfx.DrawImage(twCredit.Image, m_rcCardArtistImage);
+                        grfx.DrawString(m_strArtist, m_ftCardArtistFont, brArtistBrush, m_ptArtistCredit);
 
-					// Now we can put on the expansion image (Only those images from DotP 2013 supported, sorry no real expansion images)
-					string strExpansion = Tools.CardRarityToImageName(m_eRarity);
-					if (strExpansion != null)
-					{
-						TdxWrapper twExpansion = m_gdData.LoadImage(strExpansion, LoadImageType.Texture);
-						if (twExpansion != null)
-						{
-							grfx.DrawImage(twExpansion.Image, m_rcCardExpansionImage);
-							if (!Settings.GetSetting("MaintainImageCache", Settings.MAINTAIN_IMAGE_CACHE_DEFAULT))
-								twExpansion.Dispose();
-						}
-					}
+                        // Now we can put on the expansion image (Only those images from DotP 2013 supported, sorry no real expansion images)
+                        string strExpansion = Tools.CardRarityToImageName(m_eRarity);
+                        if (strExpansion != null)
+                        {
+                            TdxWrapper twExpansion = m_gdData.LoadImage(strExpansion, LoadImageType.Texture);
+                            if (twExpansion != null)
+                            {
+                                grfx.DrawImage(twExpansion.Image, m_rcCardExpansionImage);
+                                if (!Settings.GetSetting("MaintainImageCache", Settings.MAINTAIN_IMAGE_CACHE_DEFAULT))
+                                    twExpansion.Dispose();
+                            }
+                        }
 
-					if (Settings.GetSetting("MaintainImageCache", Settings.MAINTAIN_IMAGE_CACHE_DEFAULT))
-					{
-						// Now that we've generated the image we should store it so we don't need to re-generate.
-						if (m_dicCardPreview.ContainsKey(strLangCode))
-							m_dicCardPreview[strLangCode] = bmpImage;
-						else
-							m_dicCardPreview.Add(strLangCode, bmpImage);
-					}
-					else
-					{
-						// Since we aren't keeping the image cache then we need to dispose of all our images.
-						if (twFrame != null)
-							twFrame.Dispose();
-						if (twImage != null)
-							twImage.Dispose();
-						if (twPTBox != null)
-							twPTBox.Dispose();
-						if (twCredit != null)
-							twCredit.Dispose();
-					}
+                        if (Settings.GetSetting("MaintainImageCache", Settings.MAINTAIN_IMAGE_CACHE_DEFAULT))
+                        {
+                            // Now that we've generated the image we should store it so we don't need to re-generate.
+                            if (m_dicCardPreview.ContainsKey(strLangCode))
+                                m_dicCardPreview[strLangCode] = bmpImage;
+                            else
+                                m_dicCardPreview.Add(strLangCode, bmpImage);
+                        }
+                        else
+                        {
+                            // Since we aren't keeping the image cache then we need to dispose of all our images.
+                            if (twFrame != null)
+                                twFrame.Dispose();
+                            if (twImage != null)
+                                twImage.Dispose();
+                            if (twPTBox != null)
+                                twPTBox.Dispose();
+                            if (twCredit != null)
+                                twCredit.Dispose();
+                        }
+                    }
 				}
 			}
 
