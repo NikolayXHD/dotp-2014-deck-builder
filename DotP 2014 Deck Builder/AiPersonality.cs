@@ -112,37 +112,41 @@ namespace RSN.DotP
 				m_bmpLargeAvatarImage = XmlTools.ImageFromNode(xnNode["LargeAvatar"]);
 			else
 			{
-				TdxWrapper twAvatar = gdData.LoadImage(m_strLargeAvatarImage, LoadImageType.Personality);
-				if (twAvatar != null)
-					m_bmpLargeAvatarImage = twAvatar.Image;
-			}
+                TdxWrapper twAvatar = gdData.LoadImage(m_strLargeAvatarImage, LoadImageType.Personality);
+                if (twAvatar != null)
+                    m_bmpLargeAvatarImage = twAvatar.Image;
+                twAvatar.Dispose();
+            }
 
 			if (xnNode["SmallAvatar"] != null)
 				m_bmpSmallAvatarImage = XmlTools.ImageFromNode(xnNode["SmallAvatar"]);
 			else
 			{
-				TdxWrapper twAvatar = gdData.LoadImage(m_strSmallAvatarImage, LoadImageType.Personality);
-				if (twAvatar != null)
-					m_bmpSmallAvatarImage = twAvatar.Image;
-			}
+                TdxWrapper twAvatar = gdData.LoadImage(m_strSmallAvatarImage, LoadImageType.Personality);
+                if (twAvatar != null)
+                    m_bmpSmallAvatarImage = twAvatar.Image;
+                twAvatar.Dispose();
+            }
 
 			if (xnNode["SmallAvatarLocked"] != null)
 				m_bmpSmallAvatarLockedImage = XmlTools.ImageFromNode(xnNode["SmallAvatarLocked"]);
 			else if ((m_strSmallAvatarLockedImage != null) && (m_strSmallAvatarLockedImage.Length > 0))
 			{
-				TdxWrapper twAvatar = gdData.LoadImage(m_strSmallAvatarLockedImage, LoadImageType.Personality);
-				if (twAvatar != null)
-					m_bmpSmallAvatarLockedImage = twAvatar.Image;
-			}
+                TdxWrapper twAvatar = gdData.LoadImage(m_strSmallAvatarLockedImage, LoadImageType.Personality);
+                if (twAvatar != null)
+                    m_bmpSmallAvatarLockedImage = twAvatar.Image;
+                twAvatar.Dispose();
+            }
 
 			if (xnNode["LobbyImage"] != null)
 				m_bmpLobbyImage = XmlTools.ImageFromNode(xnNode["LobbyImage"]);
 			else
 			{
-				TdxWrapper twAvatar = gdData.LoadImage(m_strLobbyImage, LoadImageType.Personality);
-				if (twAvatar != null)
-					m_bmpLobbyImage = twAvatar.Image;
-			}
+                TdxWrapper twAvatar = gdData.LoadImage(m_strLobbyImage, LoadImageType.Personality);
+                if (twAvatar != null)
+                    m_bmpLobbyImage = twAvatar.Image;
+                twAvatar.Dispose();
+            }
 		}
 
 		public string Filename
@@ -344,5 +348,30 @@ namespace RSN.DotP
 			if (PropertyChanged != null)
 				PropertyChanged(this, new PropertyChangedEventArgs(strProp));
 		}
+
+        public void Dispose()
+        {
+            //public event PropertyChangedEventHandler PropertyChanged;
+            if (m_bmpLargeAvatarImage != null)
+            {
+                m_bmpLargeAvatarImage.Dispose();
+                m_bmpLargeAvatarImage = null;
+            }
+            if (m_bmpSmallAvatarImage != null)
+            {
+                m_bmpSmallAvatarImage.Dispose();
+                m_bmpSmallAvatarImage = null;
+            }
+            if (m_bmpSmallAvatarLockedImage != null)
+            {
+                m_bmpSmallAvatarLockedImage.Dispose();
+                m_bmpSmallAvatarLockedImage = null;
+            }
+            if (m_bmpLobbyImage != null)
+            {
+                m_bmpLobbyImage.Dispose();
+                m_bmpLobbyImage = null;
+            }
+        }
 	}
 }

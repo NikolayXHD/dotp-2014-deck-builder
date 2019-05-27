@@ -465,5 +465,56 @@ namespace RSN.DotP
 				}
 			}
 		}
+
+        public void Dispose()
+        {
+            if (m_lstWads != null && m_lstWads.Count > 0)
+            {
+                foreach (var W in m_lstWads)
+                {
+                    W.Dispose();
+                }
+                m_lstWads.Clear();
+                m_lstWads = null;
+            }
+            if (m_lstCards != null && m_lstCards.Count > 0)
+            {
+                foreach (var C in m_lstCards)
+                {
+                    C.Dispose();
+                }
+                m_lstCards.Clear();
+                m_lstCards = null;
+            }
+            if (m_lstDecks != null && m_lstDecks.Count > 0)
+            {
+                foreach (var D in m_lstDecks)
+                {
+                    D.Dispose();
+                }
+                m_lstDecks.Clear();
+                m_lstDecks = null;
+            }
+            if (m_dicImages != null && m_dicImages.Count > 0)
+            {
+                foreach (var W in m_dicImages.Values)
+                {
+                    W.Dispose();
+                }
+                m_dicImages.Clear();
+                m_dicImages = null;
+            }
+            if (m_dicCachedImages != null && m_dicCachedImages.Count > 0)
+            {
+                foreach (var T in m_dicCachedImages.Values)
+                {
+                    T.Dispose();
+                }
+                m_dicCachedImages.Clear();
+                m_dicCachedImages = null;
+            }
+            m_dicCachedImages = null;
+            m_dicPersonalities = null;
+        }
 	}
 }

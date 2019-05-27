@@ -485,5 +485,68 @@ namespace RSN.DotP
 				return CreateHeader(whiInfo);
 			}
 		}
+
+        public void Dispose()
+        {
+            if (m_dicCachedImages != null && m_dicCachedImages.Count >0)
+            {
+                foreach (var T in m_dicCachedImages.Values)
+                {
+                    T.Dispose();
+                }
+                m_dicCachedImages.Clear();
+                m_dicCachedImages = null;
+            }
+            if (m_lstCards != null && m_lstCards.Count > 0)
+            {
+                foreach (var C in m_lstCards)
+                {
+                    C.Dispose();
+                }
+                m_lstCards.Clear();
+                m_lstCards = null;
+            }
+            if (m_lstDecks != null && m_lstDecks.Count > 0)
+            {
+                foreach (var D in m_lstDecks)
+                {
+                    D.Dispose();
+                }
+                m_lstDecks.Clear();
+                m_lstDecks = null;
+            }
+            if (m_lstPersonalities != null && m_lstPersonalities.Count > 0)
+            {
+                foreach (var P in m_lstPersonalities)
+                {
+                    P.Dispose();
+                }
+                m_lstPersonalities.Clear();
+                m_lstPersonalities = null;
+            }
+            if (m_lstPersonalities != null && m_lstPersonalities.Count > 0)
+            {
+                foreach (var P in m_lstPersonalities)
+                {
+                    P.Dispose();
+                }
+                m_lstPersonalities.Clear();
+                m_lstPersonalities = null;
+            }
+            if (m_sdicOutputFiles != null && m_sdicOutputFiles.Count > 0)
+            {
+                foreach (var MS in m_sdicOutputFiles.Values)
+                {
+                    MS.Dispose();
+                }
+                m_sdicOutputFiles.Clear();
+                m_sdicOutputFiles = null;
+            }
+            //if (m_xdHeader != null)
+            //{
+            //    m_xdHeader.Dispose();
+            //    m_xdHeader = null;
+            //}
+        }
 	}
 }

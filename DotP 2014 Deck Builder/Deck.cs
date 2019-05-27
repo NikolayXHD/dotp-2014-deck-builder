@@ -1537,5 +1537,42 @@ namespace RSN.DotP
 
 			return lstCards;
 		}
+
+        public void Dispose()
+        {
+            if (m_apPersonality != null)
+            {
+                m_apPersonality.Dispose();
+                m_apPersonality = null;
+            }
+            if (m_bmpDeckBoxImage != null)
+            {
+                m_bmpDeckBoxImage.Dispose();
+                m_bmpDeckBoxImage = null;
+            }
+            if (m_lstCards != null && m_lstCards.Count > 0)
+            {
+                foreach (var C in m_lstCards)
+                {
+                    C.Dispose();
+                }
+                m_lstCards = null;
+            }
+            if  (m_dkLandPool != null)
+            {
+                m_dkLandPool.Dispose();
+                m_dkLandPool = null;
+            }
+            if (m_duUnlocksRegular != null)
+            {
+                m_duUnlocksRegular.Dispose();
+                m_duUnlocksRegular = null;
+            }
+            if (m_duUnlocksPromo != null)
+            {
+                m_duUnlocksPromo.Dispose();
+                m_duUnlocksPromo = null;
+            }
+        }
 	}
 }

@@ -54,7 +54,11 @@ namespace RSN.DotP
 		private Dictionary<DataGridViewColumn, PropertyInfo> m_dicColumnMap;
 		private MethodInfo m_miCustomTagValue;
 
-		private enum DeckLocation
+        //Tells the refresh worker to make a new deck after the first time it runs.
+        private bool FirstRefresh = true;
+
+
+        private enum DeckLocation
 		{
 			MainDeck = 0,
 			RegularUnlocks,
@@ -65,8 +69,8 @@ namespace RSN.DotP
 		{
 			InitializeComponent();
 
-			// This will set the double buffering for the Data Grids well before we start loading data.
-			SetDoubleBufferingForDataGrids();
+            // This will set the double buffering for the Data Grids well before we start loading data.
+            SetDoubleBufferingForDataGrids();
 
 			Settings.InitDefaults();
 			Settings.LoadSettings();
@@ -204,150 +208,160 @@ namespace RSN.DotP
 
 		public void RefreshGameData()
 		{
-			this.Cursor = Cursors.WaitCursor;
-			m_strGameDirectory = Settings.GetSetting("DotP2014Directory", m_strGameDirectory);
-			m_gdWads = new GameDirectory(m_strGameDirectory);
-			m_gdWads.LoadMusic();
-			m_gdWads.LoadWads();
-			bool bFirstSetup = SetupCardList();
-			m_bsCards = new BindingSource();
-			if ((Settings.GetSetting("Filtering", true)) && (Settings.GetSetting("AdvancedFiltering", false)) && (m_cfsCardFilterAdvanced != null))
-				m_bsCards.DataSource = new SortableBindingList<CardInfo>(m_gdWads.Cards.Where(x => m_cfsCardFilterAdvanced.IsAllowed(x)));
-			else if ((Settings.GetSetting("Filtering", true)) && (m_fltCardFilter != null))
-				m_bsCards.DataSource = new SortableBindingList<CardInfo>(m_gdWads.Cards.Where(x => m_fltCardFilter.CheckAgainstFilter(x)));
-			else
-				m_bsCards.DataSource = m_gdWads.Cards;
-			//dgvCards.DataSource = m_bsCards;
-			dgvCards.RowCount = ((SortableBindingList<CardInfo>)m_bsCards.DataSource).Count;
-			// Update status numbers.
-			sslblLoadedCardsNum.Text = m_gdWads.Cards.Count.ToString();
-			sslblCardsInListNum.Text = ((SortableBindingList<CardInfo>)m_bsCards.DataSource).Count.ToString();
-			// Restore the previous sort.
-			RestoreCardSort();
-			if (bFirstSetup)
-			{
-				foreach (DataGridViewColumn dgvc in dgvCards.Columns)
-					dgvc.Width = dgvc.GetPreferredWidth(DataGridViewAutoSizeColumnMode.DisplayedCells, true);
-			}
-			// Refresh preview card (if any)
-			if (m_ciCurrentViewingCard != null)
-			{
-				string strCard = m_ciCurrentViewingCard.Filename;
-				m_ciCurrentViewingCard = m_gdWads.GetCardByFileName(strCard);
-				ShowCardInfo(m_ciCurrentViewingCard);
-			}
+            this.Cursor = Cursors.WaitCursor;
+            this.Enabled = false;
 
-			// Check to see if we have read/write access to directory.
-			bool bHasWriteAccess = false;	// We assume no access by default.
-			try
-			{
-				DirectorySecurity dsDir = Directory.GetAccessControl(m_gdWads.GameDir);
-				if (dsDir != null)
-				{
-					AuthorizationRuleCollection arcRules = dsDir.GetAccessRules(true, true, typeof(SecurityIdentifier));
-					bool bHasCreateDirs = false;
-					bool bHasCreateFiles = false;
-					bool bHasDelete = false;
-					bool bHasWrite = false;
-					foreach (FileSystemAccessRule fsarRule in arcRules)
-					{
-						// Create Directories
-						if ((fsarRule.FileSystemRights & FileSystemRights.CreateDirectories) == FileSystemRights.CreateDirectories)
-						{
-							if (fsarRule.AccessControlType == AccessControlType.Allow)
-							{
-								// We will allow access if there is an Allow.
-								bHasCreateDirs = true;
-							}
-							else if (fsarRule.AccessControlType == AccessControlType.Deny)
-							{
-								// If there is a Deny then it doesn't matter if we have previously come across any Allows.
-								bHasCreateDirs = false;
-								break;
-							}
-						}
-						// Create Files
-						if ((fsarRule.FileSystemRights & FileSystemRights.CreateFiles) == FileSystemRights.CreateFiles)
-						{
-							if (fsarRule.AccessControlType == AccessControlType.Allow)
-							{
-								// We will allow access if there is an Allow.
-								bHasCreateFiles = true;
-							}
-							else if (fsarRule.AccessControlType == AccessControlType.Deny)
-							{
-								// If there is a Deny then it doesn't matter if we have previously come across any Allows.
-								bHasCreateFiles = false;
-								break;
-							}
-						}
-						// Delete
-						if ((fsarRule.FileSystemRights & FileSystemRights.DeleteSubdirectoriesAndFiles) == FileSystemRights.DeleteSubdirectoriesAndFiles)
-						{
-							if (fsarRule.AccessControlType == AccessControlType.Allow)
-							{
-								// We will allow access if there is an Allow.
-								bHasDelete = true;
-							}
-							else if (fsarRule.AccessControlType == AccessControlType.Deny)
-							{
-								// If there is a Deny then it doesn't matter if we have previously come across any Allows.
-								bHasDelete = false;
-								break;
-							}
-						}
-						// Write
-						if ((fsarRule.FileSystemRights & FileSystemRights.Write) == FileSystemRights.Write)
-						{
-							if (fsarRule.AccessControlType == AccessControlType.Allow)
-							{
-								// We will allow access if there is an Allow.
-								bHasWrite = true;
-							}
-							else if (fsarRule.AccessControlType == AccessControlType.Deny)
-							{
-								// If there is a Deny then it doesn't matter if we have previously come across any Allows.
-								bHasWrite = false;
-								break;
-							}
-						}
-					}
-					bHasWriteAccess = bHasCreateDirs && bHasCreateFiles && bHasDelete && bHasWrite;
-				}
-			}
-			catch (Exception e)
-			{
-				Settings.ReportError(e, ErrorPriority.High, "Builder does not have Write access to game directory, exporting and some other features will be disabled.");
-			}
-			if (bHasWriteAccess)
-			{
-				mnuiFileExportTo.Enabled = true;
-			}
-			else
-			{
-				mnuiFileExportTo.Enabled = false;
-			}
+            m_strGameDirectory = Settings.GetSetting("DotP2014Directory", m_strGameDirectory);
+            if (m_gdWads != null)
+            {
+                m_gdWads.Dispose();
+                m_dkWorking.Dispose();
+                m_gdWads = null;
+                m_bsCards = null;
+            }
+            m_gdWads = new GameDirectory(m_strGameDirectory);
+            m_gdWads.LoadMusic();
+            m_gdWads.LoadWads();
+            bool bFirstSetup = SetupCardList();
+            m_bsCards = new BindingSource();
+            if ((Settings.GetSetting("Filtering", true)) && (Settings.GetSetting("AdvancedFiltering", false)) && (m_cfsCardFilterAdvanced != null))
+                m_bsCards.DataSource = new SortableBindingList<CardInfo>(m_gdWads.Cards.Where(x => m_cfsCardFilterAdvanced.IsAllowed(x)));
+            else if ((Settings.GetSetting("Filtering", true)) && (m_fltCardFilter != null))
+                m_bsCards.DataSource = new SortableBindingList<CardInfo>(m_gdWads.Cards.Where(x => m_fltCardFilter.CheckAgainstFilter(x)));
+            else
+                m_bsCards.DataSource = m_gdWads.Cards;
+            //dgvCards.DataSource = m_bsCards;
+            dgvCards.RowCount = ((SortableBindingList<CardInfo>)m_bsCards.DataSource).Count;
+            // Update status numbers.
+            sslblLoadedCardsNum.Text = m_gdWads.Cards.Count.ToString();
+            sslblCardsInListNum.Text = ((SortableBindingList<CardInfo>)m_bsCards.DataSource).Count.ToString();
+            // Restore the previous sort.
+            RestoreCardSort();
+            if (bFirstSetup)
+            {
+                foreach (DataGridViewColumn dgvc in dgvCards.Columns)
+                    dgvc.Width = dgvc.GetPreferredWidth(DataGridViewAutoSizeColumnMode.DisplayedCells, true);
+            }
+            // Refresh preview card (if any)
+            if (m_ciCurrentViewingCard != null)
+            {
+                string strCard = m_ciCurrentViewingCard.Filename;
+                m_ciCurrentViewingCard = m_gdWads.GetCardByFileName(strCard);
+                ShowCardInfo(m_ciCurrentViewingCard);
+            }
 
-			// Check to see if our custom data exists.
-			bool bFound = false;
-			foreach (WadBase wad in m_gdWads.LoadedWads)
-			{
-				if (wad.Name.Equals(DECK_BUILDER_CUSTOM_DATA_WAD_NAME, StringComparison.OrdinalIgnoreCase))
-				{
-					bFound = true;
-					break;
-				}
-			}
-			if (bHasWriteAccess)
-				mnuiToolsSetupCustomData.Enabled = !bFound;
-			else
-				mnuiToolsSetupCustomData.Enabled = false;
-			mnuiToolsCreateCoreWad.Enabled = bFound;
+            // Check to see if we have read/write access to directory.
+            bool bHasWriteAccess = false;   // We assume no access by default.
+            try
+            {
+                DirectorySecurity dsDir = Directory.GetAccessControl(m_gdWads.GameDir);
+                if (dsDir != null)
+                {
+                    AuthorizationRuleCollection arcRules = dsDir.GetAccessRules(true, true, typeof(SecurityIdentifier));
+                    bool bHasCreateDirs = false;
+                    bool bHasCreateFiles = false;
+                    bool bHasDelete = false;
+                    bool bHasWrite = false;
+                    foreach (FileSystemAccessRule fsarRule in arcRules)
+                    {
+                        // Create Directories
+                        if ((fsarRule.FileSystemRights & FileSystemRights.CreateDirectories) == FileSystemRights.CreateDirectories)
+                        {
+                            if (fsarRule.AccessControlType == AccessControlType.Allow)
+                            {
+                                // We will allow access if there is an Allow.
+                                bHasCreateDirs = true;
+                            }
+                            else if (fsarRule.AccessControlType == AccessControlType.Deny)
+                            {
+                                // If there is a Deny then it doesn't matter if we have previously come across any Allows.
+                                bHasCreateDirs = false;
+                                break;
+                            }
+                        }
+                        // Create Files
+                        if ((fsarRule.FileSystemRights & FileSystemRights.CreateFiles) == FileSystemRights.CreateFiles)
+                        {
+                            if (fsarRule.AccessControlType == AccessControlType.Allow)
+                            {
+                                // We will allow access if there is an Allow.
+                                bHasCreateFiles = true;
+                            }
+                            else if (fsarRule.AccessControlType == AccessControlType.Deny)
+                            {
+                                // If there is a Deny then it doesn't matter if we have previously come across any Allows.
+                                bHasCreateFiles = false;
+                                break;
+                            }
+                        }
+                        // Delete
+                        if ((fsarRule.FileSystemRights & FileSystemRights.DeleteSubdirectoriesAndFiles) == FileSystemRights.DeleteSubdirectoriesAndFiles)
+                        {
+                            if (fsarRule.AccessControlType == AccessControlType.Allow)
+                            {
+                                // We will allow access if there is an Allow.
+                                bHasDelete = true;
+                            }
+                            else if (fsarRule.AccessControlType == AccessControlType.Deny)
+                            {
+                                // If there is a Deny then it doesn't matter if we have previously come across any Allows.
+                                bHasDelete = false;
+                                break;
+                            }
+                        }
+                        // Write
+                        if ((fsarRule.FileSystemRights & FileSystemRights.Write) == FileSystemRights.Write)
+                        {
+                            if (fsarRule.AccessControlType == AccessControlType.Allow)
+                            {
+                                // We will allow access if there is an Allow.
+                                bHasWrite = true;
+                            }
+                            else if (fsarRule.AccessControlType == AccessControlType.Deny)
+                            {
+                                // If there is a Deny then it doesn't matter if we have previously come across any Allows.
+                                bHasWrite = false;
+                                break;
+                            }
+                        }
+                    }
+                    bHasWriteAccess = bHasCreateDirs && bHasCreateFiles && bHasDelete && bHasWrite;
+                }
+            }
+            catch (Exception ex)
+            {
+                Settings.ReportError(ex, ErrorPriority.High, "Builder does not have Write access to game directory, exporting and some other features will be disabled.");
+            }
+            if (bHasWriteAccess)
+            {
+                mnuiFileExportTo.Enabled = true;
+            }
+            else
+            {
+                mnuiFileExportTo.Enabled = false;
+            }
 
-			this.Cursor = Cursors.Default;
-		}
+            // Check to see if our custom data exists.
+            bool bFound = false;
+            foreach (WadBase wad in m_gdWads.LoadedWads)
+            {
+                if (wad.Name.Equals(DECK_BUILDER_CUSTOM_DATA_WAD_NAME, StringComparison.OrdinalIgnoreCase))
+                {
+                    bFound = true;
+                    break;
+                }
+            }
+            if (bHasWriteAccess)
+                mnuiToolsSetupCustomData.Enabled = !bFound;
+            else
+                mnuiToolsSetupCustomData.Enabled = false;
+            mnuiToolsCreateCoreWad.Enabled = bFound;
 
-		private void RestoreCardSort()
+            this.Enabled = true;
+            this.Cursor = Cursors.Default;
+        }
+
+        private void RestoreCardSort()
 		{
 			// Load the list
 			List<ColumnSort> lstSort = Settings.GetSerializableSetting("CardViewSort", new List<ColumnSort>());
@@ -788,17 +802,18 @@ namespace RSN.DotP
 				frmOptions.ShowDialog(this);
 			}
 			RefreshGameData();
-			// We just started the program so give us a new deck to work with.
-			mnuiFileNew_Click(null, null);
 
-			// Check to see if there were any errors during load.
-			if (Settings.ErrorLog.Opened)
-			{
-				// Error log was opened so we have errors, now we need to show them to user.
-				ErrorReportWindow frmErrors = new ErrorReportWindow(Settings.ErrorLog);
-				frmErrors.Show(this);
-			}
-		}
+            // We just started the program so give us a new deck to work with.
+            mnuiFileNew_Click(null, null);
+
+            // Check to see if there were any errors during load.
+            if (Settings.ErrorLog.Opened)
+            {
+                // Error log was opened so we have errors, now we need to show them to user.
+                ErrorReportWindow frmErrors = new ErrorReportWindow(Settings.ErrorLog);
+                frmErrors.Show(this);
+            }
+        }
 
 		private void cmdClearFilters_Click(object sender, EventArgs e)
 		{

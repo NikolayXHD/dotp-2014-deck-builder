@@ -1498,5 +1498,83 @@ namespace RSN.DotP
 			else
 				return default(V);
 		}
+
+        public void Dispose()
+        {
+            if (m_dicCastingCostCache != null && m_dicCastingCostCache.Count > 0)
+            {
+                foreach (var B in m_dicCastingCostCache.Values)
+                {
+                    B.Dispose();
+                }
+                m_dicCastingCostCache.Clear();
+                m_dicCastingCostCache = null;
+            }
+            if (m_imgCastingCost != null)
+            {
+                m_imgCastingCost.Dispose();
+                m_imgCastingCost = null;
+            }
+            m_gdData = null;
+            if (m_dicCardPreview != null && m_dicCardPreview.Count > 0)
+            {
+                foreach (var B in m_dicCardPreview.Values)
+                {
+                    B.Dispose();
+                }
+                m_dicCardPreview.Clear();
+                m_dicCardPreview = null;
+            }
+            if (m_ftCardArtistFont != null)
+            {
+                m_ftCardArtistFont.Dispose();
+                m_ftCardArtistFont = null;
+            }
+            if (m_ftCardNameFont != null)
+            {
+                m_ftCardNameFont.Dispose();
+                m_ftCardNameFont = null;
+            }
+            if (m_ftCardTypeFont != null)
+            {
+                m_ftCardTypeFont.Dispose();
+                m_ftCardTypeFont = null;
+            }
+            if (m_ftCardTextFontRegular != null)
+            {
+                m_ftCardTextFontRegular.Dispose();
+                m_ftCardTextFontRegular = null;
+            }
+            if (m_ftCardTextFontItalic != null)
+            {
+                m_ftCardTextFontItalic.Dispose();
+                m_ftCardTextFontItalic = null;
+            }
+            if (m_brCardTextBrush != null)
+            {
+                m_brCardTextBrush.Dispose();
+                m_brCardTextBrush = null;
+            }
+            if (m_brCardArtistWhite != null)
+            {
+                m_brCardArtistWhite.Dispose();
+                m_brCardArtistWhite = null;
+            }
+            if (m_sfFullCenter != null)
+            {
+                m_sfFullCenter.Dispose();
+                m_sfFullCenter = null;
+            }
+            if (m_sfLeftCenter != null)
+            {
+                m_sfLeftCenter.Dispose();
+                m_sfLeftCenter = null;
+            }
+            if (m_sfCardText != null)
+            {
+                m_sfCardText.Dispose();
+                m_sfCardText = null;
+            }
+        }
 	}
 }

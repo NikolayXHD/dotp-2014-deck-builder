@@ -155,5 +155,16 @@ namespace RSN.DotP
 		{
 			get { return m_ciCard.Token; }
 		}
+
+        public void Dispose()
+        {
+            if (PropertyChanged != null)
+                PropertyChanged = null;
+            if (m_ciCard != null)
+            {
+                m_ciCard.Dispose();
+                m_ciCard = null;
+            }
+        }
 	}
 }

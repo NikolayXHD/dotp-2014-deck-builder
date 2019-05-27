@@ -292,5 +292,18 @@ namespace RSN.DotP
 		{
 			return RemoveCard(dcCard.Card, nQuantity);
 		}
+
+        public void Dispose()
+        {
+            if (m_lstCards != null && m_lstCards.Count > 0)
+            {
+                foreach (var C in m_lstCards)
+                {
+                    C.Dispose();
+                }
+                m_lstCards.Clear();
+                m_lstCards = null;
+            }
+        }
 	}
 }
