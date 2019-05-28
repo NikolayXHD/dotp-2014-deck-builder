@@ -237,34 +237,30 @@ namespace RSN.DotP
 							m_dicDeckDescription = gdData.StringTable[strDeckDescriptionName];
 					}
 
-					// Look to see if we have an embedded personality tag.
-					if (xnDeck["AiPersonality"] != null)
-						m_apPersonality = new AiPersonality(gdData, xnDeck["AiPersonality"]);
-					else if (m_strPersonality.Length > 0)
-					{
-						// We may be using a built-in personality so try to find it.
-						if (gdData.Personalities.ContainsKey(m_strPersonality.ToUpper()))
-							m_apPersonality = gdData.Personalities[m_strPersonality.ToUpper()];
-						else
-							m_apPersonality = new AiPersonality();
-					}
+                    // Look to see if we have an embedded personality tag.
+                    if (xnDeck["AiPersonality"] != null)
+                        m_apPersonality = new AiPersonality(gdData, xnDeck["AiPersonality"]);
+                    else if (m_strPersonality.Length > 0)
+                    {
+                        // We may be using a built-in personality so try to find it.
+                        if (gdData.Personalities.ContainsKey(m_strPersonality.ToUpper()))
+                            m_apPersonality = gdData.Personalities[m_strPersonality.ToUpper()];
+                        else
+                            m_apPersonality = new AiPersonality();
+                    }
 
-					// The file may also have another deck (the land pool) buried inside if this is an "unfinished" deck.
-					if (xnDeck["LandPool"] != null)
-						m_dkLandPool = new Deck(gdData, string.Empty, xnDeck["LandPool"].InnerXml.Trim(), m_strWad, true);
+                    // The file may also have another deck (the land pool) buried inside if this is an "unfinished" deck.
+                    if (xnDeck["LandPool"] != null)
+                        m_dkLandPool = new Deck(gdData, string.Empty, xnDeck["LandPool"].InnerXml.Trim(), m_strWad, true);
 
-					if (xnDeck["RegularUnlocks"] != null)
-						m_duUnlocksRegular = new DeckUnlocks(gdData, xnDeck["RegularUnlocks"], false);
+                    if (xnDeck["RegularUnlocks"] != null)
+                        m_duUnlocksRegular = new DeckUnlocks(gdData, xnDeck["RegularUnlocks"], false);
 
-					if (xnDeck["PromoUnlocks"] != null)
-						m_duUnlocksPromo = new DeckUnlocks(gdData, xnDeck["PromoUnlocks"], true);
+                    if (xnDeck["PromoUnlocks"] != null)
+                        m_duUnlocksPromo = new DeckUnlocks(gdData, xnDeck["PromoUnlocks"], true);
 
                     if (xnDeck["DeckBoxImage"] != null)
-                    {
-                        if (m_bmpDeckBoxImage != null)
-                            m_bmpDeckBoxImage.Dispose();
                         m_bmpDeckBoxImage = XmlTools.ImageFromNode(xnDeck["DeckBoxImage"]);
-                    }
 
 					if (xnDeck["ColourOverride"] != null)
 					{

@@ -110,14 +110,19 @@ namespace RSN.DotP
 
             if (xnNode["LargeAvatar"] != null)
             {
-                m_bmpLargeAvatarImage.Dispose();
+                if (m_bmpLargeAvatarImage != null)
+                    m_bmpLargeAvatarImage.Dispose();
                 m_bmpLargeAvatarImage = XmlTools.ImageFromNode(xnNode["LargeAvatar"]);
             }
             else
             {
                 TdxWrapper twAvatar = gdData.LoadImage(m_strLargeAvatarImage, LoadImageType.Personality);
                 if (twAvatar != null)
-                    m_bmpLargeAvatarImage = twAvatar.Image;
+                {
+                    if (m_bmpLargeAvatarImage != null)
+                        m_bmpLargeAvatarImage.Dispose();
+                    m_bmpLargeAvatarImage = (Bitmap)twAvatar.Image.Clone();
+                }
                 twAvatar.Dispose();
             }
 
@@ -134,7 +139,7 @@ namespace RSN.DotP
                 {
                     if (m_bmpSmallAvatarImage != null)
                         m_bmpSmallAvatarImage.Dispose();
-                    m_bmpSmallAvatarImage = twAvatar.Image;
+                    m_bmpSmallAvatarImage = (Bitmap)twAvatar.Image.Clone();
                 }
                 twAvatar.Dispose();
             }
@@ -152,7 +157,7 @@ namespace RSN.DotP
                 {
                     if (m_bmpSmallAvatarLockedImage != null)
                         m_bmpSmallAvatarLockedImage.Dispose();
-                    m_bmpSmallAvatarLockedImage = twAvatar.Image;
+                    m_bmpSmallAvatarLockedImage = (Bitmap)twAvatar.Image.Clone();
                     twAvatar.Dispose();
                 }
             }
@@ -172,7 +177,7 @@ namespace RSN.DotP
                 {
                     if (m_bmpLobbyImage != null)
                         m_bmpLobbyImage.Dispose();
-                    m_bmpLobbyImage = twAvatar.Image;
+                    m_bmpLobbyImage = (Bitmap)twAvatar.Image.Clone();
                 }
                 twAvatar.Dispose();
             }
