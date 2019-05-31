@@ -130,9 +130,27 @@ namespace RSN.DotP
 		BoolIsNot,
 	}
 
-	public enum FilterEnumComparisonType
-	{
-		EnumIs = 0,
-		EnumIsNot,
-	}
+    public enum FilterEnumComparisonType
+    {
+        EnumIs = 0,
+        EnumIsNot,
+    }
+
+    public enum FilterLegalityComparisonType
+    {
+        Equal = 0,
+        GreaterThan,
+        GreaterThanOrEqualTo,
+        LessThan,
+        LessThanOrEqualTo,
+        NotEqual,
+    }
+
+    public enum LegalityValue
+    {
+        Unknown = 0,
+        Banned,
+        Restricted,
+        Legal
+    }
 }

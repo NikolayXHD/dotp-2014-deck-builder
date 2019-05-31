@@ -245,6 +245,7 @@ Por favor escolha um antes de aplicar.]]></STRING>
 	<STRING key="CARD_FILTER_STRING"><![CDATA[Filtros de Samblagens]]></STRING>
 	<STRING key="CARD_FILTER_ENUM"><![CDATA[Filtros Enumerados]]></STRING>
 	<STRING key="CARD_FILTER_POWER_TOUGHNESS"><![CDATA[Poder/Resistência]]></STRING>
+  <STRING key="CARD_FILTER_LEGALITY"><![CDATA[Legalidade]]></STRING>
 	<STRING key="CARD_FILTER_CLEAR"><![CDATA[Limpar Filtros]]></STRING>
 	<STRING key="CARD_FILTER_ADD"><![CDATA[Adicionar Filtro]]></STRING>
 	<STRING key="CARD_FILTER_ADD_SET"><![CDATA[Adicionar Conjunto de Filtros]]></STRING>

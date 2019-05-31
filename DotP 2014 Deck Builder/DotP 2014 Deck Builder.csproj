@@ -98,6 +98,7 @@
     <Compile Include="CardFilterBoolProp.cs" />
     <Compile Include="CardFilterEnumProp.cs" />
     <Compile Include="CardFilterIntProp.cs" />
+    <Compile Include="CardFilterLegalityProp.cs" />
     <Compile Include="CardFilterStringIntProp.cs" />
     <Compile Include="CardFilterStringProp.cs" />
     <Compile Include="CardInfo.cs" />
@@ -165,6 +166,7 @@
     <Compile Include="ImageBuilder.cs" />
     <Compile Include="LanguageEntry.cs" />
     <Compile Include="LanguageStrings.cs" />
+    <Compile Include="LegalityTools.cs" />
     <Compile Include="MessageLog.cs" />
     <Compile Include="Options.cs">
       <SubType>Form</SubType>

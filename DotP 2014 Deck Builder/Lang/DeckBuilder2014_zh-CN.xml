@@ -243,6 +243,7 @@ http://www.slightlymagic.net/forum/viewforum.php?f=62 ]]></STRING>
 	<STRING key="CARD_FILTER_STRING"><![CDATA[字符串变量过滤]]></STRING>
 	<STRING key="CARD_FILTER_ENUM"><![CDATA[枚举变量过滤]]></STRING>
 	<STRING key="CARD_FILTER_POWER_TOUGHNESS"><![CDATA[力量／防御力]]></STRING>
+  <STRING key="CARD_FILTER_LEGALITY"><![CDATA[合法性]]></STRING>
 	<STRING key="CARD_FILTER_CLEAR"><![CDATA[清除所有过滤选项]]></STRING>
 	<STRING key="CARD_FILTER_ADD"><![CDATA[添加该过滤设置]]></STRING>
 	<STRING key="CARD_FILTER_ADD_SET"><![CDATA[添加该过滤设置]]></STRING>

@@ -227,6 +227,7 @@ namespace RSN.DotP
             m_gdWads = new GameDirectory(m_strGameDirectory);
             m_gdWads.LoadMusic();
             m_gdWads.LoadWads();
+            LegalityTools.AllLegalities = m_gdWads.Cards.Select(L => L.Legalities).Where(L => L != null).SelectMany(L => L).Distinct().OrderBy(L => L.Format).ToList();
             bool bFirstSetup = SetupCardList();
             m_bsCards = new BindingSource();
             if ((Settings.GetSetting("Filtering", true)) && (Settings.GetSetting("AdvancedFiltering", false)) && (m_cfsCardFilterAdvanced != null))
@@ -2931,17 +2932,20 @@ namespace RSN.DotP
 			IdScheme isScheme = Settings.GetSerializableSetting("CurrentIdScheme", new IdScheme());
 			IdBlockInput frmInput = new IdBlockInput(isScheme.IdBlock);
 			DialogResult drResult = frmInput.ShowDialog(this);
+            string FileName = "";
 			if (drResult == DialogResult.OK)
 			{
 				try
 				{
+                    var A = frmInput.IdBlock;
+                    FileName = "Data_DLC_" + A.ToString() + "Content_Pack_Enabler.wad";
 					Tools.CreateContentPackEnabler(m_gdWads.GameDir, frmInput.IdBlock);
 					MessageBox.Show(Settings.UIStrings["EXPORT_COMPLETE_CAPTION"], this.Text);
 				}
 				catch (Exception ex)
 				{
-                    var A = frmInput.IdBlock; //Marshall-By-Reference access warning if used in-line.
                     // This is probably due to a permissions problem (read-only directory).
+                    var A = frmInput.IdBlock; //Marshall-By-Reference access warning if used in-line.
                     Settings.ReportError(ex, ErrorPriority.Medium, "Unable to Export Wad: Data_DLC_" + A.ToString() + "Content_Pack_Enabler.wad");
 					MessageBox.Show(Settings.UIStrings["EXPORT_UNSUCCESSFUL"], Settings.UIStrings["EXPORT_UNSUCCESSFUL"], MessageBoxButtons.OK, MessageBoxIcon.Error);
 				}

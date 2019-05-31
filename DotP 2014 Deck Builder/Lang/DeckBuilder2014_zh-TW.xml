@@ -249,6 +249,7 @@ http://www.slightlymagic.net/forum/viewforum.php?f=62]]><!--Tigertooth: The same
   <STRING key="CARD_FILTER_STRING"><![CDATA[字符過濾器]]></STRING>
   <STRING key="CARD_FILTER_ENUM"><![CDATA[列舉過濾器]]></STRING>
   <STRING key="CARD_FILTER_POWER_TOUGHNESS"><![CDATA[力量和防禦力]]></STRING>
+  <STRING key="CARD_FILTER_LEGALITY"><![CDATA[合法性]]></STRING>
   <STRING key="CARD_FILTER_CLEAR"><![CDATA[清除過濾器]]></STRING>
   <STRING key="CARD_FILTER_ADD"><![CDATA[添加過濾器]]></STRING>
   <STRING key="CARD_FILTER_ADD_SET"><![CDATA[添加過濾器設置]]></STRING>

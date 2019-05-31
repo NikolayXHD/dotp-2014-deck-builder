@@ -244,6 +244,7 @@ Please give one before applying.]]></STRING>
 	<STRING key="CARD_FILTER_STRING"><![CDATA[String Filters]]></STRING>
 	<STRING key="CARD_FILTER_ENUM"><![CDATA[Enum Filters]]></STRING>
 	<STRING key="CARD_FILTER_POWER_TOUGHNESS"><![CDATA[Power/Toughness]]></STRING>
+	<STRING key="CARD_FILTER_LEGALITY"><![CDATA[Legality]]></STRING>
 	<STRING key="CARD_FILTER_CLEAR"><![CDATA[Clear Filters]]></STRING>
 	<STRING key="CARD_FILTER_ADD"><![CDATA[Add Filter]]></STRING>
 	<STRING key="CARD_FILTER_ADD_SET"><![CDATA[Add Filter Set]]></STRING>

@@ -105,6 +105,15 @@ namespace RSN.DotP
 			cmdStringIntAdd.Text = Settings.UIStrings[(string)cmdStringIntAdd.Tag];
 			cmdStringIntReplace.Text = Settings.UIStrings[(string)cmdStringIntReplace.Tag];
 
+            // Legality Page
+            AddItemsToLegalityDataPropDropDown(cboLegalityDataProp, LegalityTools.AllLegalities.Select(L=>L.Format).OrderBy(L=>L).Distinct().ToArray());
+            AddItemsToLegalityOperationDropDown(cboLegalityOperation);
+            lblLegalityCompare.Text = Settings.UIStrings[(string)lblLegalityCompare.Tag];
+            AddItemsToCompareDropDown(cboLegalityCompare);
+            AddItemsToLegalityValueDropDown(cboLegalityValue);
+            cmdLegalityAdd.Text = Settings.UIStrings[(string)cmdLegalityAdd.Tag];
+            cmdLegalityReplace.Text = Settings.UIStrings[(string)cmdLegalityReplace.Tag];
+
 			// Clear Filters
 			cmdClearFilters.Text = Settings.UIStrings[(string)cmdClearFilters.Tag];
 
@@ -141,7 +150,21 @@ namespace RSN.DotP
 			cboDropDown.SelectedIndex = 0;
 		}
 
-		private void AddItemsToBoolOperationDropDown(ComboBox cboDropDown)
+        private void AddItemsToLegalityDataPropDropDown(ComboBox cboDropDown, string[] astrProps)
+        {
+            // Make sure there's nothing already in the list.
+            cboDropDown.Items.Clear();
+            // Set up how we should display our items.
+            cboDropDown.DisplayMember = "Value";
+            cboDropDown.ValueMember = "Key";
+            // Add the items.
+            foreach (string strItem in astrProps)
+                cboDropDown.Items.Add(new KeyValuePair<string, string>(strItem, strItem));
+            // Set the first item as our selected item to start things off.
+            cboDropDown.SelectedIndex = 0;
+        }
+
+        private void AddItemsToBoolOperationDropDown(ComboBox cboDropDown)
 		{
 			// Make sure there's nothing already in the list.
 			cboDropDown.Items.Clear();
@@ -240,9 +263,38 @@ namespace RSN.DotP
 			// Set the first item as our selected item to start things off.
 			if (cboDropDown.Items.Count > 0)
 				cboDropDown.SelectedIndex = 0;
-		}
+        }
 
-		private void FillTreeFromSet(CardFilterBase cfbFilter, TreeNode trParent = null)
+        private void AddItemsToLegalityOperationDropDown(ComboBox cboDropDown)
+        {
+            // Make sure there's nothing already in the list.
+            cboDropDown.Items.Clear();
+            // Set up how we should display our items.
+            cboDropDown.DisplayMember = "Value";
+            cboDropDown.ValueMember = "Key";
+            // Add the items.
+            foreach (FilterLegalityComparisonType eItem in Enum.GetValues(typeof(FilterLegalityComparisonType)))
+                cboDropDown.Items.Add(new KeyValuePair<FilterLegalityComparisonType, string>(eItem, Settings.UIStrings[eItem.ToString().ToUpper()]));
+            // Set the first item as our selected item to start things off.
+            cboDropDown.SelectedIndex = 0;
+        }
+
+        private void AddItemsToLegalityValueDropDown(ComboBox cboDropDown)
+        {
+            // Make sure there's nothing already in the list.
+            cboDropDown.Items.Clear();
+            // Set up how we should display our items.
+            cboDropDown.DisplayMember = "Value";
+            cboDropDown.ValueMember = "Key";
+            // Add the items.
+            foreach (LegalityValue eItem in Enum.GetValues(typeof(LegalityValue)))
+                cboDropDown.Items.Add(new KeyValuePair<LegalityValue, string>(eItem, eItem.ToString().ToUpper()));
+            // Set the first item as our selected item to start things off.
+            if (cboDropDown.Items.Count > 0)
+                cboDropDown.SelectedIndex = 0;
+        }
+
+        private void FillTreeFromSet(CardFilterBase cfbFilter, TreeNode trParent = null)
 		{
 			TreeNode trNode = new TreeNode(cfbFilter.ToString());
 			trNode.Tag = cfbFilter;
@@ -668,32 +720,71 @@ namespace RSN.DotP
 				//	deselect the items or select an invalid item.
 				return null;
 			}
-		}
+        }
 
-		private void cmdEnumReplace_Click(object sender, EventArgs e)
-		{
-			CardFilterBase cfbFilter = CreateEnumFilter();
-			if (cfbFilter != null)
-				ReplaceNode(tvwFilters.SelectedNode, cfbFilter);
-		}
+        private void cmdEnumReplace_Click(object sender, EventArgs e)
+        {
+            CardFilterBase cfbFilter = CreateEnumFilter();
+            if (cfbFilter != null)
+                ReplaceNode(tvwFilters.SelectedNode, cfbFilter);
+        }
 
-		private void cmdEnumAdd_Click(object sender, EventArgs e)
-		{
-			CardFilterBase cfbFilter = CreateEnumFilter();
-			if (cfbFilter != null)
-				AddNode(tvwFilters.SelectedNode, cfbFilter);
-		}
+        private void cmdEnumAdd_Click(object sender, EventArgs e)
+        {
+            CardFilterBase cfbFilter = CreateEnumFilter();
+            if (cfbFilter != null)
+                AddNode(tvwFilters.SelectedNode, cfbFilter);
+        }
 
-		private void cboEnumDataProp_SelectedIndexChanged(object sender, EventArgs e)
-		{
-			if (cboEnumDataProp.SelectedItem != null)
-			{
-				string strDataProp = ((KeyValuePair<string, string>)cboEnumDataProp.SelectedItem).Key;
-				AddItemsToEnumValueDropDown(cboEnumValue, strDataProp);
-			}
-		}
+        private CardFilterBase CreateLegalityFilter()
+        {
+            if ((cboLegalityDataProp.SelectedItem != null) &&
+                (cboLegalityOperation.SelectedItem != null) &&
+                (cboLegalityValue.SelectedItem != null) &&
+                (cboLegalityCompare.SelectedItem != null))
+            {
+                string strDataProp = ((KeyValuePair<string, string>)cboLegalityDataProp.SelectedItem).Key;
+                FilterLegalityComparisonType flctOperation = ((KeyValuePair<FilterLegalityComparisonType, string>)cboLegalityOperation.SelectedItem).Key;
+                var A = cboLegalityValue.SelectedItem.ToString();
+                LegalityValue lvValue = (LegalityValue)cboLegalityValue.SelectedIndex;
+                FilterBooleanCompare fbcCompare = ((KeyValuePair<FilterBooleanCompare, string>)cboStringCompare.SelectedItem).Key;
+                // Handle any special cases.
+                return new CardFilterLegalityProp(strDataProp, flctOperation, lvValue, fbcCompare);
+            }
+            else
+            {
+                // User needs to make sure all fields are filled.
+                //	This should never happen, because I forcibly fill all fields on load
+                //	and since they are drop-down lists the user should not be able to
+                //	deselect the items or select an invalid item.
+                return null;
+            }
+        }
 
-		private CardFilterStringProp CreateStringFilter()
+        private void cmdLegalityReplace_Click(object sender, EventArgs e)
+        {
+            CardFilterBase cfbFilter = CreateLegalityFilter();
+            if (cfbFilter != null)
+                ReplaceNode(tvwFilters.SelectedNode, cfbFilter);
+        }
+
+        private void cmdLegalityAdd_Click(object sender, EventArgs e)
+        {
+            CardFilterBase cfbFilter = CreateLegalityFilter();
+            if (cfbFilter != null)
+                AddNode(tvwFilters.SelectedNode, cfbFilter);
+        }
+
+        private void cboEnumDataProp_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (cboEnumDataProp.SelectedItem != null)
+            {
+                string strDataProp = ((KeyValuePair<string, string>)cboEnumDataProp.SelectedItem).Key;
+                AddItemsToEnumValueDropDown(cboEnumValue, strDataProp);
+            }
+        }
+
+        private CardFilterStringProp CreateStringFilter()
 		{
 			if ((cboStringDataProp.SelectedItem != null) &&
 				(cboStringOperation.SelectedItem != null) &&
@@ -732,5 +823,5 @@ namespace RSN.DotP
 			if (cfspFilter != null)
 				AddNode(tvwFilters.SelectedNode, cfspFilter);
 		}
-	}
+    }
 }

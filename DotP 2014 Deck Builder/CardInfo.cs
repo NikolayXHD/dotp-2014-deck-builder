@@ -7,6 +7,7 @@ using System.Text;
 using System.Xml;
 using Be.Timvw.Framework.ComponentModel;
 using RSN.Tools;
+using static RSN.DotP.LegalityTools;
 
 namespace RSN.DotP
 {
@@ -50,6 +51,7 @@ namespace RSN.DotP
         private bool m_bUnderscore;
 		private string m_strFrameType;
         private string m_strFlipFileName;
+        private List<Legality> m_legLegalities;
 
 		// These are values that are derived from the card attributes at one point or another.
 		//	These may also be additional convenience members so that expensive operations don't
@@ -487,6 +489,11 @@ namespace RSN.DotP
                 else
                     return null;
             }
+        }
+
+        public List<Legality> Legalities
+        {
+            get { return m_legLegalities; }
         }
 
 		public Dictionary<string, SortableBindingList<string>> CustomTags
@@ -1256,6 +1263,25 @@ namespace RSN.DotP
                         else if (xnNode.Name.Equals("REVERSE_FACE", StringComparison.OrdinalIgnoreCase))
                         {
                             m_strFlipFileName = XmlTools.GetValueFromAttribute(xnNode, "value");
+                        }
+                        else if (xnNode.Name.Equals("LEGALITY", StringComparison.OrdinalIgnoreCase))
+                        {
+                            try
+                            {
+                                m_legLegalities = new List<Legality>();
+                                foreach (XmlNode legNode in xnNode.ChildNodes)
+                                {
+                                    m_legLegalities.Add(new Legality()
+                                    {
+                                        Format = XmlTools.GetValueFromAttribute(legNode, "value"),
+                                        Status = (LegalityValue)Enum.Parse(typeof(LegalityValue), XmlTools.GetValueFromAttribute(legNode, "status"))
+                                    });
+                                }
+                            }
+                            catch (Exception e)
+                            {
+                                Settings.ReportError(e, ErrorPriority.Low, "Unable to load legality: " + m_strFilename);
+                            }
                         }
 						else
 						{
