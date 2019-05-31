@@ -496,7 +496,31 @@ namespace RSN.DotP
             get { return m_legLegalities; }
         }
 
-		public Dictionary<string, SortableBindingList<string>> CustomTags
+        public string FormatLegality
+        {
+            get
+            {
+                var CurrentFormat = Settings.GetSerializableSetting("CurrentFormat", "None");
+                if (CurrentFormat == "None")
+                {
+                    return "";
+                }
+                else
+                {
+                    var legality = m_legLegalities?.Where(L => L.Format == CurrentFormat);
+                    if (legality != null)
+                    {
+                        if (legality.Any())
+                            return legality.First().Status.ToString();
+                        else
+                            return "Banned";
+                    }
+                }
+                return "Unknown";
+            }
+        }
+
+        public Dictionary<string, SortableBindingList<string>> CustomTags
 		{
 			get { return m_dicCustomTags; }
 		}

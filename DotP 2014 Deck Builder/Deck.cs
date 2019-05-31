@@ -36,6 +36,8 @@ namespace RSN.DotP
 		private AiPersonality m_apPersonality;
 		private string m_strDeckBoxImage;		// deck_box_image
 		private Bitmap m_bmpDeckBoxImage;
+        private XmlNode m_xnDeckBoxImageNode;
+        private int m_iDeckBoxImageLoaded;
 		private string m_strDeckBoxImageLocked;	// deck_box_image_locked
 		private int m_nContentPack;				// content_pack
 		private DeckAvailability m_eAvailability;	// never_available, always_available
@@ -260,7 +262,10 @@ namespace RSN.DotP
                         m_duUnlocksPromo = new DeckUnlocks(gdData, xnDeck["PromoUnlocks"], true);
 
                     if (xnDeck["DeckBoxImage"] != null)
-                        m_bmpDeckBoxImage = XmlTools.ImageFromNode(xnDeck["DeckBoxImage"]);
+                    {
+                        m_xnDeckBoxImageNode = xnDeck["DeckBoxImage"];
+                        m_iDeckBoxImageLoaded = 2;
+                    }
 
 					if (xnDeck["ColourOverride"] != null)
 					{
@@ -548,8 +553,12 @@ namespace RSN.DotP
 
 		public Bitmap DeckBoxImage
 		{
-			get { return m_bmpDeckBoxImage; }
-			set { m_bmpDeckBoxImage = value; }
+            get
+            {
+                m_bmpDeckBoxImage = Tools.LoadDeferredImage(m_strDeckBoxImage, m_iDeckBoxImageLoaded, m_xnDeckBoxImageNode, null, m_bmpDeckBoxImage);
+                return m_bmpDeckBoxImage;
+            }
+            set { m_bmpDeckBoxImage = value; }
 		}
 
 		public string DeckBoxImageName
@@ -1536,7 +1545,7 @@ namespace RSN.DotP
 			}
 
 			return lstCards;
-		}
+        }
 
         public void Dispose()
         {
@@ -1574,5 +1583,5 @@ namespace RSN.DotP
                 m_duUnlocksPromo = null;
             }
         }
-	}
+    }
 }

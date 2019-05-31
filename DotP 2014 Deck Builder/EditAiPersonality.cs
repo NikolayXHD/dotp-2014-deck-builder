@@ -43,7 +43,7 @@ namespace RSN.DotP
 		{
 			InitializeComponent();
 
-			LoadLocalizationStrings();
+            LoadLocalizationStrings();
 
 			Rectangle rcPosition = Settings.GetSetting("EditPersonalityPosition", new Rectangle(-1, -1, -1, -1));
 			if (rcPosition.X != -1)
@@ -80,8 +80,8 @@ namespace RSN.DotP
 				if (apPersonality != null)
 					cboPersonality.SelectedItem = apPersonality;
 				m_apPersonality = apPersonality;
-			}
-			RefreshPersonality();
+            }
+            RefreshPersonality();
 
 			// Set up for building full avatar images.
 			m_rbFullAvatarLastChecked = rbUseThisImageFull;

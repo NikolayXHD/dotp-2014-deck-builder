@@ -35,7 +35,8 @@ namespace RSN.DotP
 		XmlArrayItem(Type = typeof(CardFilterEnumProp<CardRarity>)),
 		XmlArrayItem(Type = typeof(CardFilterEnumProp<CardSuperType>)),
 		XmlArrayItem(Type = typeof(CardFilterEnumProp<CardType>)),
-		XmlArrayItem(Type = typeof(CardFilterEnumProp<ColourFlags>))
+		XmlArrayItem(Type = typeof(CardFilterEnumProp<ColourFlags>)),
+        XmlArrayItem(Type = typeof(CardFilterLegalityProp))
 		]
 		public List<CardFilterBase> Filters
 		{

@@ -6,6 +6,7 @@ using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
+using System.Xml;
 using RSN.Tools;
 
 namespace RSN.DotP
@@ -854,6 +855,30 @@ namespace RSN.DotP
 				Settings.ReportError(e, ErrorPriority.Medium, "Unable to Export Wad: Data_DLC_" + whiInfo.ContentPackId.ToString() + "_Content_Pack_Enabler");
 				MessageBox.Show(Settings.UIStrings["EXPORT_UNSUCCESSFUL"], Settings.UIStrings["EXPORT_UNSUCCESSFUL"], MessageBoxButtons.OK, MessageBoxIcon.Error);
 			}
-		}
-	}
+        }
+
+        public static Bitmap LoadDeferredImage(string strImagePath, int iImageLoaded, XmlNode xnImageNode, GameDirectory gdWad, Bitmap bmpImageBitmap)
+        {
+            if (bmpImageBitmap != null)
+                return bmpImageBitmap;
+            else if (iImageLoaded == 2 && xnImageNode != null)
+            {
+                if (bmpImageBitmap != null)
+                    bmpImageBitmap.Dispose();
+                return XmlTools.ImageFromNode(xnImageNode);
+            }
+            else if (iImageLoaded == 3 && gdWad != null)
+            {
+                TdxWrapper twAvatar = gdWad.LoadImage(strImagePath, LoadImageType.Personality);
+                if (twAvatar != null)
+                {
+                    if (bmpImageBitmap != null)
+                        bmpImageBitmap.Dispose();
+                    return (Bitmap)twAvatar.Image.Clone();
+                }
+                twAvatar.Dispose();
+            }
+            return null;
+        }
+    }
 }

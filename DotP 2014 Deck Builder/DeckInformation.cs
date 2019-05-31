@@ -155,7 +155,7 @@ namespace RSN.DotP
 			}
 
 			m_bProgramaticAdjust = false;
-		}
+        }
 
 		private void LoadLocalizationStrings()
 		{

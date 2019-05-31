@@ -161,7 +161,8 @@ namespace RSN.DotP
             foreach (string strItem in astrProps)
                 cboDropDown.Items.Add(new KeyValuePair<string, string>(strItem, strItem));
             // Set the first item as our selected item to start things off.
-            cboDropDown.SelectedIndex = 0;
+            if (cboDropDown.Items.Count > 0)
+                cboDropDown.SelectedIndex = 0;
         }
 
         private void AddItemsToBoolOperationDropDown(ComboBox cboDropDown)

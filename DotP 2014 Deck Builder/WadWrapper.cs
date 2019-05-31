@@ -598,7 +598,8 @@ namespace RSN.DotP
                                         ap.BuiltIn = true;
                                     }
 									m_lstPersonalities.Add(ap);
-								}
+
+                                }
 								catch (Exception e)
 								{
 									Settings.ReportError(e, ErrorPriority.Medium, "Unable to load deck: " + feFile.Name + " in " + m_strName);
@@ -635,10 +636,12 @@ namespace RSN.DotP
 									Deck deck = new Deck(gdData, strFileName, strXml, m_strName);
 									// See if we can load the deck image (can make things easier for people who create from existing deck).
 									TdxWrapper twDeckBox = gdData.LoadImage(deck.DeckBoxImageName, LoadImageType.Deck);
-									if (twDeckBox != null)
-										deck.DeckBoxImage = (Bitmap)twDeckBox.Image.Clone();
-                                    twDeckBox.Dispose();
+                                    if (twDeckBox != null)
+                                    {
+                                        deck.DeckBoxImage = (Bitmap)twDeckBox.Image.Clone();
+                                        twDeckBox.Dispose();
                                         //deck.DeckBoxImage = new System.Drawing.Bitmap(twDeckBox.Image);
+                                    }
                                     m_lstDecks.Add(deck);
 								}
 								catch (Exception e)
@@ -982,6 +985,6 @@ namespace RSN.DotP
 					}
 				}
 			}
-		}
-	}
+        }
+    }
 }

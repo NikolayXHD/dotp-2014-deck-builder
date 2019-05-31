@@ -488,7 +488,7 @@ namespace RSN.DotP
 
         public void Dispose()
         {
-            if (m_dicCachedImages != null && m_dicCachedImages.Count >0)
+            if (m_dicCachedImages != null && m_dicCachedImages.Count > 0)
             {
                 foreach (var T in m_dicCachedImages.Values)
                 {
@@ -499,12 +499,16 @@ namespace RSN.DotP
             }
             if (m_lstCards != null && m_lstCards.Count > 0)
             {
+                if (Name == "DATA_DLC_COMMUNITY_CORE")
+                { }
                 foreach (var C in m_lstCards)
                 {
                     C.Dispose();
                 }
+                GC.Collect();
                 m_lstCards.Clear();
                 m_lstCards = null;
+                GC.Collect();
             }
             if (m_lstDecks != null && m_lstDecks.Count > 0)
             {

@@ -167,26 +167,23 @@ namespace RSN.DotP
 		public static Bitmap ImageFromNode(XmlNode xnNode)
 		{
 			string strImage = xnNode.InnerText;
-			MemoryStream msImage = new MemoryStream(Convert.FromBase64String(strImage));
-			// This looks odd, but if we want to close the memory stream we need to first
-			//	create a bitmap from the stream then create a bitmap from the created bitmap.
-			Bitmap bmpTemp = new Bitmap(msImage);
-			Bitmap bmpReturn = new Bitmap(bmpTemp);
-			// Now we can get rid of the temp image and close the memory stream.
-			bmpTemp.Dispose();
-			msImage.Close();
-
-			return bmpReturn;
+            using (MemoryStream msImage = new MemoryStream(Convert.FromBase64String(strImage)))
+            using (Bitmap bmpTemp = new Bitmap(msImage))
+            {
+                // This looks odd, but if we want to close the memory stream we need to first
+                //	create a bitmap from the stream then create a bitmap from the created bitmap.
+                Bitmap bmpReturn = new Bitmap(bmpTemp);
+                return bmpReturn;
+            }
 		}
 
 		public static string ImageToBase64String(Image imgPic)
 		{
-			MemoryStream msImage = new MemoryStream();
-			imgPic.Save(msImage, System.Drawing.Imaging.ImageFormat.Png);
-			string strReturn = Convert.ToBase64String(msImage.ToArray());
-			msImage.Close();
-
-			return strReturn;
+            using (MemoryStream msImage = new MemoryStream())
+            {
+                imgPic.Save(msImage, System.Drawing.Imaging.ImageFormat.Png);
+                return Convert.ToBase64String(msImage.ToArray());
+            }
 		}
 
 		public static XmlDocument CreateStringTable(params KeyValuePair<string, Dictionary<string, string>>[] akvpParams)

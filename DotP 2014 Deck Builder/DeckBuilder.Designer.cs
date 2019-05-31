@@ -56,6 +56,13 @@
             this.mnuiToolsCombineSpecData = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator6 = new System.Windows.Forms.ToolStripSeparator();
             this.mnuiToolsOptions = new System.Windows.Forms.ToolStripMenuItem();
+            this.formatToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.mnuiFormatStandard = new System.Windows.Forms.ToolStripMenuItem();
+            this.mnuiFormatModern = new System.Windows.Forms.ToolStripMenuItem();
+            this.mnuiFormatVintage = new System.Windows.Forms.ToolStripMenuItem();
+            this.mnuiFormatLegacy = new System.Windows.Forms.ToolStripMenuItem();
+            this.mnuiFormatCommander = new System.Windows.Forms.ToolStripMenuItem();
+            this.mnuiFormatNone = new System.Windows.Forms.ToolStripMenuItem();
             this.mnuiAbout = new System.Windows.Forms.ToolStripMenuItem();
             this.picFrame = new System.Windows.Forms.PictureBox();
             this.gbCardMoveOptions = new System.Windows.Forms.GroupBox();
@@ -127,6 +134,7 @@
             this.sslblCardsInList = new System.Windows.Forms.ToolStripStatusLabel();
             this.sslblCardsInListNum = new System.Windows.Forms.ToolStripStatusLabel();
             this.picFlip = new System.Windows.Forms.PictureBox();
+            this.resetImageCacheToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.dgvCards)).BeginInit();
             this.mnuMain.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.picFrame)).BeginInit();
@@ -220,6 +228,7 @@
             this.mnuMain.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.mnuiFile,
             this.mnuiTools,
+            this.formatToolStripMenuItem,
             this.mnuiAbout});
             this.mnuMain.Location = new System.Drawing.Point(0, 0);
             this.mnuMain.Name = "mnuMain";
@@ -354,7 +363,8 @@
             this.mnuiToolsGenerateCPE,
             this.mnuiToolsCombineSpecData,
             this.toolStripSeparator6,
-            this.mnuiToolsOptions});
+            this.mnuiToolsOptions,
+            this.resetImageCacheToolStripMenuItem});
             this.mnuiTools.Name = "mnuiTools";
             this.mnuiTools.Size = new System.Drawing.Size(47, 20);
             this.mnuiTools.Tag = "MENU_TOOLS";
@@ -423,6 +433,61 @@
             this.mnuiToolsOptions.Tag = "MENU_TOOLS_OPTIONS";
             this.mnuiToolsOptions.Text = "&Options ...";
             this.mnuiToolsOptions.Click += new System.EventHandler(this.mnuiToolsOptions_Click);
+            // 
+            // formatToolStripMenuItem
+            // 
+            this.formatToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.mnuiFormatStandard,
+            this.mnuiFormatModern,
+            this.mnuiFormatVintage,
+            this.mnuiFormatLegacy,
+            this.mnuiFormatCommander,
+            this.mnuiFormatNone});
+            this.formatToolStripMenuItem.Name = "formatToolStripMenuItem";
+            this.formatToolStripMenuItem.Size = new System.Drawing.Size(57, 20);
+            this.formatToolStripMenuItem.Text = "Format";
+            // 
+            // mnuiFormatStandard
+            // 
+            this.mnuiFormatStandard.Name = "mnuiFormatStandard";
+            this.mnuiFormatStandard.Size = new System.Drawing.Size(141, 22);
+            this.mnuiFormatStandard.Text = "Standard";
+            this.mnuiFormatStandard.Click += new System.EventHandler(this.mnuiFormatStandard_Click);
+            // 
+            // mnuiFormatModern
+            // 
+            this.mnuiFormatModern.Name = "mnuiFormatModern";
+            this.mnuiFormatModern.Size = new System.Drawing.Size(141, 22);
+            this.mnuiFormatModern.Text = "Modern";
+            this.mnuiFormatModern.Click += new System.EventHandler(this.mnuiFormatModern_Click);
+            // 
+            // mnuiFormatVintage
+            // 
+            this.mnuiFormatVintage.Name = "mnuiFormatVintage";
+            this.mnuiFormatVintage.Size = new System.Drawing.Size(141, 22);
+            this.mnuiFormatVintage.Text = "Vintage";
+            this.mnuiFormatVintage.Click += new System.EventHandler(this.mnuiFormatVintage_Click);
+            // 
+            // mnuiFormatLegacy
+            // 
+            this.mnuiFormatLegacy.Name = "mnuiFormatLegacy";
+            this.mnuiFormatLegacy.Size = new System.Drawing.Size(141, 22);
+            this.mnuiFormatLegacy.Text = "Legacy";
+            this.mnuiFormatLegacy.Click += new System.EventHandler(this.mnuiFormatLegacy_Click);
+            // 
+            // mnuiFormatCommander
+            // 
+            this.mnuiFormatCommander.Name = "mnuiFormatCommander";
+            this.mnuiFormatCommander.Size = new System.Drawing.Size(141, 22);
+            this.mnuiFormatCommander.Text = "Commander";
+            this.mnuiFormatCommander.Click += new System.EventHandler(this.mnuiFormatCommander_Click);
+            // 
+            // mnuiFormatNone
+            // 
+            this.mnuiFormatNone.Name = "mnuiFormatNone";
+            this.mnuiFormatNone.Size = new System.Drawing.Size(141, 22);
+            this.mnuiFormatNone.Text = "None";
+            this.mnuiFormatNone.Click += new System.EventHandler(this.mnuiFormatNone_Click);
             // 
             // mnuiAbout
             // 
@@ -1291,6 +1356,14 @@
             this.picFlip.TabStop = false;
             this.picFlip.Click += new System.EventHandler(this.PicFlip_Click);
             // 
+            // resetImageCacheToolStripMenuItem
+            // 
+            this.resetImageCacheToolStripMenuItem.Name = "resetImageCacheToolStripMenuItem";
+            this.resetImageCacheToolStripMenuItem.ShortcutKeyDisplayString = "";
+            this.resetImageCacheToolStripMenuItem.Size = new System.Drawing.Size(264, 22);
+            this.resetImageCacheToolStripMenuItem.Text = "Reset &Image Cache";
+            this.resetImageCacheToolStripMenuItem.Click += new System.EventHandler(this.ResetImageCacheToolStripMenuItem_Click);
+            // 
             // DeckBuilder
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -1480,6 +1553,14 @@
 		private System.Windows.Forms.Label lblPromoUnlockCount;
 		private System.Windows.Forms.Label lblPromoUnlockCardCount;
         private System.Windows.Forms.PictureBox picFlip;
+        private System.Windows.Forms.ToolStripMenuItem formatToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem mnuiFormatStandard;
+        private System.Windows.Forms.ToolStripMenuItem mnuiFormatModern;
+        private System.Windows.Forms.ToolStripMenuItem mnuiFormatVintage;
+        private System.Windows.Forms.ToolStripMenuItem mnuiFormatLegacy;
+        private System.Windows.Forms.ToolStripMenuItem mnuiFormatCommander;
+        private System.Windows.Forms.ToolStripMenuItem mnuiFormatNone;
+        private System.Windows.Forms.ToolStripMenuItem resetImageCacheToolStripMenuItem;
     }
 }
 

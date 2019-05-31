@@ -224,7 +224,7 @@ namespace RSN.DotP
                 }
 			}
 
-            Bitmap bitmap = m_bmpImage;
+            Bitmap bitmap = (Bitmap)m_bmpImage.Clone();
             TdxFile tdx = new TdxFile();
             tdx.Width = (ushort)bitmap.Width;
             tdx.Height = (ushort)bitmap.Height;
@@ -252,6 +252,7 @@ namespace RSN.DotP
                     AddMipMap(tdx, bitmap, usLevelWidth, usLevelHeight, eFlags, bCompressing);
                 }
             }
+            bitmap.Dispose();
 
             return tdx;
 		}
@@ -264,15 +265,16 @@ namespace RSN.DotP
 
 			int stride = mip.Width * 4;
 
+            bool bBitmapNeedsDisposed = false;
 			if ((bmpImage.Width != usWidth) || (bmpImage.Height != usHeight))
 			{
-				Size szNewSize = new Size(usWidth, usHeight);
+                bBitmapNeedsDisposed = true;
+                Size szNewSize = new Size(usWidth, usHeight);
                 Bitmap bmpNew = new Bitmap(szNewSize.Width, szNewSize.Height);
                 using (Graphics grfx = Graphics.FromImage(bmpNew))
                 {
                     grfx.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.HighQualityBicubic;
                     grfx.DrawImage(bmpImage, 0, 0, szNewSize.Width, szNewSize.Height);
-                    bmpImage.Dispose();
                     bmpImage = bmpNew;
                 }
 			}
@@ -305,7 +307,11 @@ namespace RSN.DotP
 				mip.Data = buffer;
 
 			tdx.Mipmaps.Add(mip);
-		}
+
+            if (bBitmapNeedsDisposed)
+                bmpImage.Dispose();
+
+        }
 
 		private Bitmap MakeBitmapFromDXT(uint width, uint height, byte[] buffer, bool keepAlpha)
 		{

@@ -54,6 +54,10 @@ namespace RSN.DotP
 		private Dictionary<DataGridViewColumn, PropertyInfo> m_dicColumnMap;
 		private MethodInfo m_miCustomTagValue;
 
+        // Legality related variables
+        private ToolStripMenuItem CurrentFormatItem;
+        private string CurrentFormat = "None";
+
         private enum DeckLocation
 		{
 			MainDeck = 0,
@@ -70,8 +74,33 @@ namespace RSN.DotP
 
 			Settings.InitDefaults();
 			Settings.LoadSettings();
+            CurrentFormat = Settings.GetSerializableSetting("CurrentFormat", "None");
+            switch (CurrentFormat)
+            {
+                case "Standard":
+                    CurrentFormatItem = mnuiFormatStandard;
+                    break;
+                case "Modern":
+                    CurrentFormatItem = mnuiFormatModern;
+                    break;
+                case "Vintage":
+                    CurrentFormatItem = mnuiFormatVintage;
+                    break;
+                case "Legacy":
+                    CurrentFormatItem = mnuiFormatLegacy;
+                    break;
+                case "Commander":
+                    CurrentFormatItem = mnuiFormatCommander;
+                    break;
+                case "None":
+                default:
+                    CurrentFormatItem = mnuiFormatNone;
+                    CurrentFormat = "None";
+                    break;
+            }
+            CurrentFormatItem.Checked = true;
 
-			this.Text = Settings.GetAssemblyTitle();
+            this.Text = Settings.GetAssemblyTitle();
 
             picFrame.Controls.Add(picFlip);
             picFlip.Location = new Point(0, picFrame.Height - picFlip.Height);
@@ -88,7 +117,8 @@ namespace RSN.DotP
 			// Initialize the column map.
 			m_dicColumnMap = new Dictionary<DataGridViewColumn, PropertyInfo>();
 
-			Rectangle rcPosition = Settings.GetSetting("MainPosition", new Rectangle(-1, -1, -1, -1));
+
+            Rectangle rcPosition = Settings.GetSetting("MainPosition", new Rectangle(-1, -1, -1, -1));
 			if (rcPosition.X != -1)
 			{
 				bool bDoChecks = Settings.GetSetting("PerformBasicScreenChecks", true);
@@ -214,7 +244,6 @@ namespace RSN.DotP
             {
                 m_dkWorking.Dispose();
                 m_dkWorking = null;
-                mnuiFileNew_Click(null, null);
             }
             if (m_bsCards != null)
                 m_bsCards.Dispose();
@@ -223,7 +252,6 @@ namespace RSN.DotP
             m_gdWads = null;
             m_bsCards = null;
             m_bsDeckCards = null;
-            GC.Collect();
             m_gdWads = new GameDirectory(m_strGameDirectory);
             m_gdWads.LoadMusic();
             m_gdWads.LoadWads();
@@ -236,6 +264,7 @@ namespace RSN.DotP
                 m_bsCards.DataSource = new SortableBindingList<CardInfo>(m_gdWads.Cards.Where(x => m_fltCardFilter.CheckAgainstFilter(x)));
             else
                 m_bsCards.DataSource = m_gdWads.Cards;
+            mnuiFileNew_Click(null, null);
             //dgvCards.DataSource = m_bsCards;
             dgvCards.RowCount = ((SortableBindingList<CardInfo>)m_bsCards.DataSource).Count;
             // Update status numbers.
@@ -424,7 +453,7 @@ namespace RSN.DotP
 			dgvUnlocksPromo.Refresh();
 			lblPromoUnlockCardCount.Text = m_dkWorking.PromoUnlockCardCount.ToString();
 			CheckPromoButtons();
-		}
+        }
 
 		// This is merely to setup the columns for the card list.
 		private bool SetupCardList()
@@ -454,12 +483,13 @@ namespace RSN.DotP
 				Tools.AddViewColumn(dgvCards, new DataGridViewTextBoxColumn(), "Artist", "Artist", "COLUMN_TEXT_ARTIST", DataGridViewColumnSortMode.Programmatic, -1, false);
 				Tools.AddViewColumn(dgvCards, new DataGridViewTextBoxColumn(), "Expansion", "Expansion", "COLUMN_TEXT_EXPANSION", DataGridViewColumnSortMode.Programmatic, -1, false);
 				Tools.AddViewColumn(dgvCards, new DataGridViewTextBoxColumn(), "Wad", "PresentInWad", "COLUMN_TEXT_WAD", DataGridViewColumnSortMode.Programmatic);
+                Tools.AddViewColumn(dgvCards, new DataGridViewTextBoxColumn(), "Legality", "FormatLegality", "Legality", DataGridViewColumnSortMode.Programmatic, -1, false);
 
 				// Let's add some custom tag columns related to the Community Wad (custom tags are not sortable unfortunately):
 				Tools.AddViewColumn(dgvCards, new DataGridViewTextBoxColumn(), "CustomTag:AUTHOR", "CustomTag:AUTHOR", "CustomTag:Author", DataGridViewColumnSortMode.NotSortable, -1, false);
 				Tools.AddViewColumn(dgvCards, new DataGridViewTextBoxColumn(), "CustomTag:EDITORS", "CustomTag:EDITORS", "CustomTag:Editors", DataGridViewColumnSortMode.NotSortable, -1, false);
 				Tools.AddViewColumn(dgvCards, new DataGridViewTextBoxColumn(), "CustomTag:DATE", "CustomTag:DATE", "CustomTag:Date", DataGridViewColumnSortMode.NotSortable, -1, false);
-
+                
 				bSetup = !Settings.GetSetting("CardViewColumns", dgvCards.Columns);
 			}
 			return bSetup;
@@ -604,15 +634,16 @@ namespace RSN.DotP
 					lblBasicLandCount.Text = m_dkWorking.BasicLandAmount.ToString();
 					lblTotalCardCount.Text = m_dkWorking.CardCount.ToString();
 					dgvDeckCards.CurrentCell = dgvDeckCards.Rows[nIndex].Cells[0];
-					dgvDeckCards.Refresh();
-				}
+                    UpdateDGVLegality(dgvDeckCards, lblTotalCardCount);
+                }
 				else if (rbDoubleClickRegularUnlock.Checked)
 				{
 					m_dkWorking.RegularUnlocks.Cards.Add(new DeckCard(ciCard));
 					lblRegUnlockCardCount.Text = m_dkWorking.RegularUnlockCardCount.ToString();
 					dgvUnlocksRegular.CurrentCell = dgvUnlocksRegular.Rows[dgvUnlocksRegular.RowCount - 1].Cells[0];
 					CheckRegularButtons();
-				}
+                    UpdateDGVLegality(dgvUnlocksRegular, lblRegUnlockCardCount);
+                }
 				else
 				{
 					// Only thing left is the Promo Unlocks.
@@ -620,7 +651,8 @@ namespace RSN.DotP
 					lblPromoUnlockCardCount.Text = m_dkWorking.PromoUnlockCardCount.ToString();
 					dgvUnlocksPromo.CurrentCell = dgvUnlocksPromo.Rows[dgvUnlocksPromo.RowCount - 1].Cells[0];
 					CheckPromoButtons();
-				}
+                    UpdateDGVLegality(dgvUnlocksPromo, lblPromoUnlockCardCount);
+                }
 			}
 		}
 
@@ -630,7 +662,9 @@ namespace RSN.DotP
 			{
 				if (m_ciCurrentViewingCard != ciCard)
 					m_ciCurrentViewingCard = ciCard;
-				picFrame.Image = ciCard.GetLocalizedPreviewImage();
+                if (picFrame.Image != null)
+                    picFrame.Image.Dispose();
+                picFrame.Image = ciCard.GetLocalizedPreviewImage();
                 picFlip.Visible = ciCard.ReverseFace != null;
 			}
 			else
@@ -862,7 +896,10 @@ namespace RSN.DotP
 
 		private void cmdFilterAdvanced_Click(object sender, EventArgs e)
 		{
-			if (m_gdWads != null)
+            this.Cursor = Cursors.WaitCursor;
+            this.Enabled = false;
+
+            if (m_gdWads != null)
 			{
 				CardFilterAdvancedSettings frmFilters = new CardFilterAdvancedSettings();
 				DialogResult drResult = frmFilters.ShowDialog(this);
@@ -872,15 +909,18 @@ namespace RSN.DotP
 					m_cfsCardFilterAdvanced = Settings.GetSerializableSetting("CardFilterAdvanced", new CardFilterSet());
 					Settings.SaveSetting("Filtering", true);
 					Settings.SaveSetting("AdvancedFiltering", true);
-					m_bsCards.DataSource = new SortableBindingList<CardInfo>(m_gdWads.Cards.Where(x => m_cfsCardFilterAdvanced.IsAllowed(x)));
-					dgvCards.RowCount = ((SortableBindingList<CardInfo>)m_bsCards.DataSource).Count;
+                    m_bsCards.DataSource = new SortableBindingList<CardInfo>(m_gdWads.Cards.Where(x => m_cfsCardFilterAdvanced.IsAllowed(x)));
+                    dgvCards.RowCount = ((SortableBindingList<CardInfo>)m_bsCards.DataSource).Count;
 					sslblCardsInListNum.Text = ((SortableBindingList<CardInfo>)m_bsCards.DataSource).Count.ToString();
 					// Restore the previous sort.
 					RestoreCardSort();
 				}
 			}
 			dgvCards.Focus();
-		}
+
+            this.Enabled = true;
+            this.Cursor = Cursors.Default;
+        }
 
 		private void cmdEditName_Click(object sender, EventArgs e)
 		{
@@ -1857,8 +1897,9 @@ namespace RSN.DotP
                     dgvUnlocksRegular.Rows[nIndex - 1].Selected = true;
 
 				}
-			}
-		}
+            }
+            UpdateDGVLegality(dgvUnlocksRegular, lblRegUnlockCardCount);
+        }
 
 		private void cmdRegularMoveDown_Click(object sender, EventArgs e)
 		{
@@ -1878,8 +1919,9 @@ namespace RSN.DotP
 					dgvUnlocksRegular.Rows[nIndex].Selected = false;
                     dgvUnlocksRegular.Rows[nIndex + 1].Selected = true;
                 }
-			}
-		}
+            }
+            UpdateDGVLegality(dgvUnlocksRegular, lblRegUnlockCardCount);
+        }
 
 		private void cmdPromoMoveUp_Click(object sender, EventArgs e)
 		{
@@ -1899,8 +1941,9 @@ namespace RSN.DotP
 					dgvUnlocksPromo.Rows[nIndex].Selected = false;
                     dgvUnlocksPromo.Rows[nIndex - 1].Selected = true;
 				}
-			}
-		}
+            }
+            UpdateDGVLegality(dgvUnlocksPromo, lblPromoUnlockCardCount);
+        }
 
 		private void cmdPromoMoveDown_Click(object sender, EventArgs e)
 		{
@@ -1920,8 +1963,9 @@ namespace RSN.DotP
 					dgvUnlocksPromo.Rows[nIndex].Selected = false;
                     dgvUnlocksPromo.Rows[nIndex + 1].Selected = true;
 				}
-			}
-		}
+            }
+            UpdateDGVLegality(dgvUnlocksPromo, lblPromoUnlockCardCount);
+        }
 
 		private void dgvUnlocksRegular_SelectionChanged(object sender, EventArgs e)
 		{
@@ -2500,15 +2544,16 @@ namespace RSN.DotP
 						lblBasicLandCount.Text = m_dkWorking.BasicLandAmount.ToString();
 						lblTotalCardCount.Text = m_dkWorking.CardCount.ToString();
 						dgvDeckCards.CurrentCell = dgvDeckCards.Rows[nIndex].Cells[0];
-						dgvDeckCards.Refresh();
-					}
+                        UpdateDGVLegality(dgvDeckCards, lblTotalCardCount);
+                    }
 					else if (rbDoubleClickRegularUnlock.Checked)
 					{
 						m_dkWorking.RegularUnlocks.Cards.Add(new DeckCard(ciCard));
 						lblRegUnlockCardCount.Text = m_dkWorking.RegularUnlockCardCount.ToString();
 						dgvUnlocksRegular.CurrentCell = dgvUnlocksRegular.Rows[dgvUnlocksRegular.RowCount - 1].Cells[0];
 						CheckRegularButtons();
-					}
+                        UpdateDGVLegality(dgvUnlocksRegular, lblRegUnlockCardCount);
+                    }
 					else
 					{
 						// Only thing left is the Promo Unlocks.
@@ -2516,7 +2561,8 @@ namespace RSN.DotP
 						lblPromoUnlockCardCount.Text = m_dkWorking.PromoUnlockCardCount.ToString();
 						dgvUnlocksPromo.CurrentCell = dgvUnlocksPromo.Rows[dgvUnlocksPromo.RowCount - 1].Cells[0];
 						CheckPromoButtons();
-					}
+                        UpdateDGVLegality(dgvUnlocksPromo, lblPromoUnlockCardCount);
+                    }
 				}
 				e.Handled = true;
 				e.SuppressKeyPress = true;
@@ -2538,18 +2584,21 @@ namespace RSN.DotP
 								int nIndex = m_dkWorking.Cards.IndexOf(dcCard);
 								dgvDeckCards.CurrentCell = dgvDeckCards.Rows[nIndex].Cells[0];
 							}
-						}
-					}
+                        }
+                        UpdateDGVLegality(dgvDeckCards, lblTotalCardCount);
+                    }
 					else if (rbDoubleClickRegularUnlock.Checked)
 					{
 						if (m_dkWorking.RegularUnlocks.RemoveCard(ciCard))
 							m_dkWorking.Edited = true;
-					}
+                        UpdateDGVLegality(dgvUnlocksRegular, lblRegUnlockCardCount);
+                    }
 					else
 					{
 						if (m_dkWorking.PromoUnlocks.RemoveCard(ciCard))
 							m_dkWorking.Edited = true;
-					}
+                        UpdateDGVLegality(dgvUnlocksPromo, lblPromoUnlockCardCount);
+                    }
 				}
 			}
 			else if (e.KeyCode == Keys.Delete)
@@ -2562,17 +2611,20 @@ namespace RSN.DotP
 						DeckCard dcCard = m_dkWorking.RemoveCard(ciCard, -1);
 						if (dcCard != null)
 							m_dkWorking.Edited = true;
+                        UpdateDGVLegality(dgvDeckCards, lblTotalCardCount);
 					}
 					else if (rbDoubleClickRegularUnlock.Checked)
 					{
 						if (m_dkWorking.RegularUnlocks.RemoveCard(ciCard, -1))
 							m_dkWorking.Edited = true;
-					}
+                        UpdateDGVLegality(dgvUnlocksRegular, lblRegUnlockCardCount);
+                    }
 					else
 					{
 						if (m_dkWorking.PromoUnlocks.RemoveCard(ciCard, -1))
 							m_dkWorking.Edited = true;
-					}
+                        UpdateDGVLegality(dgvUnlocksPromo, lblPromoUnlockCardCount);
+                    }
 				}
 			}
 		}
@@ -2700,9 +2752,9 @@ namespace RSN.DotP
 					{
 						try
 						{
-							piProp = lstCards[e.RowIndex].GetType().GetProperty(dgvcColumn.DataPropertyName, BindingFlags.GetProperty | BindingFlags.Instance | BindingFlags.Public);
-							// Make sure we don't need to do any more expensive reflection look ups.
-							m_dicColumnMap.Add(dgvcColumn, piProp);
+                            piProp = lstCards[e.RowIndex].GetType().GetProperty(dgvcColumn.DataPropertyName, BindingFlags.GetProperty | BindingFlags.Instance | BindingFlags.Public);
+                            // Make sure we don't need to do any more expensive reflection look ups.
+                            m_dicColumnMap.Add(dgvcColumn, piProp);
 						}
 						catch (Exception ex)
 						{
@@ -2955,6 +3007,114 @@ namespace RSN.DotP
         private void PicFlip_Click(object sender, EventArgs e)
         {
             ShowCardInfo(m_ciCurrentViewingCard.ReverseFace);
+        }
+
+        private void mnuiFormatStandard_Click(object sender, EventArgs e)
+        {
+            SetFormat("Standard", sender as ToolStripMenuItem);
+        }
+
+        private void mnuiFormatModern_Click(object sender, EventArgs e)
+        {
+            SetFormat("Modern", sender as ToolStripMenuItem);
+        }
+
+        private void mnuiFormatVintage_Click(object sender, EventArgs e)
+        {
+            SetFormat("Vintage", sender as ToolStripMenuItem);
+        }
+
+        private void mnuiFormatLegacy_Click(object sender, EventArgs e)
+        {
+            SetFormat("Legacy", sender as ToolStripMenuItem);
+        }
+
+        private void mnuiFormatCommander_Click(object sender, EventArgs e)
+        {
+            SetFormat("Commander", sender as ToolStripMenuItem);
+        }
+
+        private void mnuiFormatNone_Click(object sender, EventArgs e)
+        {
+            SetFormat("None", sender as ToolStripMenuItem);
+        }
+
+        private void SetFormat(string Format, ToolStripMenuItem MenuItem)
+        {
+            if (Format != CurrentFormat)
+            {
+                CurrentFormatItem.Checked = false;
+                CurrentFormatItem = MenuItem;
+                CurrentFormatItem.Checked = true;
+                CurrentFormat = Format;
+                Settings.SaveSerializableSetting("CurrentFormat", Format);
+                UpdateDGVLegality(dgvDeckCards, lblTotalCardCount);
+                UpdateDGVLegality(dgvUnlocksRegular, lblRegUnlockCardCount);
+                UpdateDGVLegality(dgvUnlocksPromo, lblPromoUnlockCardCount);
+                foreach (DataGridViewColumn col in dgvCards.Columns)
+                {
+                    if (col.Name == "Legality")
+                    {
+                        col.HeaderText = $"Legality ({CurrentFormat})";
+                        break;
+                    }
+                }
+                dgvCards.Refresh();
+            }
+        }
+
+        private void UpdateDGVLegality(DataGridView dgv, Label label)
+        {
+            if (CurrentFormat == "None")
+            {
+                label.BackColor = Control.DefaultBackColor;
+                foreach (DataGridViewRow A in dgv.Rows)
+                {
+                    foreach (DataGridViewCell C in A.Cells)
+                        A.Cells[0].Style.BackColor = A.DefaultCellStyle.BackColor;
+                }
+            }
+            else
+            {
+                if (LegalityTools.IsDeckFormatLegal(m_dkWorking, CurrentFormat))
+                {
+                    label.BackColor = Color.Green;
+                }
+                else
+                {
+                    label.BackColor = Color.Red;
+                    foreach (DataGridViewRow A in dgv.Rows)
+                    {
+                        var LegalCount = LegalityTools.CardFormatLegality(((DeckCard)A.DataBoundItem).Card, CurrentFormat);
+                        if (LegalCount == 0)
+                        {
+                            foreach (DataGridViewCell C in A.Cells)
+                                C.Style.BackColor = A.DefaultCellStyle.BackColor;
+                        }
+                        else if (LegalCount < ((DeckCard)A.DataBoundItem).Quantity)
+                        {
+                            foreach (DataGridViewCell C in A.Cells)
+                                C.Style.BackColor = Color.Yellow;
+                        }
+                        else
+                        {
+                            foreach (DataGridViewCell C in A.Cells)
+                                C.Style.BackColor = Color.Red;
+                        }
+                    }
+                }
+            }
+            dgv.Refresh();
+        }
+
+        private void ResetImageCacheToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            m_gdWads.ResetImageCache();
+            foreach (var C in m_gdWads.Cards)
+            {
+                //C.Abilities
+            }
+            GC.Collect();
         }
     }
 }

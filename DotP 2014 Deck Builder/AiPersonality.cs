@@ -16,13 +16,25 @@ namespace RSN.DotP
 		private string m_strFilename;					// Just the name of the file with extension.
 		private string m_strNameId;
 		private Dictionary<string, string> m_dicName;
-		private string m_strLargeAvatarImage;			// This is a high-res full image now (not masked)
-		private Bitmap m_bmpLargeAvatarImage;
+		private string m_strLargeAvatarImage;           // This is a high-res full image now (not masked)
+        private int m_iLargeAvatarImageLoaded;
+        private XmlNode m_xnLargeAvatarImageNode;
+        private GameDirectory m_gdLargeAvatarImageGD;
+        private Bitmap m_bmpLargeAvatarImage;
 		private string m_strSmallAvatarImage;			// Circular Image (Medium & Small are the same)
+        private int m_iSmallAvatarImageLoaded;
+        private XmlNode m_xnSmallAvatarImageNode;
+        private GameDirectory m_gdSmallAvatarImageGD;
 		private Bitmap m_bmpSmallAvatarImage;
 		private string m_strSmallAvatarLockedImage;		// Circular Locked Image
+        private int m_iSmallAvatarLockedImageLoaded;
+        private XmlNode m_xnSmallAvatarLockedImageNode;
+        private GameDirectory m_gdSmallAvatarLockedImageGD;
 		private Bitmap m_bmpSmallAvatarLockedImage;
 		private string m_strLobbyImage;					// This is the backplate now.
+        private int m_iLobbyImageLoaded;
+        private XmlNode m_xnLobbyImageNode;
+        private GameDirectory m_gdLobbyImageGD;
 		private Bitmap m_bmpLobbyImage;
 		private string m_strMusicMix;					// Music to play during battle.
 
@@ -36,13 +48,25 @@ namespace RSN.DotP
 			m_dicName.Add("en-US", "New Personality");
 			m_bmpLargeAvatarImage = null;
 			m_strLargeAvatarImage = string.Empty;
-			m_bmpSmallAvatarImage = null;
+            m_iLargeAvatarImageLoaded = 0;
+            m_xnLargeAvatarImageNode = null;
+            m_gdLargeAvatarImageGD = null;
+            m_bmpSmallAvatarImage = null;
 			m_strSmallAvatarImage = string.Empty;
-			m_bmpSmallAvatarLockedImage = null;
+            m_iSmallAvatarImageLoaded = 0;
+            m_xnSmallAvatarImageNode = null;
+            m_gdSmallAvatarImageGD = null;
+            m_bmpSmallAvatarLockedImage = null;
 			m_strSmallAvatarLockedImage = string.Empty;
-			m_bmpLobbyImage = null;
+            m_iSmallAvatarLockedImageLoaded = 0;
+            m_xnSmallAvatarLockedImageNode = null;
+            m_gdSmallAvatarLockedImageGD = null;
+            m_bmpLobbyImage = null;
 			m_strLobbyImage = string.Empty;
-			m_bBuiltIn = false;
+            m_iLobbyImageLoaded = 0;
+            m_xnLobbyImageNode = null;
+            m_gdLobbyImageGD = null;
+            m_bBuiltIn = false;
 		}
 
 		public AiPersonality(GameDirectory gdData, string strXml, string strFilename)
@@ -110,78 +134,48 @@ namespace RSN.DotP
 
             if (xnNode["LargeAvatar"] != null)
             {
-                if (m_bmpLargeAvatarImage != null)
-                    m_bmpLargeAvatarImage.Dispose();
-                m_bmpLargeAvatarImage = XmlTools.ImageFromNode(xnNode["LargeAvatar"]);
+                m_xnLargeAvatarImageNode = xnNode;
+                m_iLargeAvatarImageLoaded = 2;
             }
             else
             {
-                TdxWrapper twAvatar = gdData.LoadImage(m_strLargeAvatarImage, LoadImageType.Personality);
-                if (twAvatar != null)
-                {
-                    if (m_bmpLargeAvatarImage != null)
-                        m_bmpLargeAvatarImage.Dispose();
-                    m_bmpLargeAvatarImage = (Bitmap)twAvatar.Image.Clone();
-                }
-                twAvatar.Dispose();
+                m_gdLargeAvatarImageGD = gdData;
+                m_iLargeAvatarImageLoaded = 3;
             }
 
             if (xnNode["SmallAvatar"] != null)
             {
-                if (m_bmpSmallAvatarImage != null)
-                    m_bmpSmallAvatarImage.Dispose();
-                m_bmpSmallAvatarImage = XmlTools.ImageFromNode(xnNode["SmallAvatar"]);
+                m_xnSmallAvatarImageNode = xnNode;
+                m_iSmallAvatarImageLoaded = 2;
             }
             else
             {
-                TdxWrapper twAvatar = gdData.LoadImage(m_strSmallAvatarImage, LoadImageType.Personality);
-                if (twAvatar != null)
-                {
-                    if (m_bmpSmallAvatarImage != null)
-                        m_bmpSmallAvatarImage.Dispose();
-                    m_bmpSmallAvatarImage = (Bitmap)twAvatar.Image.Clone();
-                }
-                twAvatar.Dispose();
+                m_gdSmallAvatarImageGD = gdData;
+                m_iSmallAvatarImageLoaded = 3;
             }
 
-			if (xnNode["SmallAvatarLocked"] != null)
+            if (xnNode["SmallAvatarLocked"] != null)
             {
-                if (m_bmpSmallAvatarLockedImage != null)
-                    m_bmpSmallAvatarLockedImage.Dispose();
-                m_bmpSmallAvatarLockedImage = XmlTools.ImageFromNode(xnNode["SmallAvatarLocked"]);
+                m_xnSmallAvatarLockedImageNode = xnNode;
+                m_iSmallAvatarLockedImageLoaded = 2;
             }
-			else if ((m_strSmallAvatarLockedImage != null) && (m_strSmallAvatarLockedImage.Length > 0))
-			{
-                TdxWrapper twAvatar = gdData.LoadImage(m_strSmallAvatarLockedImage, LoadImageType.Personality);
-                if (twAvatar != null)
-                {
-                    if (m_bmpSmallAvatarLockedImage != null)
-                        m_bmpSmallAvatarLockedImage.Dispose();
-                    m_bmpSmallAvatarLockedImage = (Bitmap)twAvatar.Image.Clone();
-                    twAvatar.Dispose();
-                }
+            else
+            {
+                m_gdSmallAvatarLockedImageGD = gdData;
+                m_iSmallAvatarLockedImageLoaded = 3;
             }
 
             if (xnNode["LobbyImage"] != null)
             {
-                if (m_bmpLobbyImage != null)
-                {
-                    m_bmpLobbyImage.Dispose();
-                    m_bmpLobbyImage = XmlTools.ImageFromNode(xnNode["LobbyImage"]);
-                }
+                m_xnLobbyImageNode = xnNode;
+                m_iLobbyImageLoaded = 2;
             }
             else
             {
-                TdxWrapper twAvatar = gdData.LoadImage(m_strLobbyImage, LoadImageType.Personality);
-                if (twAvatar != null)
-                {
-                    if (m_bmpLobbyImage != null)
-                        m_bmpLobbyImage.Dispose();
-                    m_bmpLobbyImage = (Bitmap)twAvatar.Image.Clone();
-                }
-                twAvatar.Dispose();
+                m_gdLobbyImageGD = gdData;
+                m_iLobbyImageLoaded = 3;
             }
-		}
+        }
 
 		public string Filename
 		{
@@ -222,26 +216,35 @@ namespace RSN.DotP
 
 		public string LargeAvatarImageName
 		{
-			get { return m_strLargeAvatarImage; }
-			set { m_strLargeAvatarImage = value; }
+            get { return m_strLargeAvatarImage; }
+            set { m_strLargeAvatarImage = value; }
 		}
 
 		public Bitmap LargeAvatarImage
 		{
-			get { return m_bmpLargeAvatarImage; }
-			set { m_bmpLargeAvatarImage = value; }
+            get
+            {
+                m_bmpLargeAvatarImage = Tools.LoadDeferredImage(m_strLargeAvatarImage, m_iLargeAvatarImageLoaded, m_xnLargeAvatarImageNode, m_gdLargeAvatarImageGD, m_bmpLargeAvatarImage);
+                return m_bmpLargeAvatarImage;
+            }
+            set { m_bmpLargeAvatarImage = value; }
 		}
 
 		public string SmallAvatarImageName
 		{
-			get { return m_strSmallAvatarImage; }
+			get
+            { return m_strSmallAvatarImage; }
 			set { m_strSmallAvatarImage = value; }
 		}
 
 		public Bitmap SmallAvatarImage
 		{
-			get { return m_bmpSmallAvatarImage; }
-			set { m_bmpSmallAvatarImage = value; }
+			get
+            {
+                m_bmpSmallAvatarImage = Tools.LoadDeferredImage(m_strSmallAvatarImage, m_iSmallAvatarImageLoaded, m_xnSmallAvatarImageNode, m_gdSmallAvatarImageGD, m_bmpSmallAvatarImage);
+                return m_bmpSmallAvatarImage;
+            }
+            set { m_bmpSmallAvatarImage = value; }
 		}
 
 		public string SmallAvatarLockedImageName
@@ -252,8 +255,12 @@ namespace RSN.DotP
 
 		public Bitmap SmallAvatarLockedImage
 		{
-			get { return m_bmpSmallAvatarLockedImage; }
-			set { m_bmpSmallAvatarLockedImage = value; }
+            get
+            {
+                m_bmpSmallAvatarLockedImage = Tools.LoadDeferredImage(m_strSmallAvatarLockedImage, m_iSmallAvatarLockedImageLoaded, m_xnSmallAvatarLockedImageNode, m_gdSmallAvatarLockedImageGD, m_bmpSmallAvatarLockedImage);
+                return m_bmpSmallAvatarLockedImage;
+            }
+            set { m_bmpSmallAvatarLockedImage = value; }
 		}
 
 		public string LobbyImageName
@@ -264,8 +271,13 @@ namespace RSN.DotP
 
 		public Bitmap LobbyImage
 		{
-			get { return m_bmpLobbyImage; }
-			set {
+            get
+            {
+                m_bmpLobbyImage = Tools.LoadDeferredImage(m_strLobbyImage, m_iLobbyImageLoaded, m_xnLobbyImageNode, m_gdLobbyImageGD, m_bmpLobbyImage);
+                return m_bmpLobbyImage;
+            }
+            set
+            {
                 if (m_bmpLobbyImage != null)
                     m_bmpLobbyImage.Dispose();
                 m_bmpLobbyImage = value;
